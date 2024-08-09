@@ -1,0 +1,55 @@
+name: Lint
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  actions: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  rust-lint:
+    name: Rust Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Rust
+        uses: ./.github/actions/rust
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check formatting
+        run: |
+          cargo fmt --check
+
+      - name: Check Cargo.toml formatting
+        run: npx @taplo/cli@0.5.2 format --check
+
+      - name: Check licenses
+        uses: EmbarkStudios/cargo-deny-action@v1
+        with:
+          command: check licenses
+
+    rust-clippy:
+      name: Rust Clippy
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v3
+
+        - name: Setup Rust
+          uses: ./.github/actions/rust
+          with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+
+        - name: Run Clippy
+          run: cargo clippy -- -D warnings
