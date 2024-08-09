@@ -1,0 +1,5 @@
+---
+source: crates/ruline-field/tests/field.rs
+expression: result.unwrap_err().to_string()
+---
+`/foo/bar/baz` in data not found
