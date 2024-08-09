@@ -1,0 +1,15 @@
+[workspace]
+members  = ["crates/ruline-context"]
+resolver = "2"
+
+[workspace.package]
+authors = ["Ezekiel Grosfeld <eze@ruline.io"]
+edition = "2021"
+license = "Apache-2.0"
+readme  = "README.md"
+
+[workspace.dependencies]
+ruline-context = { path = "crates/ruline-context" }
+
+dashmap    = { version = "6.0.1" }
+serde_json = { version = "1.0.121", features = ["unbounded_depth"] }
