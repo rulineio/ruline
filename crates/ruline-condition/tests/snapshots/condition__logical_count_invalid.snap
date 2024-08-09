@@ -1,0 +1,5 @@
+---
+source: crates/ruline-condition/tests/condition.rs
+expression: err.to_string()
+---
+Children count for logical with id `300` is invalid, must be at least 2 and is 1

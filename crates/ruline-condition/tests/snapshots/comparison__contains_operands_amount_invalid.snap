@@ -1,0 +1,5 @@
+---
+source: crates/ruline-condition/tests/comparison.rs
+expression: error.to_string()
+---
+Expected 2 operands, got 1
