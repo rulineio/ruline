@@ -1,7 +1,7 @@
 name: Rust Setup
 inputs:
   github_token:
-    description: 'GitHub Token, usually ${{ secrets.GITHUB_TOKEN }}'
+    description: 'GitHub Token, usually secrets.GITHUB_TOKEN'
     required: true
 
 runs:
@@ -13,6 +13,4 @@ runs:
     - name: Setup Rust cache
       uses: Swatinem/rust-cache@v2
       with:
-        shared-key: ${{ inputs.shared-cache-key }}
-        key: ${{ inputs.cache-key }}
         save-if: ${{ github.ref == 'refs/heads/main' || 'false' }}
