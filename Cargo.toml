@@ -1,15 +1,21 @@
 [workspace]
-members  = ["crates/ruline-context"]
+members  = ["crates/ruline-context", "crates/ruline-field"]
 resolver = "2"
 
 [workspace.package]
-authors = ["Ezekiel Grosfeld <eze@ruline.io"]
+authors = ["Ezekiel Grosfeld <eze@ruline.io>"]
 edition = "2021"
 license = "Apache-2.0"
 readme  = "README.md"
 
 [workspace.dependencies]
 ruline-context = { path = "crates/ruline-context" }
+ruline-field   = { path = "crates/ruline-field" }
 
-dashmap    = { version = "6.0.1" }
-serde_json = { version = "1.0.121", features = ["unbounded_depth"] }
+anyhow            = { version = "1.0.86" }
+dashmap           = { version = "6.0.1" }
+insta             = { version = "1.38.0" }
+pretty_assertions = { version = "1.4.0" }
+serde             = { version = "1.0.204", features = ["derive"] }
+serde_json        = { version = "1.0.121", features = ["unbounded_depth"] }
+thiserror         = { version = "1.0.63" }
