@@ -1,0 +1,5 @@
+---
+source: crates/ruline-condition/tests/condition.rs
+expression: err.to_string()
+---
+invalid type: map, expected a sequence
