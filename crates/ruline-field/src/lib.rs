@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 mod error;
+mod test;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "snake_case", tag = "type")]
@@ -15,17 +16,7 @@ pub enum FieldDefinition {
     Value { value: Value },
 }
 
-impl FieldDefinition {
-    pub fn get_type(&self) -> &'static str {
-        match self {
-            FieldDefinition::Variable { .. } => "variable",
-            FieldDefinition::Data { .. } => "data",
-            FieldDefinition::Output { .. } => "output",
-            FieldDefinition::Value { .. } => "value",
-        }
-    }
-}
-
+#[derive(Debug)]
 pub struct Field {
     pub definition: FieldDefinition,
 }
