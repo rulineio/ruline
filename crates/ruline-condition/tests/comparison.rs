@@ -4,14 +4,12 @@ extern crate pretty_assertions;
 
 use dashmap::DashMap;
 use insta::assert_snapshot;
-use ruline_condition::Condition;
+use ruline_condition::{assert_comparison, assert_comparison_error, Condition};
 use ruline_context::Context;
 use serde_json::json;
 
 #[test]
 fn test_greater_than() {
-    let context = Context::new(json!({}), DashMap::new());
-
     let definition = json!({
         "type": "binary",
         "id": 1,
@@ -28,13 +26,9 @@ fn test_greater_than() {
                 "operator": "greater_than",
                 "operands": [{
                     "type": "value",
-                    "id": 7,
-                    "name": "value",
                     "value": 50
                 }, {
                     "type": "value",
-                    "id": 8,
-                    "name": "value",
                     "value": 40
                 }]
             }, {
@@ -43,13 +37,9 @@ fn test_greater_than() {
                 "operator": "greater_than",
                 "operands": [{
                     "type": "value",
-                    "id": 9,
-                    "name": "value",
                     "value": 0.00401
                 }, {
                     "type": "value",
-                    "id": 10,
-                    "name": "value",
                     "value": 0.004
                 }]
             }, {
@@ -58,13 +48,9 @@ fn test_greater_than() {
                 "operator": "greater_than",
                 "operands": [{
                     "type": "value",
-                    "id": 9,
-                    "name": "value",
                     "value": "abcd"
                 }, {
                     "type": "value",
-                    "id": 10,
-                    "name": "value",
                     "value": "abcc"
                 }]
             }, {
@@ -73,29 +59,19 @@ fn test_greater_than() {
                 "operator": "greater_than",
                 "operands": [{
                     "type": "value",
-                    "id": 11,
-                    "name": "value",
                     "value": [ "foo", "bar" ]
                 }, {
                     "type": "value",
-                    "id": 12,
-                    "name": "value",
                     "value": [ "foo" ]
                 }]
             }]
         }
     });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let result = condition.evaluate(&context).unwrap();
-    assert_eq!(result, vec![1]);
+    assert_comparison!(definition, vec![1]);
 }
 
 #[test]
 fn test_less_than() {
-    let context = Context::new(json!({}), DashMap::new());
-
     let definition = json!({
         "type": "binary",
         "id": 1,
@@ -112,13 +88,9 @@ fn test_less_than() {
                 "operator": "less_than",
                 "operands": [{
                     "type": "value",
-                    "id": 7,
-                    "name": "value",
                     "value": 30
                 }, {
                     "type": "value",
-                    "id": 8,
-                    "name": "value",
                     "value": 40
                 }]
             }, {
@@ -127,13 +99,9 @@ fn test_less_than() {
                 "operator": "less_than",
                 "operands": [{
                     "type": "value",
-                    "id": 9,
-                    "name": "value",
                     "value": 0.00343
                 }, {
                     "type": "value",
-                    "id": 10,
-                    "name": "value",
                     "value": 0.00344
                 }]
             }, {
@@ -142,13 +110,9 @@ fn test_less_than() {
                 "operator": "less_than",
                 "operands": [{
                     "type": "value",
-                    "id": 9,
-                    "name": "value",
                     "value": "zzzx"
                 }, {
                     "type": "value",
-                    "id": 10,
-                    "name": "value",
                     "value": "zzzy"
                 }]
             }, {
@@ -157,29 +121,19 @@ fn test_less_than() {
                 "operator": "less_than",
                 "operands": [{
                     "type": "value",
-                    "id": 11,
-                    "name": "value",
                     "value": [ "foo" ]
                 }, {
                     "type": "value",
-                    "id": 12,
-                    "name": "value",
                     "value": [ "foo", "bar" ]
                 }]
             }]
         }
     });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let result = condition.evaluate(&context).unwrap();
-    assert_eq!(result, vec![1]);
+    assert_comparison!(definition, vec![1]);
 }
 
 #[test]
 fn test_equals() {
-    let context = Context::new(json!({}), DashMap::new());
-
     let definition = json!({
         "type": "binary",
         "id": 1,
@@ -196,13 +150,9 @@ fn test_equals() {
                 "operator": "equals",
                 "operands": [{
                     "type": "value",
-                    "id": 7,
-                    "name": "value",
                     "value": 30
                 }, {
                     "type": "value",
-                    "id": 8,
-                    "name": "value",
                     "value": 30
                 }]
             }, {
@@ -211,13 +161,9 @@ fn test_equals() {
                 "operator": "equals",
                 "operands": [{
                     "type": "value",
-                    "id": 9,
-                    "name": "value",
                     "value": "foo"
                 }, {
                     "type": "value",
-                    "id": 10,
-                    "name": "value",
                     "value": "foo"
                 }]
             }, {
@@ -226,13 +172,9 @@ fn test_equals() {
                 "operator": "equals",
                 "operands": [{
                     "type": "value",
-                    "id": 9,
-                    "name": "value",
                     "value": [ "foo", "bar" ]
                 }, {
                     "type": "value",
-                    "id": 10,
-                    "name": "value",
                     "value": [ "foo", "bar" ]
                 }]
             }, {
@@ -241,13 +183,9 @@ fn test_equals() {
                 "operator": "equals",
                 "operands": [{
                     "type": "value",
-                    "id": 9,
-                    "name": "value",
                     "value": { "foo": "bar" }
                 }, {
                     "type": "value",
-                    "id": 10,
-                    "name": "value",
                     "value": { "foo": "bar" }
                 }]
             }, {
@@ -256,13 +194,9 @@ fn test_equals() {
                 "operator": "equals",
                 "operands": [{
                     "type": "value",
-                    "id": 9,
-                    "name": "value",
                     "value": true
                 }, {
                     "type": "value",
-                    "id": 10,
-                    "name": "value",
                     "value": true
                 }]
             }, {
@@ -271,30 +205,20 @@ fn test_equals() {
                 "operator": "equals",
                 "operands": [{
                     "type": "value",
-                    "id": 9,
-                    "name": "value",
                     "value": null
                 }, {
                     "type": "value",
-                    "id": 10,
-                    "name": "value",
                     "value": null
                 }]
             }
             ]
         }
     });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let result = condition.evaluate(&context).unwrap();
-    assert_eq!(result, vec![1]);
+    assert_comparison!(definition, vec![1]);
 }
 
 #[test]
 fn test_not_equals() {
-    let context = Context::new(json!({}), DashMap::new());
-
     let definition = json!({
         "type": "binary",
         "id": 1,
@@ -311,13 +235,9 @@ fn test_not_equals() {
                 "operator": "not_equals",
                 "operands": [{
                     "type": "value",
-                    "id": 7,
-                    "name": "value",
                     "value": 30
                 }, {
                     "type": "value",
-                    "id": 8,
-                    "name": "value",
                     "value": 40
                 }]
             }, {
@@ -326,13 +246,9 @@ fn test_not_equals() {
                 "operator": "not_equals",
                 "operands": [{
                     "type": "value",
-                    "id": 9,
-                    "name": "value",
                     "value": 20
                 }, {
                     "type": "value",
-                    "id": 10,
-                    "name": "value",
                     "value": 30
                 }]
             }, {
@@ -341,13 +257,9 @@ fn test_not_equals() {
                 "operator": "not_equals",
                 "operands": [{
                     "type": "value",
-                    "id": 9,
-                    "name": "value",
                     "value": "foo"
                 }, {
                     "type": "value",
-                    "id": 10,
-                    "name": "value",
                     "value": "bar"
                 }]
             }, {
@@ -356,13 +268,9 @@ fn test_not_equals() {
                 "operator": "not_equals",
                 "operands": [{
                     "type": "value",
-                    "id": 9,
-                    "name": "value",
                     "value": [ "foo", "baz" ]
                 }, {
                     "type": "value",
-                    "id": 10,
-                    "name": "value",
                     "value": [ "foo", "bar" ]
                 }]
             }, {
@@ -371,30 +279,20 @@ fn test_not_equals() {
                 "operator": "not_equals",
                 "operands": [{
                     "type": "value",
-                    "id": 9,
-                    "name": "value",
                     "value": { "foo": "bar", "baz": "qux" }
                 }, {
                     "type": "value",
-                    "id": 10,
-                    "name": "value",
                     "value": { "foo": "bar" }
                 }]
             }
             ]
         }
     });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let result = condition.evaluate(&context).unwrap();
-    assert_eq!(result, vec![1]);
+    assert_comparison!(definition, vec![1]);
 }
 
 #[test]
 fn test_greater_than_or_equal() {
-    let context = Context::new(json!({}), DashMap::new());
-
     let definition = json!({
         "type": "binary",
         "id": 1,
@@ -411,13 +309,9 @@ fn test_greater_than_or_equal() {
                 "operator": "greater_than_or_equal",
                 "operands": [{
                     "type": "value",
-                    "id": 7,
-                    "name": "value",
                     "value": 40
                 }, {
                     "type": "value",
-                    "id": 8,
-                    "name": "value",
                     "value": 40
                 }]
             }, {
@@ -426,13 +320,9 @@ fn test_greater_than_or_equal() {
                 "operator": "greater_than_or_equal",
                 "operands": [{
                     "type": "value",
-                    "id": 9,
-                    "name": "value",
                     "value": 51
                 }, {
                     "type": "value",
-                    "id": 10,
-                    "name": "value",
                     "value": 50
                 }]
             }, {
@@ -441,13 +331,9 @@ fn test_greater_than_or_equal() {
                 "operator": "greater_than_or_equal",
                 "operands": [{
                     "type": "value",
-                    "id": 9,
-                    "name": "value",
                     "value": "foo"
                 }, {
                     "type": "value",
-                    "id": 10,
-                    "name": "value",
                     "value": "foo"
                 }]
             }, {
@@ -456,29 +342,19 @@ fn test_greater_than_or_equal() {
                 "operator": "greater_than_or_equal",
                 "operands": [{
                     "type": "value",
-                    "id": 11,
-                    "name": "value",
                     "value": [ "foo", "bar" ]
                 }, {
                     "type": "value",
-                    "id": 12,
-                    "name": "value",
                     "value": [ "foo" ]
                 }]
             }]
         }
     });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let result = condition.evaluate(&context).unwrap();
-    assert_eq!(result, vec![1]);
+    assert_comparison!(definition, vec![1]);
 }
 
 #[test]
 fn test_less_than_or_equal() {
-    let context = Context::new(json!({}), DashMap::new());
-
     let definition = json!({
         "type": "binary",
         "id": 1,
@@ -495,13 +371,9 @@ fn test_less_than_or_equal() {
                 "operator": "less_than_or_equal",
                 "operands": [{
                     "type": "value",
-                    "id": 7,
-                    "name": "value",
                     "value": 30
                 }, {
                     "type": "value",
-                    "id": 8,
-                    "name": "value",
                     "value": 40
                 }]
             }, {
@@ -510,13 +382,9 @@ fn test_less_than_or_equal() {
                 "operator": "less_than_or_equal",
                 "operands": [{
                     "type": "value",
-                    "id": 9,
-                    "name": "value",
                     "value": 20
                 }, {
                     "type": "value",
-                    "id": 10,
-                    "name": "value",
                     "value": 21
                 }]
             }, {
@@ -525,13 +393,9 @@ fn test_less_than_or_equal() {
                 "operator": "less_than_or_equal",
                 "operands": [{
                     "type": "value",
-                    "id": 9,
-                    "name": "value",
                     "value": "foo"
                 }, {
                     "type": "value",
-                    "id": 10,
-                    "name": "value",
                     "value": "foo"
                 }]
             }, {
@@ -540,29 +404,19 @@ fn test_less_than_or_equal() {
                 "operator": "less_than_or_equal",
                 "operands": [{
                     "type": "value",
-                    "id": 11,
-                    "name": "value",
                     "value": [ "foo" ]
                 }, {
                     "type": "value",
-                    "id": 12,
-                    "name": "value",
                     "value": [ "foo", "bar" ]
                 }]
             }]
         }
     });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let result = condition.evaluate(&context).unwrap();
-    assert_eq!(result, vec![1]);
+    assert_comparison!(definition, vec![1]);
 }
 
 #[test]
 fn test_contains() {
-    let context = Context::new(json!({}), DashMap::new());
-
     let definition = json!({
         "type": "binary",
         "id": 1,
@@ -579,13 +433,9 @@ fn test_contains() {
                 "operator": "contains",
                 "operands": [{
                     "type": "value",
-                    "id": 7,
-                    "name": "value",
                     "value": "foo"
                 }, {
                     "type": "value",
-                    "id": 8,
-                    "name": "value",
                     "value": ["foo", "bar"]
                 }]
             }, {
@@ -594,29 +444,19 @@ fn test_contains() {
                 "operator": "contains",
                 "operands": [{
                     "type": "value",
-                    "id": 9,
-                    "name": "value",
                     "value": 1
                 }, {
                     "type": "value",
-                    "id": 10,
-                    "name": "value",
                     "value": [1, 2, 3]
                 }]
             }]
         }
     });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let result = condition.evaluate(&context).unwrap();
-    assert_eq!(result, vec![1]);
+    assert_comparison!(definition, vec![1]);
 }
 
 #[test]
 fn test_not_contains() {
-    let context = Context::new(json!({}), DashMap::new());
-
     let definition = json!({
         "type": "binary",
         "id": 1,
@@ -633,13 +473,9 @@ fn test_not_contains() {
                 "operator": "not_contains",
                 "operands": [{
                     "type": "value",
-                    "id": 7,
-                    "name": "value",
                     "value": "baz"
                 }, {
                     "type": "value",
-                    "id": 8,
-                    "name": "value",
                     "value": ["foo", "bar"]
                 }]
             }, {
@@ -648,29 +484,19 @@ fn test_not_contains() {
                 "operator": "not_contains",
                 "operands": [{
                     "type": "value",
-                    "id": 9,
-                    "name": "value",
                     "value": 0.4
                 }, {
                     "type": "value",
-                    "id": 10,
-                    "name": "value",
                     "value": [0.1, 0.2, 0.3]
                 }]
             }]
         }
     });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let result = condition.evaluate(&context).unwrap();
-    assert_eq!(result, vec![1]);
+    assert_comparison!(definition, vec![1]);
 }
 
 #[test]
 fn test_not_exists() {
-    let context = Context::new(json!({}), DashMap::new());
-
     let definition = json!({
         "type": "binary",
         "id": 1,
@@ -687,8 +513,6 @@ fn test_not_exists() {
                 "operator": "not_exists",
                 "operands": [{
                     "type": "value",
-                    "id": 7,
-                    "name": "value",
                     "value": null
                 }]
             }, {
@@ -697,24 +521,16 @@ fn test_not_exists() {
                 "operator": "not_exists",
                 "operands": [{
                     "type": "value",
-                    "id": 8,
-                    "name": "value",
                     "value": null
                 }]
             }]
         }
     });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let result = condition.evaluate(&context).unwrap();
-    assert_eq!(result, vec![1]);
+    assert_comparison!(definition, vec![1]);
 }
 
 #[test]
 fn test_exists() {
-    let context = Context::new(json!({}), DashMap::new());
-
     let definition = json!({
         "type": "binary",
         "id": 1,
@@ -731,23 +547,15 @@ fn test_exists() {
                 "operator": "exists",
                 "operands": [{
                     "type": "value",
-                    "id": 7,
-                    "name": "value",
                     "value": 0
                 }, {
                     "type": "value",
-                    "id": 8,
-                    "name": "value",
                     "value": []
                 }, {
                     "type": "value",
-                    "id": 9,
-                    "name": "value",
                     "value": {}
                 }, {
                     "type": "value",
-                    "id": 10,
-                    "name": "value",
                     "value": true
                 }]
             }, {
@@ -756,24 +564,16 @@ fn test_exists() {
                 "operator": "exists",
                 "operands": [{
                     "type": "value",
-                    "id": 8,
-                    "name": "value",
                     "value": ""
                 }]
             }]
         }
     });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let result = condition.evaluate(&context).unwrap();
-    assert_eq!(result, vec![1]);
+    assert_comparison!(definition, vec![1]);
 }
 
 #[test]
 fn test_empty() {
-    let context = Context::new(json!({}), DashMap::new());
-
     let definition = json!({
         "type": "binary",
         "id": 1,
@@ -790,8 +590,6 @@ fn test_empty() {
                 "operator": "empty",
                 "operands": [{
                     "type": "value",
-                    "id": 7,
-                    "name": "value",
                     "value": []
                 }]
             }, {
@@ -800,8 +598,6 @@ fn test_empty() {
                 "operator": "empty",
                 "operands": [{
                     "type": "value",
-                    "id": 8,
-                    "name": "value",
                     "value": ""
                 }]
             }, {
@@ -810,8 +606,6 @@ fn test_empty() {
                 "operator": "empty",
                 "operands": [{
                     "type": "value",
-                    "id": 8,
-                    "name": "value",
                     "value": {}
                 }]
             }, {
@@ -820,24 +614,16 @@ fn test_empty() {
                 "operator": "empty",
                 "operands": [{
                     "type": "value",
-                    "id": 8,
-                    "name": "value",
                     "value": null
                 }]
             }]
         }
     });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let result = condition.evaluate(&context).unwrap();
-    assert_eq!(result, vec![1]);
+    assert_comparison!(definition, vec![1]);
 }
 
 #[test]
 fn test_not_empty() {
-    let context = Context::new(json!({}), DashMap::new());
-
     let definition = json!({
         "type": "binary",
         "id": 1,
@@ -854,8 +640,6 @@ fn test_not_empty() {
                 "operator": "not_empty",
                 "operands": [{
                     "type": "value",
-                    "id": 7,
-                    "name": "value",
                     "value": ["foo"]
                 }]
             }, {
@@ -864,24 +648,16 @@ fn test_not_empty() {
                 "operator": "not_empty",
                 "operands": [{
                     "type": "value",
-                    "id": 8,
-                    "name": "value",
                     "value": { "foo": "bar" }
                 }]
             }]
         }
     });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let result = condition.evaluate(&context).unwrap();
-    assert_eq!(result, vec![1]);
+    assert_comparison!(definition, vec![1]);
 }
 
 #[test]
 fn test_equals_operands_amount_invalid() {
-    let context = Context::new(json!({}), DashMap::new());
-
     let definition = json!({
         "type": "binary",
         "id": 1,
@@ -889,468 +665,334 @@ fn test_equals_operands_amount_invalid() {
         "fallbacks": [0],
         "results": [1],
         "expression": {
-                "id": 302,
-                "type": "comparison",
-                "operator": "equals",
-                "operands": [{
-                    "type": "value",
-                    "id": 7,
-                    "name": "value",
-                    "value": 30
-                }]
-            }
+            "id": 302,
+            "type": "comparison",
+            "operator": "equals",
+            "operands": [{
+                "type": "value",
+                "value": 30
+            }]
+        }
     });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let error = condition.evaluate(&context).unwrap_err();
-    assert_snapshot!(error.to_string());
+    assert_comparison_error!(definition);
 }
 
 #[test]
 fn test_greater_than_operands_amount_invalid() {
-    let context = Context::new(json!({}), DashMap::new());
-
     let definition = json!({
         "type": "binary",
         "id": 1,
         "name": "greater_than_test",
-        "fallbacks": [0],
-        "results": [1],
-        "expression": {
-                "id": 302,
-                "type": "comparison",
-                "operator": "greater_than",
-                "operands": [{
-                    "type": "value",
-                    "id": 7,
-                    "name": "value",
-                    "value": 30
-                },{
-                    "type": "value",
-                    "id": 8,
-                    "name": "value",
-                    "value": 35
-                },{
-                    "type": "value",
-                    "id": 9,
-                    "name": "value",
-                    "value": 40
-                }]
-            }
-    });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let error = condition.evaluate(&context).unwrap_err();
-    assert_snapshot!(error.to_string());
-}
-
-#[test]
-fn test_greater_than_operands_empty() {
-    let context = Context::new(json!({}), DashMap::new());
-
-    let definition = json!({
-        "type": "binary",
-        "id": 1,
-        "name": "greater_than_test",
-        "fallbacks": [0],
-        "results": [1],
-        "expression": {
-                "id": 302,
-                "type": "comparison",
-                "operator": "greater_than",
-                "operands": []
-            }
-    });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let error = condition.evaluate(&context).unwrap_err();
-    assert_snapshot!(error.to_string());
-}
-
-#[test]
-fn test_greater_than_operand_types_mismatch() {
-    let context = Context::new(json!({}), DashMap::new());
-
-    let definition = json!({
-        "type": "binary",
-        "id": 1,
-        "name": "greater_than_test",
-        "fallbacks": [0],
-        "results": [1],
-        "expression": {
-                "id": 302,
-                "type": "comparison",
-                "operator": "greater_than",
-                "operands": [{
-                    "type": "value",
-                    "id": 7,
-                    "name": "value",
-                    "value": 30
-                },{
-                    "type": "value",
-                    "id": 8,
-                    "name": "value",
-                    "value": "30"
-                }
-                ]
-            }
-    });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let error = condition.evaluate(&context).unwrap_err();
-    assert_snapshot!(error.to_string());
-}
-
-#[test]
-fn test_greater_than_operand_type_invalid() {
-    let context = Context::new(json!({}), DashMap::new());
-
-    let definition = json!({
-        "type": "binary",
-        "id": 1,
-        "name": "greater_than_test",
-        "fallbacks": [0],
-        "results": [1],
-        "expression": {
-                "id": 302,
-                "type": "comparison",
-                "operator": "greater_than",
-                "operands": [{
-                    "type": "value",
-                    "id": 7,
-                    "name": "value",
-                    "value": true
-                },{
-                    "type": "value",
-                    "id": 8,
-                    "name": "value",
-                    "value": true
-                }
-                ]
-            }
-    });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let error = condition.evaluate(&context).unwrap_err();
-    assert_snapshot!(error.to_string());
-}
-
-#[test]
-fn test_greater_than_or_equal_operands_amount_invalid() {
-    let context = Context::new(json!({}), DashMap::new());
-
-    let definition = json!({
-        "type": "binary",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
-        "fallbacks": [0],
-        "results": [1],
-        "expression": {
-                "id": 302,
-                "type": "comparison",
-                "operator": "greater_than_or_equal",
-                "operands": [{
-                    "type": "value",
-                    "id": 7,
-                    "name": "value",
-                    "value": 30
-                },{
-                    "type": "value",
-                    "id": 8,
-                    "name": "value",
-                    "value": 35
-                },{
-                    "type": "value",
-                    "id": 9,
-                    "name": "value",
-                    "value": 40
-                }]
-            }
-    });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let error = condition.evaluate(&context).unwrap_err();
-    assert_snapshot!(error.to_string());
-}
-
-#[test]
-fn test_greater_than_or_equal_operands_empty() {
-    let context = Context::new(json!({}), DashMap::new());
-
-    let definition = json!({
-        "type": "binary",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
-        "fallbacks": [0],
-        "results": [1],
-        "expression": {
-                "id": 302,
-                "type": "comparison",
-                "operator": "greater_than_or_equal",
-                "operands": []
-            }
-    });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let error = condition.evaluate(&context).unwrap_err();
-    assert_snapshot!(error.to_string());
-}
-
-#[test]
-fn test_greater_than_or_equal_operand_types_mismatch() {
-    let context = Context::new(json!({}), DashMap::new());
-
-    let definition = json!({
-        "type": "binary",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
-        "fallbacks": [0],
-        "results": [1],
-        "expression": {
-                "id": 302,
-                "type": "comparison",
-                "operator": "greater_than_or_equal",
-                "operands": [{
-                    "type": "value",
-                    "id": 7,
-                    "name": "value",
-                    "value": 30
-                },{
-                    "type": "value",
-                    "id": 8,
-                    "name": "value",
-                    "value": []
-                }
-                ]
-            }
-    });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let error = condition.evaluate(&context).unwrap_err();
-    assert_snapshot!(error.to_string());
-}
-
-#[test]
-fn test_greater_than_or_equal_operand_type_invalid() {
-    let context = Context::new(json!({}), DashMap::new());
-
-    let definition = json!({
-        "type": "binary",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
-        "fallbacks": [0],
-        "results": [1],
-        "expression": {
-                "id": 302,
-                "type": "comparison",
-                "operator": "greater_than_or_equal",
-                "operands": [{
-                    "type": "value",
-                    "id": 7,
-                    "name": "value",
-                    "value": true
-                },{
-                    "type": "value",
-                    "id": 8,
-                    "name": "value",
-                    "value": true
-                }
-                ]
-            }
-    });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let error = condition.evaluate(&context).unwrap_err();
-    assert_snapshot!(error.to_string());
-}
-
-#[test]
-fn test_less_than_operands_amount_invalid() {
-    let context = Context::new(json!({}), DashMap::new());
-
-    let definition = json!({
-        "type": "binary",
-        "id": 1,
-        "name": "less_than_test",
-        "fallbacks": [0],
-        "results": [1],
-        "expression": {
-                "id": 302,
-                "type": "comparison",
-                "operator": "less_than",
-                "operands": [{
-                    "type": "value",
-                    "id": 7,
-                    "name": "value",
-                    "value": 30
-                },{
-                    "type": "value",
-                    "id": 8,
-                    "name": "value",
-                    "value": 35
-                },{
-                    "type": "value",
-                    "id": 9,
-                    "name": "value",
-                    "value": 40
-                }
-                ]
-            }
-    });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let error = condition.evaluate(&context).unwrap_err();
-    assert_snapshot!(error.to_string());
-}
-
-#[test]
-fn test_less_than_operands_empty() {
-    let context = Context::new(json!({}), DashMap::new());
-
-    let definition = json!({
-        "type": "binary",
-        "id": 1,
-        "name": "less_than_test",
-        "fallbacks": [0],
-        "results": [1],
-        "expression": {
-                "id": 302,
-                "type": "comparison",
-                "operator": "less_than",
-                "operands": []
-            }
-    });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let error = condition.evaluate(&context).unwrap_err();
-    assert_snapshot!(error.to_string());
-}
-
-#[test]
-fn test_less_than_operand_types_mismatch() {
-    let context = Context::new(json!({}), DashMap::new());
-
-    let definition = json!({
-        "type": "binary",
-        "id": 1,
-        "name": "less_than_test",
-        "fallbacks": [0],
-        "results": [1],
-        "expression": {
-                "id": 302,
-                "type": "comparison",
-                "operator": "less_than",
-                "operands": [{
-                    "type": "value",
-                    "id": 7,
-                    "name": "value",
-                    "value": 30
-                },{
-                    "type": "value",
-                    "id": 8,
-                    "name": "value",
-                    "value": "foo"
-                }
-                ]
-            }
-    });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let error = condition.evaluate(&context).unwrap_err();
-    assert_snapshot!(error.to_string());
-}
-
-#[test]
-fn test_less_than_operand_type_invalid() {
-    let context = Context::new(json!({}), DashMap::new());
-
-    let definition = json!({
-        "type": "binary",
-        "id": 1,
-        "name": "less_than_test",
-        "fallbacks": [0],
-        "results": [1],
-        "expression": {
-                "id": 302,
-                "type": "comparison",
-                "operator": "less_than",
-                "operands": [{
-                    "type": "value",
-                    "id": 7,
-                    "name": "value",
-                    "value": {}
-                },{
-                    "type": "value",
-                    "id": 8,
-                    "name": "value",
-                    "value": {}
-                }
-                ]
-            }
-    });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let error = condition.evaluate(&context).unwrap_err();
-    assert_snapshot!(error.to_string());
-}
-
-#[test]
-fn test_less_than_or_equal_operands_amount_invalid() {
-    let context = Context::new(json!({}), DashMap::new());
-
-    let definition = json!({
-        "type": "binary",
-        "id": 1,
-        "name": "less_than_or_equal_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
             "id": 302,
             "type": "comparison",
-            "operator": "less_than_or_equal",
+            "operator": "greater_than",
             "operands": [{
                 "type": "value",
-                "id": 7,
-                "name": "value",
                 "value": 30
             },{
                 "type": "value",
-                "id": 8,
-                "name": "value",
                 "value": 35
             },{
                 "type": "value",
-                "id": 9,
-                "name": "value",
+                "value": 40
+            }]
+        }
+    });
+    assert_comparison_error!(definition);
+}
+
+#[test]
+fn test_greater_than_operands_empty() {
+    let definition = json!({
+        "type": "binary",
+        "id": 1,
+        "name": "greater_than_test",
+        "fallbacks": [0],
+        "results": [1],
+        "expression": {
+            "id": 302,
+            "type": "comparison",
+            "operator": "greater_than",
+            "operands": []
+        }
+    });
+    assert_comparison_error!(definition);
+}
+
+#[test]
+fn test_greater_than_operand_types_mismatch() {
+    let definition = json!({
+        "type": "binary",
+        "id": 1,
+        "name": "greater_than_test",
+        "fallbacks": [0],
+        "results": [1],
+        "expression": {
+            "id": 302,
+            "type": "comparison",
+            "operator": "greater_than",
+            "operands": [{
+                "type": "value",
+                "value": 30
+            },{
+                "type": "value",
+                "value": "30"
+            }
+            ]
+        }
+    });
+    assert_comparison_error!(definition);
+}
+
+#[test]
+fn test_greater_than_operand_type_invalid() {
+    let definition = json!({
+        "type": "binary",
+        "id": 1,
+        "name": "greater_than_test",
+        "fallbacks": [0],
+        "results": [1],
+        "expression": {
+            "id": 302,
+            "type": "comparison",
+            "operator": "greater_than",
+            "operands": [{
+                "type": "value",
+                "value": true
+            },{
+                "type": "value",
+                "value": true
+            }
+            ]
+        }
+    });
+    assert_comparison_error!(definition);
+}
+
+#[test]
+fn test_greater_than_or_equal_operands_amount_invalid() {
+    let definition = json!({
+        "type": "binary",
+        "id": 1,
+        "name": "greater_than_or_equal_test",
+        "fallbacks": [0],
+        "results": [1],
+        "expression": {
+            "id": 302,
+            "type": "comparison",
+            "operator": "greater_than_or_equal",
+            "operands": [{
+                "type": "value",
+                "value": 30
+            },{
+                "type": "value",
+                "value": 35
+            },{
+                "type": "value",
+                "value": 40
+            }]
+        }
+    });
+    assert_comparison_error!(definition);
+}
+
+#[test]
+fn test_greater_than_or_equal_operands_empty() {
+    let definition = json!({
+        "type": "binary",
+        "id": 1,
+        "name": "greater_than_or_equal_test",
+        "fallbacks": [0],
+        "results": [1],
+        "expression": {
+            "id": 302,
+            "type": "comparison",
+            "operator": "greater_than_or_equal",
+            "operands": []
+        }
+    });
+    assert_comparison_error!(definition);
+}
+
+#[test]
+fn test_greater_than_or_equal_operand_types_mismatch() {
+    let definition = json!({
+        "type": "binary",
+        "id": 1,
+        "name": "greater_than_or_equal_test",
+        "fallbacks": [0],
+        "results": [1],
+        "expression": {
+            "id": 302,
+            "type": "comparison",
+            "operator": "greater_than_or_equal",
+            "operands": [{
+                "type": "value",
+                "value": 30
+            },{
+                "type": "value",
+                "value": []
+            }
+            ]
+        }
+    });
+    assert_comparison_error!(definition);
+}
+
+#[test]
+fn test_greater_than_or_equal_operand_type_invalid() {
+    let definition = json!({
+        "type": "binary",
+        "id": 1,
+        "name": "greater_than_or_equal_test",
+        "fallbacks": [0],
+        "results": [1],
+        "expression": {
+            "id": 302,
+            "type": "comparison",
+            "operator": "greater_than_or_equal",
+            "operands": [{
+                "type": "value",
+                "value": true
+            },{
+                "type": "value",
+                "value": true
+            }
+            ]
+        }
+    });
+    assert_comparison_error!(definition);
+}
+
+#[test]
+fn test_less_than_operands_amount_invalid() {
+    let definition = json!({
+        "type": "binary",
+        "id": 1,
+        "name": "less_than_test",
+        "fallbacks": [0],
+        "results": [1],
+        "expression": {
+            "id": 302,
+            "type": "comparison",
+            "operator": "less_than",
+            "operands": [{
+                "type": "value",
+                "value": 30
+            },{
+                "type": "value",
+                "value": 35
+            },{
+                "type": "value",
                 "value": 40
             }
             ]
         }
     });
+    assert_comparison_error!(definition);
+}
 
-    let condition = Condition::try_from(definition).unwrap();
+#[test]
+fn test_less_than_operands_empty() {
+    let definition = json!({
+        "type": "binary",
+        "id": 1,
+        "name": "less_than_test",
+        "fallbacks": [0],
+        "results": [1],
+        "expression": {
+            "id": 302,
+            "type": "comparison",
+            "operator": "less_than",
+            "operands": []
+        }
+    });
+    assert_comparison_error!(definition);
+}
 
-    let error = condition.evaluate(&context).unwrap_err();
-    assert_snapshot!(error.to_string());
+#[test]
+fn test_less_than_operand_types_mismatch() {
+    let definition = json!({
+        "type": "binary",
+        "id": 1,
+        "name": "less_than_test",
+        "fallbacks": [0],
+        "results": [1],
+        "expression": {
+            "id": 302,
+            "type": "comparison",
+            "operator": "less_than",
+            "operands": [{
+                "type": "value",
+                "value": 30
+            },{
+                "type": "value",
+                "value": "foo"
+            }
+            ]
+        }
+    });
+    assert_comparison_error!(definition);
+}
+
+#[test]
+fn test_less_than_operand_type_invalid() {
+    let definition = json!({
+        "type": "binary",
+        "id": 1,
+        "name": "less_than_test",
+        "fallbacks": [0],
+        "results": [1],
+        "expression": {
+            "id": 302,
+            "type": "comparison",
+            "operator": "less_than",
+            "operands": [{
+                "type": "value",
+                "value": {}
+            },{
+                "type": "value",
+                "value": {}
+            }
+            ]
+        }
+    });
+    assert_comparison_error!(definition);
+}
+
+#[test]
+fn test_less_than_or_equal_operands_amount_invalid() {
+    let definition = json!({
+        "type": "binary",
+        "id": 1,
+        "name": "less_than_or_equal_test",
+        "fallbacks": [0],
+        "results": [1],
+        "expression": {
+            "id": 302,
+            "type": "comparison",
+            "operator": "less_than_or_equal",
+            "operands": [{
+                "type": "value",
+                "value": 30
+            },{
+                "type": "value",
+                "value": 35
+            },{
+                "type": "value",
+                "value": 40
+            }
+            ]
+        }
+    });
+    assert_comparison_error!(definition);
 }
 
 #[test]
 fn test_less_than_or_equal_operands_empty() {
-    let context = Context::new(json!({}), DashMap::new());
-
     let definition = json!({
         "type": "binary",
         "id": 1,
@@ -1364,17 +1006,11 @@ fn test_less_than_or_equal_operands_empty() {
             "operands": []
         }
     });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let error = condition.evaluate(&context).unwrap_err();
-    assert_snapshot!(error.to_string());
+    assert_comparison_error!(definition);
 }
 
 #[test]
 fn test_less_than_or_equal_operand_types_mismatch() {
-    let context = Context::new(json!({}), DashMap::new());
-
     let definition = json!({
         "type": "binary",
         "id": 1,
@@ -1387,29 +1023,19 @@ fn test_less_than_or_equal_operand_types_mismatch() {
             "operator": "less_than_or_equal",
             "operands": [{
                 "type": "value",
-                "id": 7,
-                "name": "value",
                 "value": 30
             },{
                 "type": "value",
-                "id": 8,
-                "name": "value",
                 "value": "foo"
             }
             ]
         }
     });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let error = condition.evaluate(&context).unwrap_err();
-    assert_snapshot!(error.to_string());
+    assert_comparison_error!(definition);
 }
 
 #[test]
 fn test_less_than_or_equal_operand_type_invalid() {
-    let context = Context::new(json!({}), DashMap::new());
-
     let definition = json!({
         "type": "binary",
         "id": 1,
@@ -1422,29 +1048,19 @@ fn test_less_than_or_equal_operand_type_invalid() {
             "operator": "less_than_or_equal",
             "operands": [{
                 "type": "value",
-                "id": 7,
-                "name": "value",
                 "value": {}
             },{
                 "type": "value",
-                "id": 8,
-                "name": "value",
                 "value": {}
             }
             ]
         }
     });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let error = condition.evaluate(&context).unwrap_err();
-    assert_snapshot!(error.to_string());
+    assert_comparison_error!(definition);
 }
 
 #[test]
 fn test_empty_operands_amount_invalid() {
-    let context = Context::new(json!({}), DashMap::new());
-
     let definition = json!({
         "type": "binary",
         "id": 1,
@@ -1457,29 +1073,19 @@ fn test_empty_operands_amount_invalid() {
             "operator": "empty",
             "operands": [{
                 "type": "value",
-                "id": 7,
-                "name": "value",
                 "value": []
             },{
                 "type": "value",
-                "id": 8,
-                "name": "value",
                 "value": []
             }
             ]
         }
     });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let error = condition.evaluate(&context).unwrap_err();
-    assert_snapshot!(error.to_string());
+    assert_comparison_error!(definition);
 }
 
 #[test]
 fn test_empty_operands_empty() {
-    let context = Context::new(json!({}), DashMap::new());
-
     let definition = json!({
         "type": "binary",
         "id": 1,
@@ -1493,17 +1099,11 @@ fn test_empty_operands_empty() {
             "operands": []
         }
     });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let error = condition.evaluate(&context).unwrap_err();
-    assert_snapshot!(error.to_string());
+    assert_comparison_error!(definition);
 }
 
 #[test]
 fn test_contains_operands_amount_invalid() {
-    let context = Context::new(json!({}), DashMap::new());
-
     let definition = json!({
         "type": "binary",
         "id": 1,
@@ -1516,23 +1116,15 @@ fn test_contains_operands_amount_invalid() {
             "operator": "contains",
             "operands": [{
                 "type": "value",
-                "id": 7,
-                "name": "value",
                 "value": "foo"
             }]
         }
     });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let error = condition.evaluate(&context).unwrap_err();
-    assert_snapshot!(error.to_string());
+    assert_comparison_error!(definition);
 }
 
 #[test]
 fn test_contains_operands_empty() {
-    let context = Context::new(json!({}), DashMap::new());
-
     let definition = json!({
         "type": "binary",
         "id": 1,
@@ -1546,17 +1138,11 @@ fn test_contains_operands_empty() {
             "operands": []
         }
     });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let error = condition.evaluate(&context).unwrap_err();
-    assert_snapshot!(error.to_string());
+    assert_comparison_error!(definition);
 }
 
 #[test]
 fn test_contains_operand_type_invalid() {
-    let context = Context::new(json!({}), DashMap::new());
-
     let definition = json!({
         "type": "binary",
         "id": 1,
@@ -1569,29 +1155,19 @@ fn test_contains_operand_type_invalid() {
             "operator": "contains",
             "operands": [{
                 "type": "value",
-                "id": [7],
-                "name": "value",
                 "value": "foo"
             },{
                 "type": "value",
-                "id": 8,
-                "name": "value",
                 "value": "foo"
             }
             ]
         }
     });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let error = condition.evaluate(&context).unwrap_err();
-    assert_snapshot!(error.to_string());
+    assert_comparison_error!(definition);
 }
 
 #[test]
 fn test_exists_operands_amount_invalid() {
-    let context = Context::new(json!({}), DashMap::new());
-
     let definition = json!({
         "type": "binary",
         "id": 1,
@@ -1605,9 +1181,5 @@ fn test_exists_operands_amount_invalid() {
             "operands": []
         }
     });
-
-    let condition = Condition::try_from(definition).unwrap();
-
-    let error = condition.evaluate(&context).unwrap_err();
-    assert_snapshot!(error.to_string());
+    assert_comparison_error!(definition);
 }

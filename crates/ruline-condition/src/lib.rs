@@ -16,6 +16,7 @@ use serde_json::Value;
 mod comparison;
 mod error;
 mod evaluate;
+mod test;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "snake_case")]
