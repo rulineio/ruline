@@ -98,7 +98,7 @@ fn test_get_value_field() {
         "value": 42
     });
 
-    assert_field!(&context, definition, null);
+    assert_field!(&context, definition, 42);
 }
 
 #[test]
