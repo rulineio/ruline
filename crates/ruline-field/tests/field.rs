@@ -5,7 +5,7 @@ extern crate pretty_assertions;
 use dashmap::DashMap;
 use insta::assert_snapshot;
 use ruline_context::Context;
-use ruline_field::Field;
+use ruline_field::{assert_deserialize_error, assert_field, assert_field_error, Field};
 use serde_json::json;
 
 #[test]
@@ -17,47 +17,27 @@ fn test_get_data_field() {
             }
         }
     });
-
     let context = Context::new(data, DashMap::new());
 
-    let field_definition = json!({
+    let definition = json!({
         "type": "data",
-        "id": 1,
-        "name": "baz",
         "path": "/foo/bar/baz"
     });
 
-    let field = Field::try_from(field_definition).unwrap();
-    let result = field.process(&context).unwrap();
-
-    assert_eq!(result, json!(42));
+    assert_field!(&context, definition, 42);
 }
 
 #[test]
 fn test_get_data_field_not_found() {
-    let data = json!({});
-
-    let context = Context::new(data, DashMap::new());
-
-    let field_definition = json!({
+    assert_field_error!({
         "type": "data",
-        "id": 1,
-        "name": "baz",
         "path": "/foo/bar/baz"
     });
-
-    let field = Field::try_from(field_definition).unwrap();
-    let result = field.process(&context);
-
-    assert!(result.is_err());
-    assert_snapshot!(result.unwrap_err().to_string());
 }
 
 #[test]
 fn test_get_output_field() {
-    let data = json!({});
-
-    let context = Context::new(data, DashMap::new());
+    let context = Context::new(json!({}), DashMap::new());
     context.set_output(
         30,
         json!({
@@ -69,98 +49,77 @@ fn test_get_output_field() {
         }),
     );
 
-    let field_definition = json!({
+    let definition = json!({
         "type": "output",
-        "id": 1,
-        "name": "30_baz",
         "output_id": 30,
         "path": "/foo/bar/baz"
     });
 
-    let field = Field::try_from(field_definition).unwrap();
-    let result = field.process(&context).unwrap();
-
-    assert_eq!(result, json!(["a", "b", "c"]));
+    assert_field!(&context, definition, ["a", "b", "c"]);
 }
 
 #[test]
 fn test_get_output_field_not_found() {
-    let data = json!({});
-
-    let context = Context::new(data, DashMap::new());
-
-    let field_definition = json!({
+    assert_field_error!({
         "type": "output",
-        "id": 1,
-        "name": "30_baz",
         "output_id": 30,
         "path": "/foo/bar/baz"
     });
-
-    let field = Field::try_from(field_definition).unwrap();
-    let result = field.process(&context);
-
-    assert!(result.is_err());
-    assert_snapshot!(result.unwrap_err().to_string());
 }
 
 #[test]
 fn test_get_variable_field() {
-    let data = json!({});
     let variables = DashMap::new();
     variables.insert("foo".to_string(), json!("bar"));
+    let context = Context::new(json!({}), variables);
 
-    let context = Context::new(data, variables);
-
-    let field_definition = json!({
+    let definition = json!({
         "type": "variable",
-        "id": 1,
-        "name": "foo",
         "variable": "foo"
     });
 
-    let field = Field::try_from(field_definition).unwrap();
-    let result = field.process(&context).unwrap();
-
-    assert_eq!(result, json!("bar"));
+    assert_field!(&context, definition, "bar");
 }
 
 #[test]
 fn test_get_variable_field_not_found() {
-    let data = json!({});
-    let variables = DashMap::new();
-
-    let context = Context::new(data, variables);
-
-    let field_definition = json!({
+    assert_field_error!({
         "type": "variable",
-        "id": 1,
-        "name": "foo",
         "variable": "foo"
     });
-
-    let field = Field::try_from(field_definition).unwrap();
-    let result = field.process(&context);
-
-    assert!(result.is_err());
-    assert_snapshot!(result.unwrap_err().to_string());
 }
 
 #[test]
 fn test_get_value_field() {
-    let data = json!({});
+    let context = Context::new(json!({}), DashMap::new());
 
-    let context = Context::new(data, DashMap::new());
-
-    let field_definition = json!({
+    let definition = json!({
         "type": "value",
-        "id": 1,
-        "name": "baz",
-        "value": null
+        "value": 42
     });
 
-    let field = Field::try_from(field_definition).unwrap();
-    let result = field.process(&context).unwrap();
+    assert_field!(&context, definition, null);
+}
 
-    assert_eq!(result, json!(null));
+#[test]
+fn test_serialization_invalid_field_type() {
+    assert_deserialize_error!({ "type": "invalid" });
+}
+
+#[test]
+fn test_serialization_invalid_type() {
+    assert_deserialize_error!({ "type": "data", "path": 42 });
+}
+
+#[test]
+fn get_dependency() {
+    let definition = json!({
+        "type": "output",
+        "output_id": 30,
+        "path": "/foo/bar/baz"
+    });
+
+    let field = Field::try_from(definition).unwrap();
+    let result = field.dependency();
+    assert_eq!(result, 30);
 }
