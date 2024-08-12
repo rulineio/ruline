@@ -1,0 +1,5 @@
+---
+source: crates/ruline-field/tests/function.rs
+expression: result.unwrap_err().to_string()
+---
+Expected 2 arguments, got 1

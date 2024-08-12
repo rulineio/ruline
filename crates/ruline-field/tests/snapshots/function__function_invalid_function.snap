@@ -1,0 +1,5 @@
+---
+source: crates/ruline-field/tests/function.rs
+expression: result.unwrap_err().to_string()
+---
+unknown variant `invalid`, expected one of `add`, `sub`, `mul`, `div`, `mod`, `pow`, `min`, `max`, `abs`, `mean`, `median`, `upper`, `lower`, `join`

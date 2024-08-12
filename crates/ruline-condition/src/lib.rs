@@ -224,7 +224,7 @@ impl TryFrom<Value> for Condition {
                 _ => None,
             })
             .flatten()
-            .map(|operand| Field::from(operand).dependency())
+            .flat_map(|operand| Field::from(operand).dependencies())
             .collect::<Vec<_>>();
 
         dependencies.sort();

@@ -2,4 +2,4 @@
 source: crates/ruline-field/tests/field.rs
 expression: result.unwrap_err().to_string()
 ---
-unknown variant `invalid`, expected one of `variable`, `data`, `output`, `value`
+unknown variant `invalid`, expected one of `variable`, `data`, `output`, `value`, `function`
