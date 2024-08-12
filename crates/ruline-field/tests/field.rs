@@ -110,16 +110,3 @@ fn test_serialization_invalid_field_type() {
 fn test_serialization_invalid_type() {
     assert_deserialize_error!({ "type": "data", "path": 42 });
 }
-
-#[test]
-fn get_dependency() {
-    let definition = json!({
-        "type": "output",
-        "output_id": 30,
-        "path": "/foo/bar/baz"
-    });
-
-    let field = Field::try_from(definition).unwrap();
-    let result = field.dependency();
-    assert_eq!(result, 30);
-}

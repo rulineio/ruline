@@ -70,10 +70,14 @@ impl Field {
         }
     }
 
-    pub fn dependency(&self) -> i64 {
+    pub fn dependencies(&self) -> Vec<i64> {
         match &self.definition {
-            FieldDefinition::Output { output_id, .. } => *output_id,
-            _ => 0,
+            FieldDefinition::Function { args, .. } => args
+                .iter()
+                .flat_map(|arg| Self::from(arg).dependencies())
+                .collect(),
+            FieldDefinition::Output { output_id, .. } => vec![*output_id],
+            _ => vec![],
         }
     }
 }
