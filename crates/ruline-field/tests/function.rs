@@ -16,44 +16,44 @@ fn test_function_field_nested() {
         "type": "function",
         "function": "add",
         "args": [
+        {
+            "type": "function",
+            "function": "add",
+            "args": [
             {
-                "type": "function",
-                "function": "add",
-                "args": [
-                    {
-                        "type": "value",
-                        "value": 1
-                    },
-                    {
-                        "type": "function",
-                        "function": "mul",
-                        "args": [
-                            {
-                                "type": "value",
-                                "value": 2
-                            },
-                            {
-                                "type": "value",
-                                "value": 3
-                            }
-                        ]
-                    }
-                ]
+                "type": "value",
+                "value": 1
             },
             {
                 "type": "function",
-                "function": "sub",
+                "function": "mul",
                 "args": [
-                    {
-                        "type": "value",
-                        "value": 3
-                    },
-                    {
-                        "type": "value",
-                        "value": 4
-                    }
+                {
+                    "type": "value",
+                    "value": 2
+                },
+                {
+                    "type": "value",
+                    "value": 3
+                }
                 ]
             }
+            ]
+        },
+        {
+            "type": "function",
+            "function": "sub",
+            "args": [
+            {
+                "type": "value",
+                "value": 3
+            },
+            {
+                "type": "value",
+                "value": 4
+            }
+            ]
+        }
         ]
     });
 
@@ -66,53 +66,53 @@ fn test_function_field_dependencies() {
         "type": "function",
         "function": "add",
         "args": [
+        {
+            "type": "function",
+            "function": "add",
+            "args": [
             {
                 "type": "function",
                 "function": "add",
                 "args": [
+                {
+                    "type": "output",
+                    "output_id": 10,
+                    "path": "/foo/bar/baz"
+                },
+                {
+                    "type": "function",
+                    "function": "mul",
+                    "args": [
                     {
-                        "type": "function",
-                        "function": "add",
-                        "args": [
-                            {
-                                "type": "output",
-                                "output_id": 10,
-                                "path": "/foo/bar/baz"
-                            },
-                            {
-                                "type": "function",
-                                "function": "mul",
-                                "args": [
-                                    {
-                                        "type": "output",
-                                        "output_id": 20,
-                                        "path": "/foo/bar/baz"
-                                    },
-                                    {
-                                        "type": "value",
-                                        "value": 3
-                                    }
-                                ]
-                            }
-                        ]
+                        "type": "output",
+                        "output_id": 20,
+                        "path": "/foo/bar/baz"
                     },
                     {
-                        "type": "function",
-                        "function": "sub",
-                        "args": [
-                            {
-                                "type": "output",
-                                "output_id": 40,
-                                "path": "/foo/bar/baz"
-                            },
-                            {
-                                "type": "value",
-                                "value": 4
-                            }
-                        ]
+                        "type": "value",
+                        "value": 3
                     }
+                    ]
+                }
                 ]
-            }        ]
+            },
+            {
+                "type": "function",
+                "function": "sub",
+                "args": [
+                {
+                    "type": "output",
+                    "output_id": 40,
+                    "path": "/foo/bar/baz"
+                },
+                {
+                    "type": "value",
+                    "value": 4
+                }
+                ]
+            }
+            ]
+        }        ]
     });
 
     let field = Field::try_from(definition).unwrap();
@@ -137,14 +137,14 @@ fn test_function_field_add() {
         "type": "function",
         "function": "add",
         "args": [
-            {
-                "type": "value",
-                "value": 1
-            },
-            {
-                "type": "value",
-                "value": 2
-            }
+        {
+            "type": "value",
+            "value": 1
+        },
+        {
+            "type": "value",
+            "value": 2
+        }
         ]
     });
 
@@ -159,10 +159,10 @@ fn test_function_field_add_vec() {
         "type": "function",
         "function": "add",
         "args": [
-            {
-                "type": "value",
-                "value": [1, 2, 3]
-            }
+        {
+            "type": "value",
+            "value": [1, 2, 3]
+        }
         ]
     });
 
@@ -175,14 +175,14 @@ fn test_function_field_add_invalid_arg_type() {
         "type": "function",
         "function": "add",
         "args": [
-            {
-                "type": "value",
-                "value": "foo"
-            },
-            {
-                "type": "value",
-                "value": 2
-            }
+        {
+            "type": "value",
+            "value": "foo"
+        },
+        {
+            "type": "value",
+            "value": 2
+        }
         ]
     });
 }
@@ -202,10 +202,10 @@ fn test_function_field_add_invalid_arg_type_vec() {
         "type": "function",
         "function": "add",
         "args": [
-            {
-                "type": "value",
-                "value": ["foo", 2, 3]
-            }
+        {
+            "type": "value",
+            "value": ["foo", 2, 3]
+        }
         ]
     });
 }
@@ -218,14 +218,14 @@ fn test_function_field_sub() {
         "type": "function",
         "function": "sub",
         "args": [
-            {
-                "type": "value",
-                "value": 4
-            },
-            {
-                "type": "value",
-                "value": 2
-            }
+        {
+            "type": "value",
+            "value": 4
+        },
+        {
+            "type": "value",
+            "value": 2
+        }
         ]
     });
 
@@ -240,10 +240,10 @@ fn test_function_field_sub_vec() {
         "type": "function",
         "function": "sub",
         "args": [
-            {
-                "type": "value",
-                "value": [4, 2, 1]
-            }
+        {
+            "type": "value",
+            "value": [4, 2, 1]
+        }
         ]
     });
 
@@ -256,14 +256,14 @@ fn test_function_field_sub_invalid_arg_type() {
         "type": "function",
         "function": "sub",
         "args": [
-            {
-                "type": "value",
-                "value": "foo"
-            },
-            {
-                "type": "value",
-                "value": 2
-            }
+        {
+            "type": "value",
+            "value": "foo"
+        },
+        {
+            "type": "value",
+            "value": 2
+        }
         ]
     });
 }
@@ -283,10 +283,10 @@ fn test_function_field_sub_invalid_arg_type_vec() {
         "type": "function",
         "function": "sub",
         "args": [
-            {
-                "type": "value",
-                "value": ["foo", 2, 3]
-            }
+        {
+            "type": "value",
+            "value": ["foo", 2, 3]
+        }
         ]
     });
 }
@@ -299,14 +299,14 @@ fn test_function_field_mul() {
         "type": "function",
         "function": "mul",
         "args": [
-            {
-                "type": "value",
-                "value": 2
-            },
-            {
-                "type": "value",
-                "value": 3
-            }
+        {
+            "type": "value",
+            "value": 2
+        },
+        {
+            "type": "value",
+            "value": 3
+        }
         ]
     });
 
@@ -321,10 +321,10 @@ fn test_function_field_mul_vec() {
         "type": "function",
         "function": "mul",
         "args": [
-            {
-                "type": "value",
-                "value": [2, 3, 4]
-            }
+        {
+            "type": "value",
+            "value": [2, 3, 4]
+        }
         ]
     });
 
@@ -337,14 +337,14 @@ fn test_function_field_mul_invalid_arg_type() {
         "type": "function",
         "function": "mul",
         "args": [
-            {
-                "type": "value",
-                "value": "foo"
-            },
-            {
-                "type": "value",
-                "value": 2
-            }
+        {
+            "type": "value",
+            "value": "foo"
+        },
+        {
+            "type": "value",
+            "value": 2
+        }
         ]
     });
 }
@@ -364,10 +364,10 @@ fn test_function_field_mul_invalid_arg_type_vec() {
         "type": "function",
         "function": "mul",
         "args": [
-            {
-                "type": "value",
-                "value": [true]
-            }
+        {
+            "type": "value",
+            "value": [true]
+        }
         ]
     });
 }
@@ -380,14 +380,14 @@ fn test_function_field_div() {
         "type": "function",
         "function": "div",
         "args": [
-            {
-                "type": "value",
-                "value": 6
-            },
-            {
-                "type": "value",
-                "value": 3
-            }
+        {
+            "type": "value",
+            "value": 6
+        },
+        {
+            "type": "value",
+            "value": 3
+        }
         ]
     });
 
@@ -402,10 +402,10 @@ fn test_function_field_div_vec() {
         "type": "function",
         "function": "div",
         "args": [
-            {
-                "type": "value",
-                "value": [6, 3, 2]
-            }
+        {
+            "type": "value",
+            "value": [6, 3, 2]
+        }
         ]
     });
 
@@ -418,14 +418,14 @@ fn test_function_field_div_invalid_arg_type() {
         "type": "function",
         "function": "div",
         "args": [
-            {
-                "type": "value",
-                "value": "foo"
-            },
-            {
-                "type": "value",
-                "value": 2
-            }
+        {
+            "type": "value",
+            "value": "foo"
+        },
+        {
+            "type": "value",
+            "value": 2
+        }
         ]
     });
 }
@@ -445,10 +445,10 @@ fn test_function_field_div_invalid_arg_type_vec() {
         "type": "function",
         "function": "div",
         "args": [
-            {
-                "type": "value",
-                "value": [[1,2], [3,4]]
-            }
+        {
+            "type": "value",
+            "value": [[1,2], [3,4]]
+        }
         ]
     });
 }
@@ -460,15 +460,15 @@ fn test_function_field_mod() {
     let definition = json!({
         "type": "function",
         "function": "mod",
-            "args": [
-            {
-                "type": "value",
-                "value": 6
-            },
-            {
-                "type": "value",
-                "value": 4
-            }
+        "args": [
+        {
+            "type": "value",
+            "value": 6
+        },
+        {
+            "type": "value",
+            "value": 4
+        }
         ]
     });
 
@@ -481,14 +481,14 @@ fn test_function_field_mod_invalid_arg_type() {
         "type": "function",
         "function": "mod",
         "args": [
-            {
-                "type": "value",
-                "value": "foo"
-            },
-            {
-                "type": "value",
-                "value": 2
-            }
+        {
+            "type": "value",
+            "value": "foo"
+        },
+        {
+            "type": "value",
+            "value": 2
+        }
         ]
     });
 }
@@ -499,10 +499,10 @@ fn test_function_field_mod_invalid_arg_count() {
         "type": "function",
         "function": "mod",
         "args": [
-            {
-                "type": "value",
-                "value": 6
-            }
+        {
+            "type": "value",
+            "value": 6
+        }
         ]
     });
 }
@@ -515,14 +515,14 @@ fn test_function_field_pow() {
         "type": "function",
         "function": "pow",
         "args": [
-            {
-                "type": "value",
-                "value": 2
-            },
-            {
-                "type": "value",
-                "value": 3
-            }
+        {
+            "type": "value",
+            "value": 2
+        },
+        {
+            "type": "value",
+            "value": 3
+        }
         ]
     });
 
@@ -535,14 +535,14 @@ fn test_function_field_pow_invalid_arg_type() {
         "type": "function",
         "function": "pow",
         "args": [
-            {
-                "type": "value",
-                "value": "foo"
-            },
-            {
-                "type": "value",
-                "value": 2
-            }
+        {
+            "type": "value",
+            "value": "foo"
+        },
+        {
+            "type": "value",
+            "value": 2
+        }
         ]
     });
 }
@@ -553,18 +553,18 @@ fn test_function_field_pow_invalid_arg_count() {
         "type": "function",
         "function": "pow",
         "args": [
-            {
-                "type": "value",
-                "value": 6
-            },
-            {
-                "type": "value",
-                "value": 4
-            },
-            {
-                "type": "value",
-                "value": 2
-            }
+        {
+            "type": "value",
+            "value": 6
+        },
+        {
+            "type": "value",
+            "value": 4
+        },
+        {
+            "type": "value",
+            "value": 2
+        }
         ]
     });
 }
@@ -577,14 +577,14 @@ fn test_function_field_min() {
         "type": "function",
         "function": "min",
         "args": [
-            {
-                "type": "value",
-                "value": 2
-            },
-            {
-                "type": "value",
-                "value": 3
-            }
+        {
+            "type": "value",
+            "value": 2
+        },
+        {
+            "type": "value",
+            "value": 3
+        }
         ]
     });
 
@@ -599,10 +599,10 @@ fn test_function_field_min_vec() {
         "type": "function",
         "function": "min",
         "args": [
-            {
-                "type": "value",
-                "value": [2, 3, 4]
-            }
+        {
+            "type": "value",
+            "value": [2, 3, 4]
+        }
         ]
     });
 
@@ -615,14 +615,14 @@ fn test_function_field_min_invalid_arg_type() {
         "type": "function",
         "function": "min",
         "args": [
-            {
-                "type": "value",
-                "value": "foo"
-            },
-            {
-                "type": "value",
-                "value": 2
-            }
+        {
+            "type": "value",
+            "value": "foo"
+        },
+        {
+            "type": "value",
+            "value": 2
+        }
         ]
     });
 }
@@ -642,10 +642,10 @@ fn test_function_field_min_invalid_arg_type_vec() {
         "type": "function",
         "function": "min",
         "args": [
-            {
-                "type": "value",
-                "value": [{}, {}]
-            }
+        {
+            "type": "value",
+            "value": [{}, {}]
+        }
         ]
     });
 }
@@ -658,14 +658,14 @@ fn test_function_field_max() {
         "type": "function",
         "function": "max",
         "args": [
-            {
-                "type": "value",
-                "value": 2
-            },
-            {
-                "type": "value",
-                "value": 3
-            }
+        {
+            "type": "value",
+            "value": 2
+        },
+        {
+            "type": "value",
+            "value": 3
+        }
         ]
     });
 
@@ -680,10 +680,10 @@ fn test_function_field_max_vec() {
         "type": "function",
         "function": "max",
         "args": [
-            {
-                "type": "value",
-                "value": [2, 3, 4]
-            }
+        {
+            "type": "value",
+            "value": [2, 3, 4]
+        }
         ]
     });
 
@@ -696,14 +696,14 @@ fn test_function_field_max_invalid_arg_type() {
         "type": "function",
         "function": "max",
         "args": [
-            {
-                "type": "value",
-                "value": "foo"
-            },
-            {
-                "type": "value",
-                "value": 2
-            }
+        {
+            "type": "value",
+            "value": "foo"
+        },
+        {
+            "type": "value",
+            "value": 2
+        }
         ]
     });
 }
@@ -723,10 +723,10 @@ fn test_function_field_max_invalid_arg_type_vec() {
         "type": "function",
         "function": "max",
         "args": [
-            {
-                "type": "value",
-                "value": [{}, {}]
-            }
+        {
+            "type": "value",
+            "value": [{}, {}]
+        }
         ]
     });
 }
@@ -739,10 +739,10 @@ fn test_function_field_abs() {
         "type": "function",
         "function": "abs",
         "args": [
-            {
-                "type": "value",
-                "value": -2
-            }
+        {
+            "type": "value",
+            "value": -2
+        }
         ]
     });
 
@@ -755,10 +755,10 @@ fn test_function_field_abs_invalid_arg_type() {
         "type": "function",
         "function": "abs",
         "args": [
-            {
-                "type": "value",
-                "value": "foo"
-            }
+        {
+            "type": "value",
+            "value": "foo"
+        }
         ]
     });
 }
@@ -780,14 +780,14 @@ fn test_function_field_mean() {
         "type": "function",
         "function": "mean",
         "args": [
-            {
-                "type": "value",
-                "value": 2
-            },
-            {
-                "type": "value",
-                "value": 3
-            }
+        {
+            "type": "value",
+            "value": 2
+        },
+        {
+            "type": "value",
+            "value": 3
+        }
         ]
     });
 
@@ -802,10 +802,10 @@ fn test_function_field_mean_vec() {
         "type": "function",
         "function": "mean",
         "args": [
-            {
-                "type": "value",
-                "value": [2, 3, 4, 24]
-            }
+        {
+            "type": "value",
+            "value": [2, 3, 4, 24]
+        }
         ]
     });
 
@@ -818,14 +818,14 @@ fn test_function_field_mean_invalid_arg_type() {
         "type": "function",
         "function": "mean",
         "args": [
-            {
-                "type": "value",
-                "value": "foo"
-            },
-            {
-                "type": "value",
-                "value": 2
-            }
+        {
+            "type": "value",
+            "value": "foo"
+        },
+        {
+            "type": "value",
+            "value": 2
+        }
         ]
     });
 }
@@ -845,10 +845,10 @@ fn test_function_field_mean_invalid_arg_type_vec() {
         "type": "function",
         "function": "mean",
         "args": [
-            {
-                "type": "value",
-                "value": ["foo", "bar"]
-            }
+        {
+            "type": "value",
+            "value": ["foo", "bar"]
+        }
         ]
     });
 }
@@ -861,18 +861,18 @@ fn test_function_field_median() {
         "type": "function",
         "function": "median",
         "args": [
-            {
-                "type": "value",
-                "value": 2
-            },
-            {
-                "type": "value",
-                "value": 3
-            },
-            {
-                "type": "value",
-                "value": 2
-            }
+        {
+            "type": "value",
+            "value": 2
+        },
+        {
+            "type": "value",
+            "value": 3
+        },
+        {
+            "type": "value",
+            "value": 2
+        }
         ]
     });
 
@@ -887,10 +887,10 @@ fn test_function_field_median_vec() {
         "type": "function",
         "function": "median",
         "args": [
-            {
-                "type": "value",
-                "value": [2, 3, 4, 5, 20, 32.0, 44.3, 55.0]
-            }
+        {
+            "type": "value",
+            "value": [2, 3, 4, 5, 20, 32.0, 44.3, 55.0]
+        }
         ]
     });
 
@@ -903,14 +903,14 @@ fn test_function_field_median_invalid_arg_type() {
         "type": "function",
         "function": "median",
         "args": [
-            {
-                "type": "value",
-                "value": "foo"
-            },
-            {
-                "type": "value",
-                "value": 2
-            }
+        {
+            "type": "value",
+            "value": "foo"
+        },
+        {
+            "type": "value",
+            "value": 2
+        }
         ]
     });
 }
@@ -930,10 +930,10 @@ fn test_function_field_median_invalid_arg_type_vec() {
         "type": "function",
         "function": "median",
         "args": [
-            {
-                "type": "value",
-                "value": ["foo", "bar"]
-            }
+        {
+            "type": "value",
+            "value": ["foo", "bar"]
+        }
         ]
     });
 }
@@ -946,10 +946,10 @@ fn test_function_field_upper() {
         "type": "function",
         "function": "upper",
         "args": [
-            {
-                "type": "value",
-                "value": "foo"
-            }
+        {
+            "type": "value",
+            "value": "foo"
+        }
         ]
     });
 
@@ -962,10 +962,10 @@ fn test_function_field_upper_invalid_arg_type() {
         "type": "function",
         "function": "upper",
         "args": [
-            {
-                "type": "value",
-                "value": 1
-            }
+        {
+            "type": "value",
+            "value": 1
+        }
         ]
     });
 }
@@ -976,14 +976,14 @@ fn test_function_field_upper_invalid_arg_count() {
         "type": "function",
         "function": "upper",
         "args": [
-            {
-                "type": "value",
-                "value": "foo"
-            },
-            {
-                "type": "value",
-                "value": "bar"
-            }
+        {
+            "type": "value",
+            "value": "foo"
+        },
+        {
+            "type": "value",
+            "value": "bar"
+        }
         ]
     });
 }
@@ -996,10 +996,10 @@ fn test_function_field_lower() {
         "type": "function",
         "function": "lower",
         "args": [
-            {
-                "type": "value",
-                "value": "FOO"
-            }
+        {
+            "type": "value",
+            "value": "FOO"
+        }
         ]
     });
 
@@ -1012,10 +1012,10 @@ fn test_function_field_lower_invalid_arg_type() {
         "type": "function",
         "function": "lower",
         "args": [
-            {
-                "type": "value",
-                "value": 1
-            }
+        {
+            "type": "value",
+            "value": 1
+        }
         ]
     });
 }
@@ -1041,14 +1041,14 @@ fn test_function_field_join() {
             "type": "value",
             "value": ","
         },
-            {
-                "type": "value",
-                "value": "foo"
-            },
-            {
-                "type": "value",
-                "value": "bar"
-            }
+        {
+            "type": "value",
+            "value": "foo"
+        },
+        {
+            "type": "value",
+            "value": "bar"
+        }
         ]
     });
 
@@ -1063,14 +1063,14 @@ fn test_function_field_join_vec() {
         "type": "function",
         "function": "join",
         "args": [
-            {
-                "type": "value",
-                "value": "-"
-            },
-            {
-                "type": "value",
-                "value": ["foo", "bar", "baz"]
-            }
+        {
+            "type": "value",
+            "value": "-"
+        },
+        {
+            "type": "value",
+            "value": ["foo", "bar", "baz"]
+        }
         ]
     });
 
@@ -1083,14 +1083,14 @@ fn test_function_field_join_invalid_arg_type() {
         "type": "function",
         "function": "join",
         "args": [
-            {
-                "type": "value",
-                "value": 1
-            },
-            {
-                "type": "value",
-                "value": "foo"
-            }
+        {
+            "type": "value",
+            "value": 1
+        },
+        {
+            "type": "value",
+            "value": "foo"
+        }
         ]
     });
 }
@@ -1113,14 +1113,14 @@ fn test_function_field_join_invalid_arg_type_vec() {
         "type": "function",
         "function": "join",
         "args": [
-            {
-                "type": "value",
-                "value": 24
-            },
-            {
-                "type": "value",
-                "value": [1, 2, 3]
-            }
+        {
+            "type": "value",
+            "value": 24
+        },
+        {
+            "type": "value",
+            "value": [1, 2, 3]
+        }
         ]
     });
 }
