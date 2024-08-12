@@ -29,3 +29,11 @@ macro_rules! assert_deserialize_error {
         assert_snapshot!(result.unwrap_err().to_string());
     };
 }
+
+#[macro_export]
+macro_rules! assert_function_error {
+    ($definition:tt) => {
+        let snapshot = insta::assert_snapshot!(String::from($value));
+        snapshot.assert();
+    };
+}

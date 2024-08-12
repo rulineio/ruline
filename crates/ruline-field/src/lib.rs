@@ -1,10 +1,12 @@
 use anyhow::Result;
 use error::FieldError::{self, FieldNotFound};
+use function::Function;
 use ruline_context::Context;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 mod error;
+mod function;
 mod test;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -14,6 +16,7 @@ pub enum FieldDefinition {
     Data { path: String },
     Output { output_id: i64, path: String },
     Value { value: Value },
+    Function { function: Function, args: Vec<Self> },
 }
 
 #[derive(Debug)]
@@ -52,6 +55,13 @@ impl Field {
             } => ctx.get_output(*output_id, path),
 
             FieldDefinition::Value { value, .. } => Some(value.clone()),
+            FieldDefinition::Function { function, args } => {
+                let args = args
+                    .iter()
+                    .map(|arg| Self::from(arg).process(ctx))
+                    .collect::<Result<Vec<Value>>>()?;
+                function.process(args).map(Some)?
+            }
         };
 
         match value {
