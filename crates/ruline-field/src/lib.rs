@@ -3,7 +3,7 @@ use error::FieldError::{self, FieldNotFound};
 use function::Function;
 use ruline_context::Context;
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use serde_json::{Map, Value};
 
 mod error;
 mod function;
@@ -54,7 +54,32 @@ impl Field {
                 output_id, path, ..
             } => ctx.get_output(*output_id, path),
 
-            FieldDefinition::Value { value, .. } => Some(value.clone()),
+            FieldDefinition::Value { value, .. } => match value {
+                Value::Array(values) => {
+                    let values = values
+                        .iter()
+                        .map(|value| {
+                            Self::try_from(value.clone())
+                                .map(|field| field.process(ctx))
+                                .unwrap_or(Ok(value.clone()))
+                        })
+                        .collect::<Result<Vec<Value>>>()?;
+                    return Ok(Value::Array(values));
+                }
+                Value::Object(map) => {
+                    let map = map
+                        .iter()
+                        .map(|(key, value)| {
+                            Self::try_from(value.clone())
+                                .map(|field| field.process(ctx))
+                                .unwrap_or(Ok(value.clone()))
+                                .map(|value| (key.clone(), value))
+                        })
+                        .collect::<Result<Map<String, Value>>>()?;
+                    return Ok(Value::Object(map));
+                }
+                _ => Some(value.clone()),
+            },
             FieldDefinition::Function { function, args } => {
                 let args = args
                     .iter()

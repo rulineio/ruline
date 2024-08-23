@@ -102,6 +102,30 @@ fn test_get_value_field() {
 }
 
 #[test]
+fn test_get_value_field_list_values() {
+    let context = Context::new(json!({}), DashMap::new());
+
+    let definition = json!({
+        "type": "value",
+        "value": [ { "type": "value", "value": "a" }, { "type": "value", "value": "b" }, { "type": "value", "value": "c" }]
+    });
+
+    assert_field!(&context, definition, ["a", "b", "c"]);
+}
+
+#[test]
+fn test_get_value_field_object_values() {
+    let context = Context::new(json!({}), DashMap::new());
+
+    let definition = json!({
+        "type": "value",
+        "value": { "a": { "type": "value", "value": 1 }, "b": { "type": "value", "value": 2 }, "c": { "type": "value", "value": 3 } }
+    });
+
+    assert_field!(&context, definition, { "a": 1, "b": 2, "c": 3 });
+}
+
+#[test]
 fn test_serialization_invalid_field_type() {
     assert_deserialize_error!({ "type": "invalid" });
 }
