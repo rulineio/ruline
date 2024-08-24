@@ -197,6 +197,14 @@ impl TryFrom<Value> for Condition {
         let definition: ConditionDefinition =
             serde_json::from_value(value).map_err(ConditionError::Serde)?;
 
+        Self::try_from(definition)
+    }
+}
+
+impl TryFrom<ConditionDefinition> for Condition {
+    type Error = ConditionError;
+
+    fn try_from(definition: ConditionDefinition) -> Result<Self, Self::Error> {
         let mut graph = DiGraph::new();
 
         match &definition {
