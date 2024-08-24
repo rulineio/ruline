@@ -232,8 +232,6 @@ fn test_decision_complex_nested_some_pass() {
 
     let definition = json!({
         "type":"decision",
-        "id":1,
-        "name":"complex_nested",
         "fallbacks":[
             0
         ],
@@ -382,8 +380,6 @@ fn test_decision_fallback() {
 
     let definition = json!({
         "type":"decision",
-        "id":1,
-        "name":"complex_nested",
         "fallbacks":[
             0
         ],
@@ -532,8 +528,6 @@ fn test_binary() {
 
     let definition = json!({
         "type":"binary",
-        "id":1,
-        "name":"complex_nested",
         "fallbacks":[
             0
         ],
@@ -659,8 +653,6 @@ fn test_binary_fallback() {
 
     let definition = json!({
         "type":"binary",
-        "id":1,
-        "name":"complex_nested",
         "fallbacks":[ 0 ],
         "results": [ 1, 2 ],
         "expression":{
@@ -774,11 +766,73 @@ fn test_binary_fallback() {
 }
 
 #[test]
+fn test_dependencies() {
+    let definition = json!({
+        "type": "decision",
+        "fallbacks": [0],
+        "results": {
+            "100": [1]
+        },
+        "expressions": [
+            {
+                "id": 100,
+                "type": "comparison",
+                "operator": "greater_than_or_equal",
+                "operands": [
+                    {
+                        "type": "data",
+                        "path": "/first_value"
+                    },
+                    {
+                        "type": "output",
+                        "path": "/output",
+                        "output_id": 14,
+                    }
+                ]
+            }
+        ]
+    });
+    let condition = Condition::try_from(definition).unwrap();
+    let dependencies = condition.dependencies();
+    assert_eq!(dependencies, vec![14]);
+}
+
+#[test]
+fn test_dependants() {
+    let definition = json!({
+        "type": "decision",
+        "fallbacks": [0],
+        "results": {
+            "100": [1]
+        },
+        "expressions": [
+            {
+                "id": 100,
+                "type": "comparison",
+                "operator": "greater_than_or_equal",
+                "operands": [
+                    {
+                        "type": "data",
+                        "path": "/first_value"
+                    },
+                    {
+                        "type": "output",
+                        "path": "/output",
+                        "output_id": 14,
+                    }
+                ]
+            }
+        ]
+    });
+    let condition = Condition::try_from(definition).unwrap();
+    let dependants = condition.dependants();
+    assert_eq!(dependants, vec![0, 1]);
+}
+
+#[test]
 fn test_expression_invalid_decision_expressions_empty() {
     let definition = json!({
         "type": "decision",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
         "fallbacks": [0],
         "results": {
             "100": [1]
@@ -794,8 +848,6 @@ fn test_expression_invalid_decision_expressions_empty() {
 fn test_logical_child_missing() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -814,8 +866,6 @@ fn test_logical_child_missing() {
 fn test_logical_count_invalid() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -843,8 +893,6 @@ fn test_logical_count_invalid() {
 fn test_expression_invalid_decision_expressions_mismatch() {
     let definition = json!({
         "type": "decision",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
         "fallbacks": [0],
         "results": {
             "100": [1]
@@ -858,8 +906,6 @@ fn test_expression_invalid_decision_expressions_mismatch() {
 fn test_deserialize_binary_error_expression_type() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
         "fallbacks": [0],
         "results": [1],
         "expression": []
@@ -871,8 +917,6 @@ fn test_deserialize_binary_error_expression_type() {
 fn test_deserialize_binary_error_expression_missing() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
         "fallbacks": [0],
         "results": [1]
     });
@@ -883,8 +927,6 @@ fn test_deserialize_binary_error_expression_missing() {
 fn test_deserialize_decision_error_expressions_mismatch() {
     let definition = json!({
         "type": "decision",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
         "fallbacks": [0],
         "results": [1],
         "expressions": {}
@@ -896,8 +938,6 @@ fn test_deserialize_decision_error_expressions_mismatch() {
 fn test_deserialize_decision_error_expressions_missing() {
     let definition = json!({
         "type": "decision",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
         "fallbacks": [0],
         "results": [1]
     });
@@ -908,8 +948,6 @@ fn test_deserialize_decision_error_expressions_missing() {
 fn test_deserialize_error_malformed() {
     let definition = json!({
         "type": "decision",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
         "fallbacks": [0],
         "results": [1],
         "expressions": [],
@@ -921,8 +959,6 @@ fn test_deserialize_error_malformed() {
 fn test_deserialize_error_invalid_type() {
     let definition = json!({
         "type": "invalid",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
         "fallbacks": [0],
         "results": [1],
         "expressions": [],
@@ -935,8 +971,6 @@ fn test_deserialize_error_invalid_type() {
 fn test_deserialize_error_invalid_fallbacks() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
         "fallbacks": {},
         "results": [1],
         "expression": {}
@@ -948,8 +982,6 @@ fn test_deserialize_error_invalid_fallbacks() {
 fn test_deserialize_error_invalid_results() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
         "fallbacks": [0],
         "results": {},
         "expression": {}
@@ -961,8 +993,6 @@ fn test_deserialize_error_invalid_results() {
 fn test_deserialize_error_invalid_comparison_operator() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -979,8 +1009,6 @@ fn test_deserialize_error_invalid_comparison_operator() {
 fn test_deserialize_error_invalid_comparison_operator_type() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -997,8 +1025,6 @@ fn test_deserialize_error_invalid_comparison_operator_type() {
 fn test_deserialize_error_invalid_comparison_operands_type() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -1015,8 +1041,6 @@ fn test_deserialize_error_invalid_comparison_operands_type() {
 fn test_deserialize_error_invalid_logical_operator() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -1033,8 +1057,6 @@ fn test_deserialize_error_invalid_logical_operator() {
 fn test_deserialize_error_invalid_logical_operator_type() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -1051,8 +1073,6 @@ fn test_deserialize_error_invalid_logical_operator_type() {
 fn test_deserialize_error_invalid_logical_expressions_type() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {

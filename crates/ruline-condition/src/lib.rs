@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use comparison::ComparisonOperator;
-use error::ConditionError;
+pub use error::ConditionError;
 use evaluate::Evaluator;
 use petgraph::{
     graph::{DiGraph, NodeIndex},
@@ -25,19 +25,15 @@ pub enum LogicalOperator {
     Or,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "snake_case", tag = "type")]
 pub enum ConditionDefinition {
     Binary {
-        id: i64,
-        name: String,
         expression: Expression,
         fallbacks: Vec<i64>,
         results: Vec<i64>,
     },
     Decision {
-        id: i64,
-        name: String,
         expressions: Vec<Expression>,
         fallbacks: Vec<i64>,
         results: HashMap<String, Vec<i64>>,
@@ -89,9 +85,10 @@ impl Expression {
 
 #[derive(Debug)]
 pub struct Condition {
-    pub definition: ConditionDefinition,
+    definition: ConditionDefinition,
     graph: DiGraph<Expression, ()>,
     dependencies: Vec<i64>,
+    dependants: Vec<i64>,
 }
 
 impl Condition {
@@ -173,6 +170,10 @@ impl Condition {
         self.dependencies.clone()
     }
 
+    pub fn dependants(&self) -> Vec<i64> {
+        self.dependants.clone()
+    }
+
     fn validate_conditions(&self, node: NodeIndex) -> Result<()> {
         let mut dfs = Dfs::new(&self.graph, node);
 
@@ -201,6 +202,14 @@ impl TryFrom<Value> for Condition {
         let definition: ConditionDefinition =
             serde_json::from_value(value).map_err(ConditionError::Serde)?;
 
+        Self::try_from(definition)
+    }
+}
+
+impl TryFrom<ConditionDefinition> for Condition {
+    type Error = ConditionError;
+
+    fn try_from(definition: ConditionDefinition) -> Result<Self, Self::Error> {
         let mut graph = DiGraph::new();
 
         match &definition {
@@ -230,9 +239,30 @@ impl TryFrom<Value> for Condition {
         dependencies.sort();
         dependencies.dedup();
 
+        let mut dependants = match &definition {
+            ConditionDefinition::Binary {
+                results, fallbacks, ..
+            } => {
+                let mut dependants = results.to_vec();
+                dependants.extend(fallbacks);
+                dependants
+            }
+            ConditionDefinition::Decision {
+                results, fallbacks, ..
+            } => {
+                let mut dependants = results.values().flatten().cloned().collect::<Vec<_>>();
+                dependants.extend(fallbacks);
+                dependants
+            }
+        };
+
+        dependants.sort();
+        dependants.dedup();
+
         Ok(Self {
             definition,
             dependencies,
+            dependants,
             graph,
         })
     }
