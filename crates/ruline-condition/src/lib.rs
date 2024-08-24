@@ -88,6 +88,7 @@ pub struct Condition {
     definition: ConditionDefinition,
     graph: DiGraph<Expression, ()>,
     dependencies: Vec<i64>,
+    dependants: Vec<i64>,
 }
 
 impl Condition {
@@ -169,6 +170,10 @@ impl Condition {
         self.dependencies.clone()
     }
 
+    pub fn dependants(&self) -> Vec<i64> {
+        self.dependants.clone()
+    }
+
     fn validate_conditions(&self, node: NodeIndex) -> Result<()> {
         let mut dfs = Dfs::new(&self.graph, node);
 
@@ -234,9 +239,30 @@ impl TryFrom<ConditionDefinition> for Condition {
         dependencies.sort();
         dependencies.dedup();
 
+        let mut dependants = match &definition {
+            ConditionDefinition::Binary {
+                results, fallbacks, ..
+            } => {
+                let mut dependants = results.to_vec();
+                dependants.extend(fallbacks);
+                dependants
+            }
+            ConditionDefinition::Decision {
+                results, fallbacks, ..
+            } => {
+                let mut dependants = results.values().flatten().cloned().collect::<Vec<_>>();
+                dependants.extend(fallbacks);
+                dependants
+            }
+        };
+
+        dependants.sort();
+        dependants.dedup();
+
         Ok(Self {
             definition,
             dependencies,
+            dependants,
             graph,
         })
     }
