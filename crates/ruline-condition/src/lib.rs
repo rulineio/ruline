@@ -29,15 +29,11 @@ pub enum LogicalOperator {
 #[serde(rename_all = "snake_case", tag = "type")]
 pub enum ConditionDefinition {
     Binary {
-        id: i64,
-        name: String,
         expression: Expression,
         fallbacks: Vec<i64>,
         results: Vec<i64>,
     },
     Decision {
-        id: i64,
-        name: String,
         expressions: Vec<Expression>,
         fallbacks: Vec<i64>,
         results: HashMap<String, Vec<i64>>,

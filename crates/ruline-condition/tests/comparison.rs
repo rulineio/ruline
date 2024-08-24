@@ -12,8 +12,6 @@ use serde_json::json;
 fn test_greater_than() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "greater_than_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -74,8 +72,6 @@ fn test_greater_than() {
 fn test_less_than() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "less_than_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -136,8 +132,6 @@ fn test_less_than() {
 fn test_equals() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "equals_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -221,8 +215,6 @@ fn test_equals() {
 fn test_not_equals() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "not_equals_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -295,8 +287,6 @@ fn test_not_equals() {
 fn test_greater_than_or_equal() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -357,8 +347,6 @@ fn test_greater_than_or_equal() {
 fn test_less_than_or_equal() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "less_than_or_equal_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -419,8 +407,6 @@ fn test_less_than_or_equal() {
 fn test_contains() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "contains_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -459,8 +445,6 @@ fn test_contains() {
 fn test_not_contains() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "not_contains_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -499,8 +483,6 @@ fn test_not_contains() {
 fn test_not_exists() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "not_exists_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -533,8 +515,6 @@ fn test_not_exists() {
 fn test_exists() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "exists_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -576,8 +556,6 @@ fn test_exists() {
 fn test_empty() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "empty_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -626,8 +604,6 @@ fn test_empty() {
 fn test_not_empty() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "not_empty_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -660,8 +636,6 @@ fn test_not_empty() {
 fn test_equals_operands_amount_invalid() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "equals_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -681,8 +655,6 @@ fn test_equals_operands_amount_invalid() {
 fn test_greater_than_operands_amount_invalid() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "greater_than_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -708,8 +680,6 @@ fn test_greater_than_operands_amount_invalid() {
 fn test_greater_than_operands_empty() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "greater_than_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -726,8 +696,6 @@ fn test_greater_than_operands_empty() {
 fn test_greater_than_operand_types_mismatch() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "greater_than_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -751,8 +719,6 @@ fn test_greater_than_operand_types_mismatch() {
 fn test_greater_than_operand_type_invalid() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "greater_than_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -776,8 +742,6 @@ fn test_greater_than_operand_type_invalid() {
 fn test_greater_than_or_equal_operands_amount_invalid() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -803,8 +767,6 @@ fn test_greater_than_or_equal_operands_amount_invalid() {
 fn test_greater_than_or_equal_operands_empty() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -821,8 +783,6 @@ fn test_greater_than_or_equal_operands_empty() {
 fn test_greater_than_or_equal_operand_types_mismatch() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -846,8 +806,6 @@ fn test_greater_than_or_equal_operand_types_mismatch() {
 fn test_greater_than_or_equal_operand_type_invalid() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "greater_than_or_equal_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -871,8 +829,6 @@ fn test_greater_than_or_equal_operand_type_invalid() {
 fn test_less_than_operands_amount_invalid() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "less_than_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -899,8 +855,6 @@ fn test_less_than_operands_amount_invalid() {
 fn test_less_than_operands_empty() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "less_than_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -917,8 +871,6 @@ fn test_less_than_operands_empty() {
 fn test_less_than_operand_types_mismatch() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "less_than_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -942,8 +894,6 @@ fn test_less_than_operand_types_mismatch() {
 fn test_less_than_operand_type_invalid() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "less_than_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -967,8 +917,6 @@ fn test_less_than_operand_type_invalid() {
 fn test_less_than_or_equal_operands_amount_invalid() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "less_than_or_equal_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -995,8 +943,6 @@ fn test_less_than_or_equal_operands_amount_invalid() {
 fn test_less_than_or_equal_operands_empty() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "less_than_or_equal_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -1013,8 +959,6 @@ fn test_less_than_or_equal_operands_empty() {
 fn test_less_than_or_equal_operand_types_mismatch() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "less_than_or_equal_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -1038,8 +982,6 @@ fn test_less_than_or_equal_operand_types_mismatch() {
 fn test_less_than_or_equal_operand_type_invalid() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "less_than_or_equal_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -1063,8 +1005,6 @@ fn test_less_than_or_equal_operand_type_invalid() {
 fn test_empty_operands_amount_invalid() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "empty_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -1088,8 +1028,6 @@ fn test_empty_operands_amount_invalid() {
 fn test_empty_operands_empty() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "empty_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -1106,8 +1044,6 @@ fn test_empty_operands_empty() {
 fn test_contains_operands_amount_invalid() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "contains_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -1127,8 +1063,6 @@ fn test_contains_operands_amount_invalid() {
 fn test_contains_operands_empty() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "contains_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -1145,8 +1079,6 @@ fn test_contains_operands_empty() {
 fn test_contains_operand_type_invalid() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "contains_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
@@ -1170,8 +1102,6 @@ fn test_contains_operand_type_invalid() {
 fn test_exists_operands_amount_invalid() {
     let definition = json!({
         "type": "binary",
-        "id": 1,
-        "name": "exists_test",
         "fallbacks": [0],
         "results": [1],
         "expression": {
