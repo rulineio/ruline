@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use comparison::ComparisonOperator;
-use error::ConditionError;
+pub use error::ConditionError;
 use evaluate::Evaluator;
 use petgraph::{
     graph::{DiGraph, NodeIndex},
@@ -25,7 +25,7 @@ pub enum LogicalOperator {
     Or,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "snake_case", tag = "type")]
 pub enum ConditionDefinition {
     Binary {
@@ -85,7 +85,7 @@ impl Expression {
 
 #[derive(Debug)]
 pub struct Condition {
-    pub definition: ConditionDefinition,
+    definition: ConditionDefinition,
     graph: DiGraph<Expression, ()>,
     dependencies: Vec<i64>,
 }
