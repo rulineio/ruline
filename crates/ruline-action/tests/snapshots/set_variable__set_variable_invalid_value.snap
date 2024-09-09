@@ -1,0 +1,5 @@
+---
+source: crates/ruline-action/tests/set_variable.rs
+expression: error.to_string()
+---
+invalid type: string "value", expected internally tagged enum FieldDefinition
