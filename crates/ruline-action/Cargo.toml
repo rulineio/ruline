@@ -1,0 +1,22 @@
+[package]
+name    = "ruline-action"
+version = "0.1.0"
+
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+readme.workspace  = true
+
+[dependencies]
+anyhow     = { workspace = true }
+serde      = { workspace = true }
+serde_json = { workspace = true }
+thiserror  = { workspace = true }
+
+ruline-context = { workspace = true }
+ruline-field   = { workspace = true }
+
+[dev-dependencies]
+dashmap           = { workspace = true }
+insta             = { workspace = true }
+pretty_assertions = { workspace = true }

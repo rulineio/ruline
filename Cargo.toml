@@ -1,5 +1,10 @@
 [workspace]
-members  = ["crates/ruline-condition", "crates/ruline-context", "crates/ruline-field"]
+members = [
+  "crates/ruline-condition",
+  "crates/ruline-context",
+  "crates/ruline-field",
+  "crates/ruline-action",
+]
 resolver = "2"
 
 [workspace.package]
@@ -9,6 +14,7 @@ license = "Apache-2.0"
 readme  = "README.md"
 
 [workspace.dependencies]
+ruline-action    = { path = "crates/ruline-action" }
 ruline-condition = { path = "crates/ruline-condition" }
 ruline-context   = { path = "crates/ruline-context" }
 ruline-field     = { path = "crates/ruline-field" }

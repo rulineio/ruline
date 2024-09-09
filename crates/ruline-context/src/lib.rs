@@ -1,6 +1,7 @@
 use dashmap::DashMap;
 use serde_json::Value;
 
+#[derive(Debug)]
 pub struct Context {
     pub data: Value,
     pub outputs: DashMap<i64, Value>,
@@ -30,5 +31,9 @@ impl Context {
 
     pub fn get_variable(&self, key: &str) -> Option<Value> {
         self.variables.get(key).map(|v| v.value().clone())
+    }
+
+    pub fn set_variable(&self, key: String, value: Value) {
+        self.variables.insert(key, value);
     }
 }
