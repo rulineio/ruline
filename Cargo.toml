@@ -4,6 +4,7 @@ members = [
   "crates/ruline-context",
   "crates/ruline-field",
   "crates/ruline-action",
+  "crates/ruline-output",
 ]
 resolver = "2"
 

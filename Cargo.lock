@@ -583,6 +583,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "ruline-output"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "dashmap",
+ "insta",
+ "pretty_assertions",
+ "ruline-context",
+ "ruline-field",
+ "serde",
+ "serde_json",
+ "thiserror",
+]
+
+[[package]]
 name = "ryu"
 version = "1.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
