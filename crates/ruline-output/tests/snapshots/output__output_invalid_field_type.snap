@@ -1,0 +1,5 @@
+---
+source: crates/ruline-output/tests/output.rs
+expression: output.unwrap_err().to_string()
+---
+unknown variant `invalid`, expected one of `variable`, `data`, `output`, `value`, `function`
