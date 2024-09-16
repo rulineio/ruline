@@ -208,6 +208,7 @@ dependencies = [
  "lock_api",
  "once_cell",
  "parking_lot_core",
+ "serde",
 ]
 
 [[package]]
@@ -594,6 +595,27 @@ dependencies = [
  "ruline-field",
  "serde",
  "serde_json",
+ "thiserror",
+]
+
+[[package]]
+name = "ruline-workflow"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "criterion",
+ "dashmap",
+ "fixedbitset",
+ "insta",
+ "petgraph",
+ "pretty_assertions",
+ "ruline-action",
+ "ruline-condition",
+ "ruline-context",
+ "ruline-output",
+ "serde",
+ "serde_json",
+ "serde_stacker",
  "thiserror",
 ]
 

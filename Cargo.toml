@@ -5,6 +5,7 @@ members = [
   "crates/ruline-field",
   "crates/ruline-action",
   "crates/ruline-output",
+  "crates/ruline-workflow",
 ]
 resolver = "2"
 
@@ -19,12 +20,14 @@ ruline-action    = { path = "crates/ruline-action" }
 ruline-condition = { path = "crates/ruline-condition" }
 ruline-context   = { path = "crates/ruline-context" }
 ruline-field     = { path = "crates/ruline-field" }
+ruline-output    = { path = "crates/ruline-output" }
 
 anyhow            = { version = "1.0.86" }
 async-recursion   = { version = "1.1.1" }
 async-trait       = { version = "0.1.81" }
 criterion         = { version = "0.5.1" }
 dashmap           = { version = "6.0.1" }
+fixedbitset       = { version = "0.4.2" }
 insta             = { version = "1.38.0" }
 parking_lot       = { version = "0.12.3" }
 petgraph          = { version = "0.6.5" }

@@ -1,0 +1,29 @@
+[package]
+name    = "ruline-workflow"
+version = "0.1.0"
+
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+readme.workspace  = true
+
+[dependencies]
+anyhow      = { workspace = true }
+dashmap     = { workspace = true, features = ["serde"] }
+fixedbitset = { workspace = true }
+petgraph    = { workspace = true }
+serde       = { workspace = true }
+serde_json  = { workspace = true }
+thiserror   = { workspace = true }
+
+ruline-action    = { workspace = true }
+ruline-condition = { workspace = true }
+ruline-context   = { workspace = true }
+ruline-output    = { workspace = true }
+
+[dev-dependencies]
+criterion         = { workspace = true }
+dashmap           = { workspace = true }
+insta             = { workspace = true }
+pretty_assertions = { workspace = true }
+serde_stacker     = { workspace = true }
