@@ -1,0 +1,5 @@
+---
+source: crates/ruline-workflow/tests/workflow.rs
+expression: "Workflow::try_from(definition).unwrap_err().to_string()"
+---
+unknown variant `iamnotatype`, expected `condition` or `action`
