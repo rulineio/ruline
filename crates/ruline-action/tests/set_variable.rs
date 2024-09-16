@@ -75,3 +75,19 @@ fn test_set_variable_invalid_value() {
     let error = Action::try_from(definition).unwrap_err();
     assert_snapshot!(error.to_string());
 }
+
+#[test]
+fn test_set_variable_dependencies() {
+    let definition = json!({
+        "type": "set_variable",
+        "variable": "key",
+        "value": {
+            "type": "output",
+            "output_id": 20,
+            "path": "/key"
+        }
+    });
+
+    let action = Action::try_from(definition).unwrap();
+    assert_eq!(action.dependencies(), vec![20]);
+}
