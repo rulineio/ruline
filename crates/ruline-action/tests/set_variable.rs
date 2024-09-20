@@ -83,11 +83,11 @@ fn test_set_variable_dependencies() {
         "variable": "key",
         "value": {
             "type": "output",
-            "output_id": 20,
+            "output_id": "20",
             "path": "/key"
         }
     });
 
     let action = Action::try_from(definition).unwrap();
-    assert_eq!(action.dependencies(), vec![20]);
+    assert_eq!(action.dependencies(), vec!["20"]);
 }

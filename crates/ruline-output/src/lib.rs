@@ -22,7 +22,7 @@ impl Output {
         let mut output = HashMap::new();
 
         for (key, value) in &self.definition.0 {
-            output.insert(key.clone(), Field::from(value).process(ctx)?);
+            output.insert(key.to_owned(), Field::from(value).process(ctx)?);
         }
         Ok(serde_json::to_value(output)?)
     }

@@ -219,18 +219,18 @@ pub fn join(args: Vec<Value>) -> Result<Value> {
     validate_min_args!(args, 2);
 
     let separator = match &args[0] {
-        Value::String(s) => s.clone(),
+        Value::String(s) => s.to_owned(),
         _ => return Err(FunctionError::ArgumentTypeInvalid.into()),
     };
 
     let mut values = vec![];
     for arg in args.iter().skip(1) {
         match arg {
-            Value::String(s) => values.push(s.clone()),
+            Value::String(s) => values.push(s.to_owned()),
             Value::Array(arr) => {
                 for value in arr {
                     match value {
-                        Value::String(s) => values.push(s.clone()),
+                        Value::String(s) => values.push(s.to_owned()),
                         _ => return Err(FunctionError::ArgumentTypeInvalid.into()),
                     }
                 }

@@ -14,7 +14,7 @@ mod test;
 pub enum FieldDefinition {
     Variable { variable: String },
     Data { path: String },
-    Output { output_id: i64, path: String },
+    Output { output_id: String, path: String },
     Value { value: Value },
     Function { function: Function, args: Vec<Self> },
 }
@@ -27,7 +27,7 @@ pub struct Field {
 impl From<&FieldDefinition> for Field {
     fn from(definition: &FieldDefinition) -> Self {
         Field {
-            definition: definition.clone(),
+            definition: definition.to_owned(),
         }
     }
 }
@@ -52,16 +52,16 @@ impl Field {
 
             FieldDefinition::Output {
                 output_id, path, ..
-            } => ctx.get_output(*output_id, path),
+            } => ctx.get_output(output_id, path),
 
             FieldDefinition::Value { value, .. } => match value {
                 Value::Array(values) => {
                     let values = values
                         .iter()
                         .map(|value| {
-                            Self::try_from(value.clone())
+                            Self::try_from(value.to_owned())
                                 .map(|field| field.process(ctx))
-                                .unwrap_or(Ok(value.clone()))
+                                .unwrap_or(Ok(value.to_owned()))
                         })
                         .collect::<Result<Vec<Value>>>()?;
                     return Ok(Value::Array(values));
@@ -70,15 +70,15 @@ impl Field {
                     let map = map
                         .iter()
                         .map(|(key, value)| {
-                            Self::try_from(value.clone())
+                            Self::try_from(value.to_owned())
                                 .map(|field| field.process(ctx))
-                                .unwrap_or(Ok(value.clone()))
-                                .map(|value| (key.clone(), value))
+                                .unwrap_or(Ok(value.to_owned()))
+                                .map(|value| (key.to_owned(), value))
                         })
                         .collect::<Result<Map<String, Value>>>()?;
                     return Ok(Value::Object(map));
                 }
-                _ => Some(value.clone()),
+                _ => Some(value.to_owned()),
             },
             FieldDefinition::Function { function, args } => {
                 let args = args
@@ -91,17 +91,17 @@ impl Field {
 
         match value {
             Some(value) => Ok(value),
-            None => Err(FieldNotFound(self.definition.clone()).into()),
+            None => Err(FieldNotFound(self.definition.to_owned()).into()),
         }
     }
 
-    pub fn dependencies(&self) -> Vec<i64> {
+    pub fn dependencies(&self) -> Vec<String> {
         match &self.definition {
             FieldDefinition::Function { args, .. } => args
                 .iter()
                 .flat_map(|arg| Self::from(arg).dependencies())
                 .collect(),
-            FieldDefinition::Output { output_id, .. } => vec![*output_id],
+            FieldDefinition::Output { output_id, .. } => vec![output_id.to_owned()],
             _ => vec![],
         }
     }

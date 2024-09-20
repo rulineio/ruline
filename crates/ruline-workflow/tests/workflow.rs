@@ -24,18 +24,18 @@ fn test_workflow() {
                     "definition": {
                         "type": "binary",
                         "fallbacks": [
-                            3
+                            "3"
                         ],
                         "results": [
-                            4
+                            "4"
                         ],
                         "expression": {
-                            "id": 100,
+                            "id": "100",
                             "type": "logical",
                             "operator": "and",
                             "expressions": [
                             {
-                                "id": 100,
+                                "id": "100",
                                 "type": "comparison",
                                 "operator": "not_exists",
                                 "operands": [
@@ -46,7 +46,7 @@ fn test_workflow() {
                                 ]
                             },
                             {
-                                "id": 101,
+                                "id": "101",
                                 "type": "comparison",
                                 "operator": "not_exists",
                                 "operands": [
@@ -66,18 +66,18 @@ fn test_workflow() {
                     "definition": {
                         "type": "binary",
                         "fallbacks": [
-                            3
+                            "3"
                         ],
                         "results": [
-                            3
+                            "3"
                         ],
                         "expression": {
-                            "id": 100,
+                            "id": "100",
                             "type": "logical",
                             "operator": "and",
                             "expressions": [
                             {
-                                "id": 101,
+                                "id": "101",
                                 "type": "comparison",
                                 "operator": "exists",
                                 "operands": [
@@ -88,7 +88,7 @@ fn test_workflow() {
                                 ]
                             },
                             {
-                                "id": 100,
+                                "id": "100",
                                 "type": "comparison",
                                 "operator": "exists",
                                 "operands": [
@@ -110,12 +110,12 @@ fn test_workflow() {
                         "fallbacks": [],
                         "results": [],
                         "expression": {
-                            "id": 100,
+                            "id": "100",
                             "type": "logical",
                             "operator": "and",
                             "expressions": [
                             {
-                                "id": 101,
+                                "id": "101",
                                 "type": "comparison",
                                 "operator": "equals",
                                 "operands": [
@@ -130,7 +130,7 @@ fn test_workflow() {
                                 ]
                             },
                             {
-                                "id": 100,
+                                "id": "100",
                                 "type": "comparison",
                                 "operator": "equals",
                                 "operands": [
@@ -154,19 +154,19 @@ fn test_workflow() {
                     "definition": {
                         "type": "binary",
                         "fallbacks": [
-                            6
+                            "6"
                         ],
                         "results": [
-                            5,
-                            6
+                            "5",
+                            "6"
                         ],
                         "expression": {
-                            "id": 100,
+                            "id": "100",
                             "type": "logical",
                             "operator": "and",
                             "expressions": [
                             {
-                                "id": 101,
+                                "id": "101",
                                 "type": "comparison",
                                 "operator": "not_equals",
                                 "operands": [
@@ -181,7 +181,7 @@ fn test_workflow() {
                                 ]
                             },
                             {
-                                "id": 100,
+                                "id": "100",
                                 "type": "comparison",
                                 "operator": "not_equals",
                                 "operands": [
@@ -204,18 +204,18 @@ fn test_workflow() {
                     "name": "gt_test",
                     "definition": {
                         "type": "binary",
-                        "id": 5,
+                        "id": "5",
                         "fallbacks": [],
                         "results": [
-                            6
+                            "6"
                         ],
                         "expression": {
-                            "id": 100,
+                            "id": "100",
                             "type": "logical",
                             "operator": "and",
                             "expressions": [
                             {
-                                "id": 101,
+                                "id": "101",
                                 "type": "comparison",
                                 "operator": "greater_than",
                                 "operands": [
@@ -230,7 +230,7 @@ fn test_workflow() {
                                 ]
                             },
                             {
-                                "id": 102,
+                                "id": "102",
                                 "type": "comparison",
                                 "operator": "greater_than",
                                 "operands": [
@@ -252,21 +252,21 @@ fn test_workflow() {
                     "type": "condition",
                     "name": "gte_test",
                     "definition": {
-                        "id": 100,
+                        "id": "100",
                         "type": "binary",
                         "fallbacks": [
-                            8
+                            "8"
                         ],
                         "results": [
-                            7
+                            "7"
                         ],
                         "expression": {
-                            "id": 100,
+                            "id": "100",
                             "type": "logical",
                             "operator": "and",
                             "expressions": [
                             {
-                                "id": 101,
+                                "id": "101",
                                 "type": "comparison",
                                 "operator": "greater_than_or_equal",
                                 "operands": [
@@ -281,7 +281,7 @@ fn test_workflow() {
                                 ]
                             },
                             {
-                                "id": 100,
+                                "id": "100",
                                 "type": "comparison",
                                 "operator": "greater_than_or_equal",
                                 "operands": [
@@ -365,24 +365,24 @@ fn test_cyclic_workflow() {
                     "definition": {
                         "type": "binary",
                         "fallbacks": [
-                            2
+                            "2"
                         ],
                         "results": [
-                            3
+                            "3"
                         ],
                         "expression": {
-                            "id": 100,
+                            "id": "100",
                             "type": "comparison",
                             "operator": "less_than",
                             "operands": [
-                                {
-                                    "type": "variable",
-                                    "variable": "counter"
-                                },
-                                {
-                                    "type": "value",
-                                    "value": 3
-                                }
+                            {
+                                "type": "variable",
+                                "variable": "counter"
+                            },
+                            {
+                                "type": "value",
+                                "value": 3
+                            }
                             ]
                         }
                     }
@@ -393,24 +393,24 @@ fn test_cyclic_workflow() {
                     "definition": {
                         "type": "binary",
                         "fallbacks": [
-                            1
+                            "1"
                         ],
                         "results": [
-                            3
+                            "3"
                         ],
                         "expression": {
-                            "id": 101,
+                            "id": "101",
                             "type": "comparison",
                             "operator": "less_than",
                             "operands": [
-                                {
-                                    "type": "variable",
-                                    "variable": "counter"
-                                },
-                                {
-                                    "type": "value",
-                                    "value": 5
-                                }
+                            {
+                                "type": "variable",
+                                "variable": "counter"
+                            },
+                            {
+                                "type": "value",
+                                "value": 5
+                            }
                             ]
                         }
                     }
@@ -421,27 +421,27 @@ fn test_cyclic_workflow() {
                     "definition": {
                         "type": "binary",
                         "fallbacks": [
-                            1
+                            "1"
                         ],
                         "results": [
-                            1
+                            "1"
                         ],
                         "expression": {
-                            "id": 102,
+                            "id": "102",
                             "type": "logical",
                             "operator": "and",
                             "expressions": [
+                            {
+                                "id": "100",
+                                "type": "comparison",
+                                "operator": "exists",
+                                "operands": [
                                 {
-                                    "id": 100,
-                                    "type": "comparison",
-                                    "operator": "exists",
-                                    "operands": [
-                                        {
-                                            "type": "variable",
-                                            "variable": "counter"
-                                        }
-                                    ]
+                                    "type": "variable",
+                                    "variable": "counter"
                                 }
+                                ]
+                            }
                             ]
                         }
                     }
@@ -452,7 +452,7 @@ fn test_cyclic_workflow() {
                 "counter": 0
             }
         }
-        "#,
+    "#,
     );
     deserializer.disable_recursion_limit();
     let deserializer = serde_stacker::Deserializer::new(&mut deserializer);
@@ -475,24 +475,24 @@ fn test_workflow_missing_variables() {
                     "definition": {
                         "type": "binary",
                         "fallbacks": [
-                            2
+                            "2"
                         ],
                         "results": [
-                            3
+                            "3"
                         ],
                         "expression": {
-                            "id": 100,
+                            "id": "100",
                             "type": "comparison",
                             "operator": "less_than",
                             "operands": [
-                                {
-                                    "type": "variable",
-                                    "variable": "counter"
-                                },
-                                {
-                                    "type": "value",
-                                    "value": 3
-                                }
+                            {
+                                "type": "variable",
+                                "variable": "counter"
+                            },
+                            {
+                                "type": "value",
+                                "value": 3
+                            }
                             ]
                         }
                     }
@@ -503,24 +503,24 @@ fn test_workflow_missing_variables() {
                     "definition": {
                         "type": "binary",
                         "fallbacks": [
-                            1
+                            "1"
                         ],
                         "results": [
-                            3
+                            "3"
                         ],
                         "expression": {
-                            "id": 101,
+                            "id": "101",
                             "type": "comparison",
                             "operator": "less_than",
                             "operands": [
-                                {
-                                    "type": "variable",
-                                    "variable": "counter"
-                                },
-                                {
-                                    "type": "value",
-                                    "value": 5
-                                }
+                            {
+                                "type": "variable",
+                                "variable": "counter"
+                            },
+                            {
+                                "type": "value",
+                                "value": 5
+                            }
                             ]
                         }
                     }
@@ -531,27 +531,27 @@ fn test_workflow_missing_variables() {
                     "definition": {
                         "type": "binary",
                         "fallbacks": [
-                            1
+                            "1"
                         ],
                         "results": [
-                            1
+                            "1"
                         ],
                         "expression": {
-                            "id": 102,
+                            "id": "102",
                             "type": "logical",
                             "operator": "and",
                             "expressions": [
+                            {
+                                "id": "100",
+                                "type": "comparison",
+                                "operator": "exists",
+                                "operands": [
                                 {
-                                    "id": 100,
-                                    "type": "comparison",
-                                    "operator": "exists",
-                                    "operands": [
-                                        {
-                                            "type": "variable",
-                                            "variable": "counter"
-                                        }
-                                    ]
+                                    "type": "variable",
+                                    "variable": "counter"
                                 }
+                                ]
+                            }
                             ]
                         }
                     }
@@ -559,7 +559,7 @@ fn test_workflow_missing_variables() {
             },
             "output": {}
         }
-        "#,
+    "#,
     );
     deserializer.disable_recursion_limit();
     let deserializer = serde_stacker::Deserializer::new(&mut deserializer);
@@ -579,25 +579,21 @@ fn test_workflow_components_malformed() {
                     "name": "check_counter_less_than_3",
                     "definition": {
                         "type": "binary",
-                        "fallbacks": [
-                            2
-                        ],
-                        "results": [
-                            3
-                        ],
+                        "fallbacks": [ "2" ],
+                        "results": [ "3" ],
                         "expression": {
-                            "id": 100,
+                            "id": "100",
                             "type": "comparison",
                             "operator": "less_than",
                             "operands": [
-                                {
-                                    "type": "variable",
-                                    "variable": "counter"
-                                },
-                                {
-                                    "type": "value",
-                                    "value": 3
-                                }
+                            {
+                                "type": "variable",
+                                "variable": "counter"
+                            },
+                            {
+                                "type": "value",
+                                "value": 3
+                            }
                             ]
                         }
                     }
@@ -608,7 +604,7 @@ fn test_workflow_components_malformed() {
                 "counter": 0
             }
         }
-        "#,
+    "#,
     );
     deserializer.disable_recursion_limit();
     let deserializer = serde_stacker::Deserializer::new(&mut deserializer);
@@ -628,25 +624,21 @@ fn test_workflow_output_malformed() {
                     "name": "check_counter_less_than_3",
                     "definition": {
                         "type": "binary",
-                        "fallbacks": [
-                            2
-                        ],
-                        "results": [
-                            3
-                        ],
+                        "fallbacks": [ "2" ],
+                        "results": [ "3" ],
                         "expression": {
-                            "id": 100,
+                            "id": "100",
                             "type": "comparison",
                             "operator": "less_than",
                             "operands": [
-                                {
-                                    "type": "variable",
-                                    "variable": "counter"
-                                },
-                                {
-                                    "type": "value",
-                                    "value": 3
-                                }
+                            {
+                                "type": "variable",
+                                "variable": "counter"
+                            },
+                            {
+                                "type": "value",
+                                "value": 3
+                            }
                             ]
                         }
                     }
@@ -656,25 +648,21 @@ fn test_workflow_output_malformed() {
                     "name": "check_counter_less_than_5",
                     "definition": {
                         "type": "binary",
-                        "fallbacks": [
-                            1
-                        ],
-                        "results": [
-                            3
-                        ],
+                        "fallbacks": [ "1" ],
+                        "results": [ "3" ],
                         "expression": {
-                            "id": 101,
+                            "id": "101",
                             "type": "comparison",
                             "operator": "less_than",
                             "operands": [
-                                {
-                                    "type": "variable",
-                                    "variable": "counter"
-                                },
-                                {
-                                    "type": "value",
-                                    "value": 5
-                                }
+                            {
+                                "type": "variable",
+                                "variable": "counter"
+                            },
+                            {
+                                "type": "value",
+                                "value": 5
+                            }
                             ]
                         }
                     }
@@ -684,28 +672,24 @@ fn test_workflow_output_malformed() {
                     "name": "increment_counter",
                     "definition": {
                         "type": "binary",
-                        "fallbacks": [
-                            1
-                        ],
-                        "results": [
-                            1
-                        ],
+                        "fallbacks": [ "1" ],
+                        "results": [ "1" ],
                         "expression": {
-                            "id": 102,
+                            "id": "102",
                             "type": "logical",
                             "operator": "and",
                             "expressions": [
+                            {
+                                "id": "100",
+                                "type": "comparison",
+                                "operator": "exists",
+                                "operands": [
                                 {
-                                    "id": 100,
-                                    "type": "comparison",
-                                    "operator": "exists",
-                                    "operands": [
-                                        {
-                                            "type": "variable",
-                                            "variable": "counter"
-                                        }
-                                    ]
+                                    "type": "variable",
+                                    "variable": "counter"
                                 }
+                                ]
+                            }
                             ]
                         }
                     }
@@ -718,7 +702,7 @@ fn test_workflow_output_malformed() {
                 "counter": 0
             }
         }
-        "#,
+    "#,
     );
     deserializer.disable_recursion_limit();
     let deserializer = serde_stacker::Deserializer::new(&mut deserializer);
@@ -737,25 +721,21 @@ fn test_workflow_component_name_missing() {
                     "type": "condition",
                     "definition": {
                         "type": "binary",
-                        "fallbacks": [
-                            2
-                        ],
-                        "results": [
-                            3
-                        ],
+                        "fallbacks": [ "2" ],
+                        "results": [ "3" ],
                         "expression": {
-                            "id": 100,
+                            "id": "100",
                             "type": "comparison",
                             "operator": "less_than",
                             "operands": [
-                                {
-                                    "type": "variable",
-                                    "variable": "counter"
-                                },
-                                {
-                                    "type": "value",
-                                    "value": 3
-                                }
+                            {
+                                "type": "variable",
+                                "variable": "counter"
+                            },
+                            {
+                                "type": "value",
+                                "value": 3
+                            }
                             ]
                         }
                     }
@@ -764,25 +744,21 @@ fn test_workflow_component_name_missing() {
                     "type": "condition",
                     "definition": {
                         "type": "binary",
-                        "fallbacks": [
-                            1
-                        ],
-                        "results": [
-                            3
-                        ],
+                        "fallbacks": [ "1" ],
+                        "results": [ "3" ],
                         "expression": {
-                            "id": 101,
+                            "id": "101",
                             "type": "comparison",
                             "operator": "less_than",
                             "operands": [
-                                {
-                                    "type": "variable",
-                                    "variable": "counter"
-                                },
-                                {
-                                    "type": "value",
-                                    "value": 5
-                                }
+                            {
+                                "type": "variable",
+                                "variable": "counter"
+                            },
+                            {
+                                "type": "value",
+                                "value": 5
+                            }
                             ]
                         }
                     }
@@ -791,28 +767,24 @@ fn test_workflow_component_name_missing() {
                     "type": "condition",
                     "definition": {
                         "type": "binary",
-                        "fallbacks": [
-                            1
-                        ],
-                        "results": [
-                            1
-                        ],
+                        "fallbacks": [ "1" ],
+                        "results": [ "1" ],
                         "expression": {
-                            "id": 102,
+                            "id": "102",
                             "type": "logical",
                             "operator": "and",
                             "expressions": [
+                            {
+                                "id": "100",
+                                "type": "comparison",
+                                "operator": "exists",
+                                "operands": [
                                 {
-                                    "id": 100,
-                                    "type": "comparison",
-                                    "operator": "exists",
-                                    "operands": [
-                                        {
-                                            "type": "variable",
-                                            "variable": "counter"
-                                        }
-                                    ]
+                                    "type": "variable",
+                                    "variable": "counter"
                                 }
+                                ]
+                            }
                             ]
                         }
                     }
@@ -823,7 +795,7 @@ fn test_workflow_component_name_missing() {
                 "counter": 0
             }
         }
-        "#,
+    "#,
     );
     deserializer.disable_recursion_limit();
     let deserializer = serde_stacker::Deserializer::new(&mut deserializer);
@@ -843,19 +815,15 @@ fn test_workflow_component_dependency_not_found() {
                     "name": "component_1",
                     "definition": {
                         "type": "binary",
-                        "fallbacks": [
-                            3
-                        ],
-                        "results": [
-                            4
-                        ],
+                        "fallbacks": [ "3" ],
+                        "results": [ "4" ],
                         "expression": {
-                            "id": 100,
+                            "id": "100",
                             "type": "logical",
                             "operator": "and",
                             "expressions": [
                             {
-                                "id": 100,
+                                "id": "100",
                                 "type": "comparison",
                                 "operator": "not_exists",
                                 "operands": [
@@ -866,7 +834,7 @@ fn test_workflow_component_dependency_not_found() {
                                 ]
                             },
                             {
-                                "id": 101,
+                                "id": "101",
                                 "type": "comparison",
                                 "operator": "not_exists",
                                 "operands": [
@@ -885,19 +853,15 @@ fn test_workflow_component_dependency_not_found() {
                     "name": "component_2",
                     "definition": {
                         "type": "binary",
-                        "fallbacks": [
-                            3
-                        ],
-                        "results": [
-                            3
-                        ],
+                        "fallbacks": [ "3" ],
+                        "results": [ "3" ],
                         "expression": {
-                            "id": 100,
+                            "id": "100",
                             "type": "logical",
                             "operator": "and",
                             "expressions": [
                             {
-                                "id": 101,
+                                "id": "101",
                                 "type": "comparison",
                                 "operator": "exists",
                                 "operands": [
@@ -908,7 +872,7 @@ fn test_workflow_component_dependency_not_found() {
                                 ]
                             },
                             {
-                                "id": 100,
+                                "id": "100",
                                 "type": "comparison",
                                 "operator": "exists",
                                 "operands": [
@@ -930,12 +894,12 @@ fn test_workflow_component_dependency_not_found() {
                         "fallbacks": [],
                         "results": [],
                         "expression": {
-                            "id": 100,
+                            "id": "100",
                             "type": "logical",
                             "operator": "and",
                             "expressions": [
                             {
-                                "id": 101,
+                                "id": "101",
                                 "type": "comparison",
                                 "operator": "equals",
                                 "operands": [
@@ -950,7 +914,7 @@ fn test_workflow_component_dependency_not_found() {
                                 ]
                             },
                             {
-                                "id": 100,
+                                "id": "100",
                                 "type": "comparison",
                                 "operator": "equals",
                                 "operands": [
@@ -974,16 +938,14 @@ fn test_workflow_component_dependency_not_found() {
                     "definition": {
                         "type": "binary",
                         "fallbacks": [],
-                        "results": [
-                            5
-                        ],
+                        "results": [ "5" ],
                         "expression": {
-                            "id": 100,
+                            "id": "100",
                             "type": "logical",
                             "operator": "and",
                             "expressions": [
                             {
-                                "id": 101,
+                                "id": "101",
                                 "type": "comparison",
                                 "operator": "not_equals",
                                 "operands": [
@@ -998,7 +960,7 @@ fn test_workflow_component_dependency_not_found() {
                                 ]
                             },
                             {
-                                "id": 100,
+                                "id": "100",
                                 "type": "comparison",
                                 "operator": "not_equals",
                                 "operands": [
@@ -1021,18 +983,16 @@ fn test_workflow_component_dependency_not_found() {
                     "name": "gt_test",
                     "definition": {
                         "type": "binary",
-                        "id": 5,
+                        "id": "5",
                         "fallbacks": [],
-                        "results": [
-                            6
-                        ],
+                        "results": [ "6" ],
                         "expression": {
-                            "id": 100,
+                            "id": "100",
                             "type": "logical",
                             "operator": "and",
                             "expressions": [
                             {
-                                "id": 101,
+                                "id": "101",
                                 "type": "comparison",
                                 "operator": "greater_than",
                                 "operands": [
@@ -1047,7 +1007,7 @@ fn test_workflow_component_dependency_not_found() {
                                 ]
                             },
                             {
-                                "id": 102,
+                                "id": "102",
                                 "type": "comparison",
                                 "operator": "greater_than",
                                 "operands": [
@@ -1108,7 +1068,7 @@ fn test_workflow_component_missing_definition() {
             }
         }
 
-    "#,
+        "#,
     );
     deserializer.disable_recursion_limit();
     let deserializer = serde_stacker::Deserializer::new(&mut deserializer);
@@ -1127,25 +1087,21 @@ fn test_workflow_component_missing_type() {
                     "name": "component_1",
                     "definition": {
                         "type": "binary",
-                        "fallbacks": [
-                            2
-                        ],
-                        "results": [
-                            3
-                        ],
+                        "fallbacks": [ "2" ],
+                        "results": [ "3" ],
                         "expression": {
-                            "id": 100,
+                            "id": "100",
                             "type": "comparison",
                             "operator": "less_than",
                             "operands": [
-                                {
-                                    "type": "variable",
-                                    "variable": "counter"
-                                },
-                                {
-                                    "type": "value",
-                                    "value": 3
-                                }
+                            {
+                                "type": "variable",
+                                "variable": "counter"
+                            },
+                            {
+                                "type": "value",
+                                "value": 3
+                            }
                             ]
                         }
                     }
