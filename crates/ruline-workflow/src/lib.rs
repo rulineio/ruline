@@ -9,7 +9,7 @@ use petgraph::{csr::IndexType, graph::DiGraph, visit::Bfs, Direction};
 use ruline_action::{Action, ActionDefinition};
 use ruline_condition::{Condition, ConditionDefinition};
 use ruline_context::Context;
-use ruline_output::{Output, OutputDefinition};
+use ruline_output::Output;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -26,19 +26,12 @@ pub enum ComponentDefinition {
     },
 }
 
-#[derive(Debug, Deserialize, Serialize)]
-#[serde(rename_all = "snake_case")]
-pub struct WorkflowDefinition {
-    pub components: HashMap<String, ComponentDefinition>,
-    pub variables: DashMap<String, Value>,
-    pub output: OutputDefinition,
-}
-
 #[derive(Debug)]
 pub enum Component {
     Condition(Condition),
     Action(Action),
 }
+
 #[derive(Debug)]
 pub struct Workflow {
     components: HashMap<String, Component>,
@@ -48,6 +41,10 @@ pub struct Workflow {
 }
 
 impl Workflow {
+    pub fn builder() -> workflow::Builder {
+        workflow::Builder::default()
+    }
+
     pub fn process(&self, data: Value) -> Result<Value> {
         let context = Context::new(data, self.variables.to_owned());
         let mut bfs = Bfs::new(&self.graph, self.graph.node_indices().next().unwrap());
@@ -96,86 +93,106 @@ impl Workflow {
     }
 }
 
-impl TryFrom<Value> for Workflow {
-    type Error = WorkflowError;
+mod workflow {
+    use super::*;
 
-    fn try_from(value: Value) -> Result<Self, Self::Error> {
-        let definition: WorkflowDefinition =
-            serde_json::from_value(value).map_err(WorkflowError::Serde)?;
-        let mut components = HashMap::new();
-        let mut nodes = HashMap::new();
-        let mut graph = DiGraph::new();
+    #[derive(Default)]
+    pub struct Builder {
+        definition: Value,
+        output: Value,
+    }
 
-        let parent_node = graph.add_node("0".to_owned());
-
-        for (id, component) in definition.components {
-            match component {
-                ComponentDefinition::Condition { definition, .. } => {
-                    let condition =
-                        Condition::try_from(definition).map_err(WorkflowError::Condition)?; // (1
-                    components.insert(id.to_owned(), Component::Condition(condition));
-                    nodes.insert(id.to_owned(), graph.add_node(id));
-                }
-                ComponentDefinition::Action { definition, .. } => {
-                    let action = Action::try_from(definition).map_err(WorkflowError::Action)?;
-                    components.insert(id.to_owned(), Component::Action(action));
-                    nodes.insert(id.to_owned(), graph.add_node(id));
-                }
-            }
+    impl Builder {
+        pub fn with_definition(mut self, definition: Value) -> Self {
+            self.definition = definition;
+            self
         }
 
-        for (component_id, component) in components.iter() {
-            match component {
-                Component::Condition(condition) => {
-                    let node = nodes.get(component_id).unwrap();
-                    for dependency in condition.dependencies() {
-                        let dependency_node = nodes.get(&dependency).ok_or_else(|| {
-                            WorkflowError::DependencyNotFound {
-                                component_id: component_id.to_owned(),
-                                dependency,
-                            }
-                        })?;
-                        graph.add_edge(*dependency_node, *node, ());
-                    }
+        pub fn with_output(mut self, output: Value) -> Self {
+            self.output = output;
+            self
+        }
 
-                    for dependant in condition.dependants() {
-                        let dependant_node = nodes.get(&dependant).ok_or_else(|| {
-                            WorkflowError::DependantNotFound {
-                                component_id: component_id.to_owned(),
-                                dependant,
-                            }
-                        })?;
-                        graph.add_edge(*node, *dependant_node, ());
+        pub fn build(self) -> Result<Workflow> {
+            let definition: HashMap<String, ComponentDefinition> =
+                serde_json::from_value(self.definition).map_err(WorkflowError::Serde)?;
+            let mut components = HashMap::new();
+            let mut nodes = HashMap::new();
+            let mut graph = DiGraph::new();
+
+            let parent_node = graph.add_node("0".to_owned());
+
+            for (id, component) in definition {
+                match component {
+                    ComponentDefinition::Condition { definition, .. } => {
+                        let condition =
+                            Condition::try_from(definition).map_err(WorkflowError::Condition)?; // (1
+                        components.insert(id.to_owned(), Component::Condition(condition));
+                        nodes.insert(id.to_owned(), graph.add_node(id));
                     }
-                }
-                Component::Action(action) => {
-                    let node = nodes.get(component_id).unwrap();
-                    for dependency in action.dependencies() {
-                        let dependency_node = nodes.get(&dependency).ok_or_else(|| {
-                            WorkflowError::DependencyNotFound {
-                                component_id: component_id.to_owned(),
-                                dependency,
-                            }
-                        })?;
-                        graph.add_edge(*dependency_node, *node, ());
+                    ComponentDefinition::Action { definition, .. } => {
+                        let action = Action::try_from(definition).map_err(WorkflowError::Action)?;
+                        components.insert(id.to_owned(), Component::Action(action));
+                        nodes.insert(id.to_owned(), graph.add_node(id));
                     }
                 }
             }
-        }
 
-        for node in graph.node_indices() {
-            if graph.edges_directed(node, Direction::Incoming).count() == 0 && node != parent_node {
-                graph.add_edge(parent_node, node, ());
+            for (component_id, component) in components.iter() {
+                match component {
+                    Component::Condition(condition) => {
+                        let node = nodes.get(component_id).unwrap();
+                        for dependency in condition.dependencies() {
+                            let dependency_node = nodes.get(&dependency).ok_or_else(|| {
+                                WorkflowError::DependencyNotFound {
+                                    component_id: component_id.to_owned(),
+                                    dependency,
+                                }
+                            })?;
+                            graph.add_edge(*dependency_node, *node, ());
+                        }
+
+                        for dependant in condition.dependants() {
+                            let dependant_node = nodes.get(&dependant).ok_or_else(|| {
+                                WorkflowError::DependantNotFound {
+                                    component_id: component_id.to_owned(),
+                                    dependant,
+                                }
+                            })?;
+                            graph.add_edge(*node, *dependant_node, ());
+                        }
+                    }
+                    Component::Action(action) => {
+                        let node = nodes.get(component_id).unwrap();
+                        for dependency in action.dependencies() {
+                            let dependency_node = nodes.get(&dependency).ok_or_else(|| {
+                                WorkflowError::DependencyNotFound {
+                                    component_id: component_id.to_owned(),
+                                    dependency,
+                                }
+                            })?;
+                            graph.add_edge(*dependency_node, *node, ());
+                        }
+                    }
+                }
             }
+
+            for node in graph.node_indices() {
+                if graph.edges_directed(node, Direction::Incoming).count() == 0
+                    && node != parent_node
+                {
+                    graph.add_edge(parent_node, node, ());
+                }
+            }
+
+            let output = Output::try_from(self.output).map_err(WorkflowError::Output)?;
+
+            Ok(Workflow {
+                components,
+                graph,
+                variables: DashMap::new(),
+                output,
+            })
         }
-
-        let output = Output::try_from(definition.output).map_err(WorkflowError::Output)?;
-
-        Ok(Self {
-            components,
-            graph,
-            variables: definition.variables,
-            output,
-        })
     }
 }
