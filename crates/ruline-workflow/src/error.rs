@@ -6,9 +6,15 @@ use thiserror::Error;
 #[derive(Debug, Error)]
 pub enum WorkflowError {
     #[error("Dependency `{dependency}` for component `{component_id}` not found")]
-    DependencyNotFound { component_id: i64, dependency: i64 },
+    DependencyNotFound {
+        component_id: String,
+        dependency: String,
+    },
     #[error("Dependant `{dependant}` for component `{component_id}` not found")]
-    DependantNotFound { component_id: i64, dependant: i64 },
+    DependantNotFound {
+        component_id: String,
+        dependant: String,
+    },
 
     #[error("Cycle detected")]
     CycleDetected,

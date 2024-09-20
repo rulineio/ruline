@@ -20,7 +20,7 @@ pub enum FieldError {
             "`{}` in output `{}` not found",
             path, output_id
         ),
-        _ => "Value not found".to_string(),
+        _ => "Value not found".to_owned(),
     })]
     FieldNotFound(FieldDefinition),
     #[error(transparent)]

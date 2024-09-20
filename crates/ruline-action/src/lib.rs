@@ -19,7 +19,7 @@ pub enum ActionDefinition {
 #[derive(Debug)]
 pub struct Action {
     pub definition: ActionDefinition,
-    pub dependencies: Vec<i64>,
+    pub dependencies: Vec<String>,
 }
 
 impl TryFrom<ActionDefinition> for Action {
@@ -52,14 +52,14 @@ impl Action {
         match &self.definition {
             ActionDefinition::SetVariable { variable, value } => {
                 let field = Field::from(value);
-                ctx.set_variable(variable.clone(), field.process(ctx)?);
+                ctx.set_variable(variable.to_owned(), field.process(ctx)?);
             }
         }
 
         Ok(())
     }
 
-    pub fn dependencies(&self) -> Vec<i64> {
-        self.dependencies.clone()
+    pub fn dependencies(&self) -> Vec<String> {
+        self.dependencies.to_owned()
     }
 }

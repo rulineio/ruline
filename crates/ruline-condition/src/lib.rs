@@ -30,13 +30,13 @@ pub enum LogicalOperator {
 pub enum ConditionDefinition {
     Binary {
         expression: Expression,
-        fallbacks: Vec<i64>,
-        results: Vec<i64>,
+        fallbacks: Vec<String>,
+        results: Vec<String>,
     },
     Decision {
         expressions: Vec<Expression>,
-        fallbacks: Vec<i64>,
-        results: HashMap<String, Vec<i64>>,
+        fallbacks: Vec<String>,
+        results: HashMap<String, Vec<String>>,
     },
 }
 
@@ -44,34 +44,34 @@ pub enum ConditionDefinition {
 #[serde(rename_all = "snake_case", tag = "type")]
 pub enum Expression {
     Comparison {
-        id: i64,
+        id: String,
         operator: ComparisonOperator,
         operands: Vec<FieldDefinition>,
     },
     Logical {
-        id: i64,
+        id: String,
         operator: LogicalOperator,
         expressions: Vec<Self>,
     },
 }
 
 impl Expression {
-    fn get_id(&self) -> i64 {
+    fn get_id(&self) -> String {
         match self {
-            Expression::Comparison { id, .. } | Expression::Logical { id, .. } => *id,
+            Expression::Comparison { id, .. } | Expression::Logical { id, .. } => id.to_owned(),
         }
     }
 
     fn setup_graph(&self, graph: &mut DiGraph<Expression, ()>, parent: Option<NodeIndex>) {
         match self {
             Expression::Comparison { .. } => {
-                let idx = graph.add_node(self.clone());
+                let idx = graph.add_node(self.to_owned());
                 if let Some(parent_id) = parent {
                     graph.add_edge(parent_id, idx, ());
                 }
             }
             Expression::Logical { expressions, .. } => {
-                let idx = graph.add_node(self.clone());
+                let idx = graph.add_node(self.to_owned());
                 if let Some(parent_id) = parent {
                     graph.add_edge(parent_id, idx, ());
                 }
@@ -87,12 +87,12 @@ impl Expression {
 pub struct Condition {
     definition: ConditionDefinition,
     graph: DiGraph<Expression, ()>,
-    dependencies: Vec<i64>,
-    dependants: Vec<i64>,
+    dependencies: Vec<String>,
+    dependants: Vec<String>,
 }
 
 impl Condition {
-    pub fn evaluate(&self, ctx: &Context) -> Result<Vec<i64>> {
+    pub fn evaluate(&self, ctx: &Context) -> Result<Vec<String>> {
         match &self.definition {
             ConditionDefinition::Binary {
                 fallbacks, results, ..
@@ -127,7 +127,7 @@ impl Condition {
                 }
 
                 if next_calls.is_empty() {
-                    next_calls.extend(fallbacks);
+                    next_calls.extend(fallbacks.to_owned());
                 }
 
                 Ok(next_calls)
@@ -166,12 +166,12 @@ impl Condition {
         }
     }
 
-    pub fn dependencies(&self) -> Vec<i64> {
-        self.dependencies.clone()
+    pub fn dependencies(&self) -> Vec<String> {
+        self.dependencies.to_owned()
     }
 
-    pub fn dependants(&self) -> Vec<i64> {
-        self.dependants.clone()
+    pub fn dependants(&self) -> Vec<String> {
+        self.dependants.to_owned()
     }
 
     fn validate_conditions(&self, node: NodeIndex) -> Result<()> {
@@ -182,7 +182,7 @@ impl Condition {
             match &self.graph[node] {
                 Expression::Logical { id, .. } if childrens_count < 2 => {
                     return Err(ConditionError::LogicalChildrenCountInvalid {
-                        id: *id,
+                        id: id.to_owned(),
                         childrens_count,
                     }
                     .into());
@@ -244,14 +244,14 @@ impl TryFrom<ConditionDefinition> for Condition {
                 results, fallbacks, ..
             } => {
                 let mut dependants = results.to_vec();
-                dependants.extend(fallbacks);
+                dependants.extend(fallbacks.to_owned());
                 dependants
             }
             ConditionDefinition::Decision {
                 results, fallbacks, ..
             } => {
                 let mut dependants = results.values().flatten().cloned().collect::<Vec<_>>();
-                dependants.extend(fallbacks);
+                dependants.extend(fallbacks.to_owned());
                 dependants
             }
         };

@@ -76,7 +76,7 @@ fn test_function_field_dependencies() {
                 "args": [
                 {
                     "type": "output",
-                    "output_id": 10,
+                    "output_id": "10",
                     "path": "/foo/bar/baz"
                 },
                 {
@@ -85,7 +85,7 @@ fn test_function_field_dependencies() {
                     "args": [
                     {
                         "type": "output",
-                        "output_id": 20,
+                        "output_id": "20",
                         "path": "/foo/bar/baz"
                     },
                     {
@@ -102,7 +102,7 @@ fn test_function_field_dependencies() {
                 "args": [
                 {
                     "type": "output",
-                    "output_id": 40,
+                    "output_id": "40",
                     "path": "/foo/bar/baz"
                 },
                 {
@@ -117,7 +117,7 @@ fn test_function_field_dependencies() {
 
     let field = Field::try_from(definition).unwrap();
     let dependencies = field.dependencies();
-    assert_eq!(dependencies, vec![10, 20, 40]);
+    assert_eq!(dependencies, vec!["10", "20", "40"]);
 }
 
 #[test]

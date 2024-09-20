@@ -20,22 +20,16 @@ fn test_decision_complex_nested_all_passed() {
     let mut deserializer = serde_json::Deserializer::from_str(
         r#"{
             "type":"decision",
-            "id":1,
+            "id":"1",
             "name":"complex_nested",
-            "fallbacks":[
-                0
-            ],
+            "fallbacks":[ "0" ],
             "results":{
-                "100":[
-                    1
-                ],
-                "300":[
-                    2
-                ]
+                "100":[ "1" ],
+                "300":[ "2" ]
             },
             "expressions":[
             {
-                "id":100,
+                "id":"100",
                 "type":"comparison",
                 "operator":"equals",
                 "operands":[
@@ -50,17 +44,17 @@ fn test_decision_complex_nested_all_passed() {
                 ]
             },
             {
-                "id":300,
+                "id":"300",
                 "type":"logical",
                 "operator":"and",
                 "expressions":[
                 {
-                    "id":301,
+                    "id":"301",
                     "type":"logical",
                     "operator":"and",
                     "expressions":[
                     {
-                        "id":302,
+                        "id":"302",
                         "type":"comparison",
                         "operator":"greater_than",
                         "operands":[
@@ -75,7 +69,7 @@ fn test_decision_complex_nested_all_passed() {
                         ]
                     },
                     {
-                        "id":303,
+                        "id":"303",
                         "type":"comparison",
                         "operator":"less_than",
                         "operands":[
@@ -90,7 +84,7 @@ fn test_decision_complex_nested_all_passed() {
                         ]
                     },
                     {
-                        "id":304,
+                        "id":"304",
                         "type":"comparison",
                         "operator":"equals",
                         "operands":[
@@ -105,18 +99,18 @@ fn test_decision_complex_nested_all_passed() {
                         ]
                     },
                     {
-                        "id": 305,
+                        "id": "305",
                         "type": "logical",
                         "operator": "or",
                         "expressions": [
                         {
-                            "id": 306,
+                            "id": "306",
                             "type": "comparison",
                             "operator": "equals",
                             "operands": [
                             {
                                 "type": "data",
-                                "id": 11,
+                                "id": "11",
                                 "name": "first_value",
                                 "path": "/first_value"
                             },
@@ -127,13 +121,13 @@ fn test_decision_complex_nested_all_passed() {
                             ]
                         },
                         {
-                            "id": 307,
+                            "id": "307",
                             "type": "comparison",
                             "operator": "equals",
                             "operands": [
                             {
                                 "type": "data",
-                                "id": 13,
+                                "id": "13",
                                 "name": "second_value",
                                 "path": "/second_value"
                             },
@@ -148,12 +142,12 @@ fn test_decision_complex_nested_all_passed() {
                     ]
                 },
                 {
-                    "id":304,
+                    "id":"304",
                     "type":"logical",
                     "operator":"or",
                     "expressions":[
                     {
-                        "id":305,
+                        "id":"305",
                         "type":"comparison",
                         "operator":"greater_than",
                         "operands":[
@@ -168,12 +162,12 @@ fn test_decision_complex_nested_all_passed() {
                         ]
                     },
                     {
-                        "id":306,
+                        "id":"306",
                         "type":"logical",
                         "operator":"and",
                         "expressions":[
                         {
-                            "id":307,
+                            "id":"307",
                             "type":"comparison",
                             "operator":"less_than",
                             "operands":[
@@ -188,7 +182,7 @@ fn test_decision_complex_nested_all_passed() {
                             ]
                         },
                         {
-                            "id":308,
+                            "id":"308",
                             "type":"comparison",
                             "operator":"greater_than",
                             "operands":[
@@ -219,7 +213,7 @@ fn test_decision_complex_nested_all_passed() {
     let condition = Condition::try_from(definition).unwrap();
     assert!(condition.validate().is_ok());
     let result = condition.evaluate(&context).unwrap();
-    assert_eq!(result, vec![1, 2]);
+    assert_eq!(result, vec!["1", "2"]);
 }
 
 #[test]
@@ -232,20 +226,14 @@ fn test_decision_complex_nested_some_pass() {
 
     let definition = json!({
         "type":"decision",
-        "fallbacks":[
-            0
-        ],
+        "fallbacks":[ "0" ],
         "results":{
-            "100":[
-                1
-            ],
-            "300":[
-                2
-            ]
+            "100":[ "1" ],
+            "300":[ "2" ]
         },
         "expressions":[
         {
-            "id":100,
+            "id":"100",
             "type":"comparison",
             "operator":"equals",
             "operands":[
@@ -260,17 +248,17 @@ fn test_decision_complex_nested_some_pass() {
             ]
         },
         {
-            "id":300,
+            "id":"300",
             "type":"logical",
             "operator":"and",
             "expressions":[
             {
-                "id":301,
+                "id":"301",
                 "type":"logical",
                 "operator":"and",
                 "expressions":[
                 {
-                    "id":302,
+                    "id":"302",
                     "type":"comparison",
                     "operator":"greater_than",
                     "operands":[
@@ -285,7 +273,7 @@ fn test_decision_complex_nested_some_pass() {
                     ]
                 },
                 {
-                    "id":303,
+                    "id":"303",
                     "type":"comparison",
                     "operator":"less_than",
                     "operands":[
@@ -302,12 +290,12 @@ fn test_decision_complex_nested_some_pass() {
                 ]
             },
             {
-                "id":304,
+                "id":"304",
                 "type":"logical",
                 "operator":"or",
                 "expressions":[
                 {
-                    "id":305,
+                    "id":"305",
                     "type":"comparison",
                     "operator":"greater_than",
                     "operands":[
@@ -322,12 +310,12 @@ fn test_decision_complex_nested_some_pass() {
                     ]
                 },
                 {
-                    "id":306,
+                    "id":"306",
                     "type":"logical",
                     "operator":"and",
                     "expressions":[
                     {
-                        "id":307,
+                        "id":"307",
                         "type":"comparison",
                         "operator":"less_than",
                         "operands":[
@@ -342,7 +330,7 @@ fn test_decision_complex_nested_some_pass() {
                         ]
                     },
                     {
-                        "id":308,
+                        "id":"308",
                         "type":"comparison",
                         "operator":"greater_than",
                         "operands":[
@@ -367,7 +355,7 @@ fn test_decision_complex_nested_some_pass() {
 
     let condition = Condition::try_from(definition).unwrap();
     let result = condition.evaluate(&context).unwrap();
-    assert_eq!(result, vec![1]);
+    assert_eq!(result, vec!["1"]);
 }
 
 #[test]
@@ -380,20 +368,14 @@ fn test_decision_fallback() {
 
     let definition = json!({
         "type":"decision",
-        "fallbacks":[
-            0
-        ],
+        "fallbacks":[ "0" ],
         "results":{
-            "100":[
-                1
-            ],
-            "300":[
-                2
-            ]
+            "100":[ "1" ],
+            "300":[ "2" ],
         },
         "expressions":[
         {
-            "id":100,
+            "id":"100",
             "type":"comparison",
             "operator":"equals",
             "operands":[
@@ -408,17 +390,17 @@ fn test_decision_fallback() {
             ]
         },
         {
-            "id":300,
+            "id":"300",
             "type":"logical",
             "operator":"and",
             "expressions":[
             {
-                "id":301,
+                "id":"301",
                 "type":"logical",
                 "operator":"and",
                 "expressions":[
                 {
-                    "id":302,
+                    "id":"302",
                     "type":"comparison",
                     "operator":"greater_than",
                     "operands":[
@@ -433,7 +415,7 @@ fn test_decision_fallback() {
                     ]
                 },
                 {
-                    "id":303,
+                    "id":"303",
                     "type":"comparison",
                     "operator":"less_than",
                     "operands":[
@@ -450,12 +432,12 @@ fn test_decision_fallback() {
                 ]
             },
             {
-                "id":304,
+                "id":"304",
                 "type":"logical",
                 "operator":"or",
                 "expressions":[
                 {
-                    "id":305,
+                    "id":"305",
                     "type":"comparison",
                     "operator":"greater_than",
                     "operands":[
@@ -470,12 +452,12 @@ fn test_decision_fallback() {
                     ]
                 },
                 {
-                    "id":306,
+                    "id":"306",
                     "type":"logical",
                     "operator":"and",
                     "expressions":[
                     {
-                        "id":307,
+                        "id":"307",
                         "type":"comparison",
                         "operator":"less_than",
                         "operands":[
@@ -490,7 +472,7 @@ fn test_decision_fallback() {
                         ]
                     },
                     {
-                        "id":308,
+                        "id":"308",
                         "type":"comparison",
                         "operator":"greater_than",
                         "operands":[
@@ -515,7 +497,7 @@ fn test_decision_fallback() {
 
     let condition = Condition::try_from(definition).unwrap();
     let result = condition.evaluate(&context).unwrap();
-    assert_eq!(result, vec![0]);
+    assert_eq!(result, vec!["0"]);
 }
 
 #[test]
@@ -528,22 +510,20 @@ fn test_binary() {
 
     let definition = json!({
         "type":"binary",
-        "fallbacks":[
-            0
-        ],
-        "results": [ 1 ],
+        "fallbacks":[ "0" ],
+        "results": [ "1" ],
         "expression":{
-            "id":300,
+            "id":"300",
             "type":"logical",
             "operator":"and",
             "expressions":[
             {
-                "id":301,
+                "id":"301",
                 "type":"logical",
                 "operator":"and",
                 "expressions":[
                 {
-                    "id":302,
+                    "id":"302",
                     "type":"comparison",
                     "operator":"greater_than",
                     "operands":[
@@ -558,7 +538,7 @@ fn test_binary() {
                     ]
                 },
                 {
-                    "id":303,
+                    "id":"303",
                     "type":"comparison",
                     "operator":"less_than",
                     "operands":[
@@ -575,12 +555,12 @@ fn test_binary() {
                 ]
             },
             {
-                "id":304,
+                "id":"304",
                 "type":"logical",
                 "operator":"or",
                 "expressions":[
                 {
-                    "id":305,
+                    "id":"305",
                     "type":"comparison",
                     "operator":"greater_than",
                     "operands":[
@@ -595,12 +575,12 @@ fn test_binary() {
                     ]
                 },
                 {
-                    "id":306,
+                    "id":"306",
                     "type":"logical",
                     "operator":"and",
                     "expressions":[
                     {
-                        "id":307,
+                        "id":"307",
                         "type":"comparison",
                         "operator":"less_than",
                         "operands":[
@@ -615,7 +595,7 @@ fn test_binary() {
                         ]
                     },
                     {
-                        "id":308,
+                        "id":"308",
                         "type":"comparison",
                         "operator":"greater_than",
                         "operands":[
@@ -640,7 +620,7 @@ fn test_binary() {
     let condition = Condition::try_from(definition).unwrap();
     assert!(condition.validate().is_ok());
     let result = condition.evaluate(&context).unwrap();
-    assert_eq!(result, vec![1]);
+    assert_eq!(result, vec!["1"]);
 }
 
 #[test]
@@ -653,20 +633,20 @@ fn test_binary_fallback() {
 
     let definition = json!({
         "type":"binary",
-        "fallbacks":[ 0 ],
-        "results": [ 1, 2 ],
+        "fallbacks":[ "0" ],
+        "results": [ "1", "2" ],
         "expression":{
-            "id":300,
+            "id":"300",
             "type":"logical",
             "operator":"and",
             "expressions":[
             {
-                "id":301,
+                "id":"301",
                 "type":"logical",
                 "operator":"and",
                 "expressions":[
                 {
-                    "id":302,
+                    "id":"302",
                     "type":"comparison",
                     "operator":"greater_than",
                     "operands":[
@@ -681,7 +661,7 @@ fn test_binary_fallback() {
                     ]
                 },
                 {
-                    "id":303,
+                    "id":"303",
                     "type":"comparison",
                     "operator":"less_than",
                     "operands":[
@@ -698,12 +678,12 @@ fn test_binary_fallback() {
                 ]
             },
             {
-                "id":304,
+                "id":"304",
                 "type":"logical",
                 "operator":"or",
                 "expressions":[
                 {
-                    "id":305,
+                    "id":"305",
                     "type":"comparison",
                     "operator":"greater_than",
                     "operands":[
@@ -718,12 +698,12 @@ fn test_binary_fallback() {
                     ]
                 },
                 {
-                    "id":306,
+                    "id":"306",
                     "type":"logical",
                     "operator":"and",
                     "expressions":[
                     {
-                        "id":307,
+                        "id":"307",
                         "type":"comparison",
                         "operator":"less_than",
                         "operands":[
@@ -738,7 +718,7 @@ fn test_binary_fallback() {
                         ]
                     },
                     {
-                        "id":308,
+                        "id":"308",
                         "type":"comparison",
                         "operator":"greater_than",
                         "operands":[
@@ -762,80 +742,80 @@ fn test_binary_fallback() {
 
     let condition = Condition::try_from(definition).unwrap();
     let result = condition.evaluate(&context).unwrap();
-    assert_eq!(result, vec![0]);
+    assert_eq!(result, vec!["0"]);
 }
 
 #[test]
 fn test_dependencies() {
     let definition = json!({
         "type": "decision",
-        "fallbacks": [0],
+        "fallbacks": [ "0" ],
         "results": {
-            "100": [1]
+            "100": [ "1" ]
         },
         "expressions": [
+        {
+            "id": "100",
+            "type": "comparison",
+            "operator": "greater_than_or_equal",
+            "operands": [
             {
-                "id": 100,
-                "type": "comparison",
-                "operator": "greater_than_or_equal",
-                "operands": [
-                    {
-                        "type": "data",
-                        "path": "/first_value"
-                    },
-                    {
-                        "type": "output",
-                        "path": "/output",
-                        "output_id": 14,
-                    }
-                ]
+                "type": "data",
+                "path": "/first_value"
+            },
+            {
+                "type": "output",
+                "path": "/output",
+                "output_id": "14"
             }
+            ]
+        }
         ]
     });
     let condition = Condition::try_from(definition).unwrap();
     let dependencies = condition.dependencies();
-    assert_eq!(dependencies, vec![14]);
+    assert_eq!(dependencies, vec!["14"]);
 }
 
 #[test]
 fn test_dependants() {
     let definition = json!({
         "type": "decision",
-        "fallbacks": [0],
+        "fallbacks": [ "0" ],
         "results": {
-            "100": [1]
+            "100": [ "1" ]
         },
         "expressions": [
+        {
+            "id": "100",
+            "type": "comparison",
+            "operator": "greater_than_or_equal",
+            "operands": [
             {
-                "id": 100,
-                "type": "comparison",
-                "operator": "greater_than_or_equal",
-                "operands": [
-                    {
-                        "type": "data",
-                        "path": "/first_value"
-                    },
-                    {
-                        "type": "output",
-                        "path": "/output",
-                        "output_id": 14,
-                    }
-                ]
+                "type": "data",
+                "path": "/first_value"
+            },
+            {
+                "type": "output",
+                "path": "/output",
+                "output_id": "14"
             }
+            ]
+        }
         ]
     });
     let condition = Condition::try_from(definition).unwrap();
     let dependants = condition.dependants();
-    assert_eq!(dependants, vec![0, 1]);
+    assert_eq!(dependants, vec!["0", "1"]);
 }
 
 #[test]
 fn test_expression_invalid_decision_expressions_empty() {
     let definition = json!({
         "type": "decision",
-        "fallbacks": [0],
+        "fallbacks": [ "0" ],
         "results": {
-            "100": [1]
+            "100": [ "1" ]
         },
         "expressions": []
     });
@@ -848,10 +828,10 @@ fn test_expression_invalid_decision_expressions_empty() {
 fn test_logical_child_missing() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 300,
+            "id": "300",
             "type": "logical",
             "operator": "and",
             "expressions": []
@@ -866,14 +846,14 @@ fn test_logical_child_missing() {
 fn test_logical_count_invalid() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 300,
+            "id": "300",
             "type": "logical",
             "operator": "and",
             "expressions": [{
-                "id": 302,
+                "id": "302",
                 "type": "comparison",
                 "operator": "greater_than",
                 "operands": [{
@@ -893,9 +873,9 @@ fn test_logical_count_invalid() {
 fn test_expression_invalid_decision_expressions_mismatch() {
     let definition = json!({
         "type": "decision",
-        "fallbacks": [0],
+        "fallbacks": [ "0" ],
         "results": {
-            "100": [1]
+            "100": [ "1" ]
         },
         "expressions": {}
     });
@@ -906,8 +886,8 @@ fn test_expression_invalid_decision_expressions_mismatch() {
 fn test_deserialize_binary_error_expression_type() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": []
     });
     assert_condition_deserialize_error!(definition);
@@ -917,8 +897,8 @@ fn test_deserialize_binary_error_expression_type() {
 fn test_deserialize_binary_error_expression_missing() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1]
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
     });
     assert_condition_deserialize_error!(definition);
 }
@@ -927,8 +907,8 @@ fn test_deserialize_binary_error_expression_missing() {
 fn test_deserialize_decision_error_expressions_mismatch() {
     let definition = json!({
         "type": "decision",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expressions": {}
     });
     assert_condition_deserialize_error!(definition);
@@ -938,8 +918,8 @@ fn test_deserialize_decision_error_expressions_mismatch() {
 fn test_deserialize_decision_error_expressions_missing() {
     let definition = json!({
         "type": "decision",
-        "fallbacks": [0],
-        "results": [1]
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
     });
     assert_condition_deserialize_error!(definition);
 }
@@ -948,8 +928,8 @@ fn test_deserialize_decision_error_expressions_missing() {
 fn test_deserialize_error_malformed() {
     let definition = json!({
         "type": "decision",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expressions": [],
     });
     assert_condition_deserialize_error!(definition);
@@ -959,8 +939,8 @@ fn test_deserialize_error_malformed() {
 fn test_deserialize_error_invalid_type() {
     let definition = json!({
         "type": "invalid",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expressions": [],
         "expression": {}
     });
@@ -972,7 +952,7 @@ fn test_deserialize_error_invalid_fallbacks() {
     let definition = json!({
         "type": "binary",
         "fallbacks": {},
-        "results": [1],
+        "results": [ "1" ],
         "expression": {}
     });
     assert_condition_deserialize_error!(definition);
@@ -982,7 +962,7 @@ fn test_deserialize_error_invalid_fallbacks() {
 fn test_deserialize_error_invalid_results() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
+        "fallbacks": [ "0" ],
         "results": {},
         "expression": {}
     });
@@ -993,10 +973,10 @@ fn test_deserialize_error_invalid_results() {
 fn test_deserialize_error_invalid_comparison_operator() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 300,
+            "id": "300",
             "type": "comparison",
             "operator": "invalid",
             "operands": []
@@ -1009,10 +989,10 @@ fn test_deserialize_error_invalid_comparison_operator() {
 fn test_deserialize_error_invalid_comparison_operator_type() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 300,
+            "id": "300",
             "type": "comparison",
             "operator": 1,
             "operands": []
@@ -1025,10 +1005,10 @@ fn test_deserialize_error_invalid_comparison_operator_type() {
 fn test_deserialize_error_invalid_comparison_operands_type() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 300,
+            "id": "300",
             "type": "comparison",
             "operator": "greater_than",
             "operands": {}
@@ -1041,10 +1021,10 @@ fn test_deserialize_error_invalid_comparison_operands_type() {
 fn test_deserialize_error_invalid_logical_operator() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 300,
+            "id": "300",
             "type": "logical",
             "operator": "invalid",
             "expressions": []
@@ -1057,10 +1037,10 @@ fn test_deserialize_error_invalid_logical_operator() {
 fn test_deserialize_error_invalid_logical_operator_type() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 300,
+            "id": "300",
             "type": "logical",
             "operator": 1,
             "expressions": []
@@ -1073,10 +1053,10 @@ fn test_deserialize_error_invalid_logical_operator_type() {
 fn test_deserialize_error_invalid_logical_expressions_type() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 300,
+            "id": "300",
             "type": "logical",
             "operator": "and",
             "expressions": {}

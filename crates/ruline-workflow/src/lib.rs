@@ -29,7 +29,7 @@ pub enum ComponentDefinition {
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub struct WorkflowDefinition {
-    pub components: HashMap<i64, ComponentDefinition>,
+    pub components: HashMap<String, ComponentDefinition>,
     pub variables: DashMap<String, Value>,
     pub output: OutputDefinition,
 }
@@ -41,19 +41,19 @@ pub enum Component {
 }
 #[derive(Debug)]
 pub struct Workflow {
-    components: HashMap<i64, Component>,
+    components: HashMap<String, Component>,
     variables: DashMap<String, Value>,
     output: Output,
-    graph: DiGraph<i64, ()>,
+    graph: DiGraph<String, ()>,
 }
 
 impl Workflow {
     pub fn process(&self, data: Value) -> Result<Value> {
-        let context = Context::new(data, self.variables.clone());
+        let context = Context::new(data, self.variables.to_owned());
         let mut bfs = Bfs::new(&self.graph, self.graph.node_indices().next().unwrap());
 
         while let Some(node) = bfs.next(&self.graph) {
-            if self.graph[node] == 0 {
+            if self.graph[node].eq("0") {
                 continue;
             }
 
@@ -106,42 +106,42 @@ impl TryFrom<Value> for Workflow {
         let mut nodes = HashMap::new();
         let mut graph = DiGraph::new();
 
-        let parent_node = graph.add_node(0);
+        let parent_node = graph.add_node("0".to_owned());
 
         for (id, component) in definition.components {
             match component {
                 ComponentDefinition::Condition { definition, .. } => {
                     let condition =
                         Condition::try_from(definition).map_err(WorkflowError::Condition)?; // (1
-                    components.insert(id, Component::Condition(condition));
-                    nodes.insert(id, graph.add_node(id));
+                    components.insert(id.to_owned(), Component::Condition(condition));
+                    nodes.insert(id.to_owned(), graph.add_node(id));
                 }
                 ComponentDefinition::Action { definition, .. } => {
                     let action = Action::try_from(definition).map_err(WorkflowError::Action)?;
-                    components.insert(id, Component::Action(action));
-                    nodes.insert(id, graph.add_node(id));
+                    components.insert(id.to_owned(), Component::Action(action));
+                    nodes.insert(id.to_owned(), graph.add_node(id));
                 }
             }
         }
 
-        for (&component_id, component) in components.iter() {
+        for (component_id, component) in components.iter() {
             match component {
                 Component::Condition(condition) => {
-                    let node = nodes.get(&component_id).unwrap();
-                    for &dependency in &condition.dependencies() {
+                    let node = nodes.get(component_id).unwrap();
+                    for dependency in condition.dependencies() {
                         let dependency_node = nodes.get(&dependency).ok_or_else(|| {
                             WorkflowError::DependencyNotFound {
-                                component_id,
+                                component_id: component_id.to_owned(),
                                 dependency,
                             }
                         })?;
                         graph.add_edge(*dependency_node, *node, ());
                     }
 
-                    for &dependant in &condition.dependants() {
+                    for dependant in condition.dependants() {
                         let dependant_node = nodes.get(&dependant).ok_or_else(|| {
                             WorkflowError::DependantNotFound {
-                                component_id,
+                                component_id: component_id.to_owned(),
                                 dependant,
                             }
                         })?;
@@ -149,11 +149,11 @@ impl TryFrom<Value> for Workflow {
                     }
                 }
                 Component::Action(action) => {
-                    let node = nodes.get(&component_id).unwrap();
-                    for &dependency in &action.dependencies() {
+                    let node = nodes.get(component_id).unwrap();
+                    for dependency in action.dependencies() {
                         let dependency_node = nodes.get(&dependency).ok_or_else(|| {
                             WorkflowError::DependencyNotFound {
-                                component_id,
+                                component_id: component_id.to_owned(),
                                 dependency,
                             }
                         })?;

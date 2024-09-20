@@ -13,122 +13,112 @@ pub fn benchmark(c: &mut Criterion) {
        "id":1,
        "name":"complex_nested",
        "fallbacks":[
-          0
+          "0"
        ],
        "results":{
           "100":[
-             1
+             "1"
           ],
           "300":[
-             2
+             "2"
           ]
        },
        "expressions":[
           {
-             "id":300,
+             "id":"300",
              "type":"logical",
              "operator":"and",
              "expressions":[
                 {
-                   "id":301,
+                   "id":"301",
                    "type":"logical",
                    "operator":"and",
                    "expressions":[
                       {
-                         "id":302,
+                         "id":"302",
                          "type":"comparison",
                          "operator":"greater_than",
                          "operands":[
                             {
                                "type":"data",
-                               "id":7,
                                "name":"first_value",
                                "path":"/first_value"
                             },
                             {
                                "type":"value",
-                               "id":8,
                                "name":"value",
                                "value":40
                             }
                          ]
                       },
                       {
-                         "id":303,
+                         "id":"303",
                          "type":"comparison",
                          "operator":"less_than",
                          "operands":[
                             {
                                "type":"data",
-                               "id":9,
                                "name":"second_value",
                                "path":"/second_value"
                             },
                             {
                                "type":"value",
-                               "id":10,
                                "name":"value",
                                "value":40
                             }
                          ]
                       },
                       {
-                         "id":304,
+                         "id":"304",
                          "type":"comparison",
                          "operator":"equals",
                          "operands":[
                             {
                                "type":"data",
-                               "id":9,
                                "name":"second_value",
                                "path":"/second_value"
                             },
                             {
                                "type":"value",
-                               "id":10,
                                "name":"value",
                                "value":30
                             }
                          ]
                       },
                       {
-                          "id": 305,
+                          "id": "305",
                           "type": "logical",
                           "operator": "or",
                           "expressions": [
                               {
-                                  "id": 306,
+                                  "id": "306",
                                   "type": "comparison",
                                   "operator": "equals",
                                   "operands": [
                                       {
                                           "type": "data",
-                                          "id": 11,
                                           "name": "first_value",
                                           "path": "/first_value"
                                       },
                                       {
                                           "type": "value",
-                                          "id": 12,
                                           "name": "value",
                                           "value": 42
                                       }
                                   ]
                               },
                               {
-                                  "id": 307,
+                                  "id": "307",
                                   "type": "comparison",
                                   "operator": "equals",
                                   "operands": [
                                       {
                                           "type": "data",
-                                          "id": 13,
                                           "name": "second_value",
                                           "path": "/second_value"
                                       },
                                       {
                                           "type": "value",
-                                          "id": 14,
                                           "name": "value",
                                           "value": 30
                                       }
@@ -139,67 +129,61 @@ pub fn benchmark(c: &mut Criterion) {
                    ]
                 },
                 {
-                   "id":304,
+                   "id":"304",
                    "type":"logical",
                    "operator":"or",
                    "expressions":[
                       {
-                         "id":305,
+                         "id":"305",
                          "type":"comparison",
                          "operator":"greater_than",
                          "operands":[
                             {
                                "type":"data",
-                               "id":11,
                                "name":"first_value",
                                "path":"/first_value"
                             },
                             {
                                "type":"value",
-                               "id":12,
                                "name":"value",
                                "value":50
                             }
                          ]
                       },
                       {
-                         "id":306,
+                         "id":"306",
                          "type":"logical",
                          "operator":"and",
                          "expressions":[
                             {
-                               "id":307,
+                               "id":"307",
                                "type":"comparison",
                                "operator":"less_than",
                                "operands":[
                                   {
                                      "type":"data",
-                                     "id":13,
                                      "name":"second_value",
                                      "path":"/second_value"
                                   },
                                   {
                                      "type":"value",
-                                     "id":14,
                                      "name":"value",
                                      "value":50
                                   }
                                ]
                             },
                             {
-                               "id":308,
+                               "id":"308",
                                "type":"comparison",
                                "operator":"greater_than",
                                "operands":[
                                   {
                                      "type":"data",
-                                     "id":15,
                                      "name":"second_value",
                                      "path":"/second_value"
                                   },
                                   {
                                      "type":"value",
-                                     "id":16,
                                      "name":"value",
                                      "value":20
                                   }
@@ -213,110 +197,100 @@ pub fn benchmark(c: &mut Criterion) {
           }
 ,
           {
-             "id":300,
+             "id":"300",
              "type":"logical",
              "operator":"and",
              "expressions":[
                 {
-                   "id":301,
+                   "id":"301",
                    "type":"logical",
                    "operator":"and",
                    "expressions":[
                       {
-                         "id":302,
+                         "id":"302",
                          "type":"comparison",
                          "operator":"greater_than",
                          "operands":[
                             {
                                "type":"data",
-                               "id":7,
                                "name":"first_value",
                                "path":"/first_value"
                             },
                             {
                                "type":"value",
-                               "id":8,
                                "name":"value",
                                "value":40
                             }
                          ]
                       },
                       {
-                         "id":303,
+                         "id":"303",
                          "type":"comparison",
                          "operator":"less_than",
                          "operands":[
                             {
                                "type":"data",
-                               "id":9,
                                "name":"second_value",
                                "path":"/second_value"
                             },
                             {
                                "type":"value",
-                               "id":10,
                                "name":"value",
                                "value":40
                             }
                          ]
                       },
                       {
-                         "id":304,
+                         "id":"304",
                          "type":"comparison",
                          "operator":"equals",
                          "operands":[
                             {
                                "type":"data",
-                               "id":9,
                                "name":"second_value",
                                "path":"/second_value"
                             },
                             {
                                "type":"value",
-                               "id":10,
                                "name":"value",
                                "value":30
                             }
                          ]
                       },
                       {
-                          "id": 305,
+                          "id": "305",
                           "type": "logical",
                           "operator": "or",
                           "expressions": [
                               {
-                                  "id": 306,
+                                  "id": "306",
                                   "type": "comparison",
                                   "operator": "equals",
                                   "operands": [
                                       {
                                           "type": "data",
-                                          "id": 11,
                                           "name": "first_value",
                                           "path": "/first_value"
                                       },
                                       {
                                           "type": "value",
-                                          "id": 12,
                                           "name": "value",
                                           "value": 42
                                       }
                                   ]
                               },
                               {
-                                  "id": 307,
+                                  "id": "307",
                                   "type": "comparison",
                                   "operator": "equals",
                                   "operands": [
                                       {
                                           "type": "data",
-                                          "id": 13,
                                           "name": "second_value",
                                           "path": "/second_value"
                                       },
                                       {
                                           "type": "value",
-                                          "id": 14,
                                           "name": "value",
                                           "value": 30
                                       }
@@ -327,67 +301,61 @@ pub fn benchmark(c: &mut Criterion) {
                    ]
                 },
                 {
-                   "id":304,
+                   "id":"304",
                    "type":"logical",
                    "operator":"or",
                    "expressions":[
                       {
-                         "id":305,
+                         "id":"305",
                          "type":"comparison",
                          "operator":"greater_than",
                          "operands":[
                             {
                                "type":"data",
-                               "id":11,
                                "name":"first_value",
                                "path":"/first_value"
                             },
                             {
                                "type":"value",
-                               "id":12,
                                "name":"value",
                                "value":50
                             }
                          ]
                       },
                       {
-                         "id":306,
+                         "id":"306",
                          "type":"logical",
                          "operator":"and",
                          "expressions":[
                             {
-                               "id":307,
+                               "id":"307",
                                "type":"comparison",
                                "operator":"less_than",
                                "operands":[
                                   {
                                      "type":"data",
-                                     "id":13,
                                      "name":"second_value",
                                      "path":"/second_value"
                                   },
                                   {
                                      "type":"value",
-                                     "id":14,
                                      "name":"value",
                                      "value":50
                                   }
                                ]
                             },
                             {
-                               "id":308,
+                               "id":"308",
                                "type":"comparison",
                                "operator":"greater_than",
                                "operands":[
                                   {
                                      "type":"data",
-                                     "id":15,
                                      "name":"second_value",
                                      "path":"/second_value"
                                   },
                                   {
                                      "type":"value",
-                                     "id":16,
                                      "name":"value",
                                      "value":20
                                   }

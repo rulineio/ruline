@@ -9,9 +9,9 @@ pub enum ConditionError {
     #[error(
         "Children count for logical with id `{id}` is invalid, must be at least 2 and is {childrens_count}"
     )]
-    LogicalChildrenCountInvalid { id: i64, childrens_count: usize },
+    LogicalChildrenCountInvalid { id: String, childrens_count: usize },
     #[error("Comparison with id `{0}` must not have any children")]
-    ComparisonChildrenInvalid(i64),
+    ComparisonChildrenInvalid(String),
     #[error(transparent)]
     Serde(#[from] serde_json::Error),
 }

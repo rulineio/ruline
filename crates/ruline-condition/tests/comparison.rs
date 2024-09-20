@@ -12,14 +12,14 @@ use serde_json::json;
 fn test_greater_than() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 300,
+            "id": "300",
             "type": "logical",
             "operator": "and",
             "expressions": [{
-                "id": 302,
+                "id": "302",
                 "type": "comparison",
                 "operator": "greater_than",
                 "operands": [{
@@ -30,7 +30,7 @@ fn test_greater_than() {
                     "value": 40
                 }]
             }, {
-                "id": 303,
+                "id": "303",
                 "type": "comparison",
                 "operator": "greater_than",
                 "operands": [{
@@ -41,7 +41,7 @@ fn test_greater_than() {
                     "value": 0.004
                 }]
             }, {
-                "id": 304,
+                "id": "304",
                 "type": "comparison",
                 "operator": "greater_than",
                 "operands": [{
@@ -52,7 +52,7 @@ fn test_greater_than() {
                     "value": "abcc"
                 }]
             }, {
-                "id": 305,
+                "id": "305",
                 "type": "comparison",
                 "operator": "greater_than",
                 "operands": [{
@@ -65,21 +65,21 @@ fn test_greater_than() {
             }]
         }
     });
-    assert_comparison!(definition, vec![1]);
+    assert_comparison!(definition, vec!["1"]);
 }
 
 #[test]
 fn test_less_than() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 300,
+            "id": "300",
             "type": "logical",
             "operator": "and",
             "expressions": [{
-                "id": 302,
+                "id": "302",
                 "type": "comparison",
                 "operator": "less_than",
                 "operands": [{
@@ -90,7 +90,7 @@ fn test_less_than() {
                     "value": 40
                 }]
             }, {
-                "id": 303,
+                "id": "303",
                 "type": "comparison",
                 "operator": "less_than",
                 "operands": [{
@@ -101,7 +101,7 @@ fn test_less_than() {
                     "value": 0.00344
                 }]
             }, {
-                "id": 304,
+                "id": "304",
                 "type": "comparison",
                 "operator": "less_than",
                 "operands": [{
@@ -112,7 +112,7 @@ fn test_less_than() {
                     "value": "zzzy"
                 }]
             }, {
-                "id": 305,
+                "id": "305",
                 "type": "comparison",
                 "operator": "less_than",
                 "operands": [{
@@ -125,21 +125,21 @@ fn test_less_than() {
             }]
         }
     });
-    assert_comparison!(definition, vec![1]);
+    assert_comparison!(definition, vec!["1"]);
 }
 
 #[test]
 fn test_equals() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 300,
+            "id": "300",
             "type": "logical",
             "operator": "and",
             "expressions": [{
-                "id": 302,
+                "id": "302",
                 "type": "comparison",
                 "operator": "equals",
                 "operands": [{
@@ -150,7 +150,7 @@ fn test_equals() {
                     "value": 30
                 }]
             }, {
-                "id": 303,
+                "id": "303",
                 "type": "comparison",
                 "operator": "equals",
                 "operands": [{
@@ -161,7 +161,7 @@ fn test_equals() {
                     "value": "foo"
                 }]
             }, {
-                "id": 304,
+                "id": "304",
                 "type": "comparison",
                 "operator": "equals",
                 "operands": [{
@@ -172,7 +172,7 @@ fn test_equals() {
                     "value": [ "foo", "bar" ]
                 }]
             }, {
-                "id": 305,
+                "id": "305",
                 "type": "comparison",
                 "operator": "equals",
                 "operands": [{
@@ -183,7 +183,7 @@ fn test_equals() {
                     "value": { "foo": "bar" }
                 }]
             }, {
-                "id": 306,
+                "id": "306",
                 "type": "comparison",
                 "operator": "equals",
                 "operands": [{
@@ -194,7 +194,7 @@ fn test_equals() {
                     "value": true
                 }]
             }, {
-                "id": 307,
+                "id": "307",
                 "type": "comparison",
                 "operator": "equals",
                 "operands": [{
@@ -208,21 +208,21 @@ fn test_equals() {
             ]
         }
     });
-    assert_comparison!(definition, vec![1]);
+    assert_comparison!(definition, vec!["1"]);
 }
 
 #[test]
 fn test_not_equals() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 300,
+            "id": "300",
             "type": "logical",
             "operator": "and",
             "expressions": [{
-                "id": 302,
+                "id": "302",
                 "type": "comparison",
                 "operator": "not_equals",
                 "operands": [{
@@ -233,7 +233,7 @@ fn test_not_equals() {
                     "value": 40
                 }]
             }, {
-                "id": 303,
+                "id": "303",
                 "type": "comparison",
                 "operator": "not_equals",
                 "operands": [{
@@ -244,7 +244,7 @@ fn test_not_equals() {
                     "value": 30
                 }]
             }, {
-                "id": 304,
+                "id": "304",
                 "type": "comparison",
                 "operator": "not_equals",
                 "operands": [{
@@ -255,7 +255,7 @@ fn test_not_equals() {
                     "value": "bar"
                 }]
             }, {
-                "id": 305,
+                "id": "305",
                 "type": "comparison",
                 "operator": "not_equals",
                 "operands": [{
@@ -266,7 +266,7 @@ fn test_not_equals() {
                     "value": [ "foo", "bar" ]
                 }]
             }, {
-                "id": 306,
+                "id": "306",
                 "type": "comparison",
                 "operator": "not_equals",
                 "operands": [{
@@ -280,21 +280,21 @@ fn test_not_equals() {
             ]
         }
     });
-    assert_comparison!(definition, vec![1]);
+    assert_comparison!(definition, vec!["1"]);
 }
 
 #[test]
 fn test_greater_than_or_equal() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 300,
+            "id": "300",
             "type": "logical",
             "operator": "and",
             "expressions": [{
-                "id": 302,
+                "id": "302",
                 "type": "comparison",
                 "operator": "greater_than_or_equal",
                 "operands": [{
@@ -305,7 +305,7 @@ fn test_greater_than_or_equal() {
                     "value": 40
                 }]
             }, {
-                "id": 303,
+                "id": "303",
                 "type": "comparison",
                 "operator": "greater_than_or_equal",
                 "operands": [{
@@ -316,7 +316,7 @@ fn test_greater_than_or_equal() {
                     "value": 50
                 }]
             }, {
-                "id": 304,
+                "id": "304",
                 "type": "comparison",
                 "operator": "greater_than_or_equal",
                 "operands": [{
@@ -327,7 +327,7 @@ fn test_greater_than_or_equal() {
                     "value": "foo"
                 }]
             }, {
-                "id": 305,
+                "id": "305",
                 "type": "comparison",
                 "operator": "greater_than_or_equal",
                 "operands": [{
@@ -340,21 +340,21 @@ fn test_greater_than_or_equal() {
             }]
         }
     });
-    assert_comparison!(definition, vec![1]);
+    assert_comparison!(definition, vec!["1"]);
 }
 
 #[test]
 fn test_less_than_or_equal() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 300,
+            "id": "300",
             "type": "logical",
             "operator": "and",
             "expressions": [{
-                "id": 302,
+                "id": "302",
                 "type": "comparison",
                 "operator": "less_than_or_equal",
                 "operands": [{
@@ -365,7 +365,7 @@ fn test_less_than_or_equal() {
                     "value": 40
                 }]
             }, {
-                "id": 303,
+                "id": "303",
                 "type": "comparison",
                 "operator": "less_than_or_equal",
                 "operands": [{
@@ -376,7 +376,7 @@ fn test_less_than_or_equal() {
                     "value": 21
                 }]
             }, {
-                "id": 304,
+                "id": "304",
                 "type": "comparison",
                 "operator": "less_than_or_equal",
                 "operands": [{
@@ -387,7 +387,7 @@ fn test_less_than_or_equal() {
                     "value": "foo"
                 }]
             }, {
-                "id": 305,
+                "id": "305",
                 "type": "comparison",
                 "operator": "less_than_or_equal",
                 "operands": [{
@@ -400,21 +400,21 @@ fn test_less_than_or_equal() {
             }]
         }
     });
-    assert_comparison!(definition, vec![1]);
+    assert_comparison!(definition, vec!["1"]);
 }
 
 #[test]
 fn test_contains() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 300,
+            "id": "300",
             "type": "logical",
             "operator": "and",
             "expressions": [{
-                "id": 302,
+                "id": "302",
                 "type": "comparison",
                 "operator": "contains",
                 "operands": [{
@@ -425,7 +425,7 @@ fn test_contains() {
                     "value": ["foo", "bar"]
                 }]
             }, {
-                "id": 303,
+                "id": "303",
                 "type": "comparison",
                 "operator": "contains",
                 "operands": [{
@@ -438,21 +438,21 @@ fn test_contains() {
             }]
         }
     });
-    assert_comparison!(definition, vec![1]);
+    assert_comparison!(definition, vec!["1"]);
 }
 
 #[test]
 fn test_not_contains() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 300,
+            "id": "300",
             "type": "logical",
             "operator": "and",
             "expressions": [{
-                "id": 302,
+                "id": "302",
                 "type": "comparison",
                 "operator": "not_contains",
                 "operands": [{
@@ -463,7 +463,7 @@ fn test_not_contains() {
                     "value": ["foo", "bar"]
                 }]
             }, {
-                "id": 303,
+                "id": "303",
                 "type": "comparison",
                 "operator": "not_contains",
                 "operands": [{
@@ -476,21 +476,21 @@ fn test_not_contains() {
             }]
         }
     });
-    assert_comparison!(definition, vec![1]);
+    assert_comparison!(definition, vec!["1"]);
 }
 
 #[test]
 fn test_not_exists() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 300,
+            "id": "300",
             "type": "logical",
             "operator": "and",
             "expressions": [{
-                "id": 302,
+                "id": "302",
                 "type": "comparison",
                 "operator": "not_exists",
                 "operands": [{
@@ -498,7 +498,7 @@ fn test_not_exists() {
                     "value": null
                 }]
             }, {
-                "id": 303,
+                "id": "303",
                 "type": "comparison",
                 "operator": "not_exists",
                 "operands": [{
@@ -508,21 +508,21 @@ fn test_not_exists() {
             }]
         }
     });
-    assert_comparison!(definition, vec![1]);
+    assert_comparison!(definition, vec!["1"]);
 }
 
 #[test]
 fn test_exists() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 300,
+            "id": "300",
             "type": "logical",
             "operator": "and",
             "expressions": [{
-                "id": 302,
+                "id": "302",
                 "type": "comparison",
                 "operator": "exists",
                 "operands": [{
@@ -539,7 +539,7 @@ fn test_exists() {
                     "value": true
                 }]
             }, {
-                "id": 303,
+                "id": "303",
                 "type": "comparison",
                 "operator": "exists",
                 "operands": [{
@@ -549,21 +549,21 @@ fn test_exists() {
             }]
         }
     });
-    assert_comparison!(definition, vec![1]);
+    assert_comparison!(definition, vec!["1"]);
 }
 
 #[test]
 fn test_empty() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 300,
+            "id": "300",
             "type": "logical",
             "operator": "and",
             "expressions": [{
-                "id": 302,
+                "id": "302",
                 "type": "comparison",
                 "operator": "empty",
                 "operands": [{
@@ -571,7 +571,7 @@ fn test_empty() {
                     "value": []
                 }]
             }, {
-                "id": 303,
+                "id": "303",
                 "type": "comparison",
                 "operator": "empty",
                 "operands": [{
@@ -579,7 +579,7 @@ fn test_empty() {
                     "value": ""
                 }]
             }, {
-                "id": 304,
+                "id": "304",
                 "type": "comparison",
                 "operator": "empty",
                 "operands": [{
@@ -587,7 +587,7 @@ fn test_empty() {
                     "value": {}
                 }]
             }, {
-                "id": 305,
+                "id": "305",
                 "type": "comparison",
                 "operator": "empty",
                 "operands": [{
@@ -597,21 +597,21 @@ fn test_empty() {
             }]
         }
     });
-    assert_comparison!(definition, vec![1]);
+    assert_comparison!(definition, vec!["1"]);
 }
 
 #[test]
 fn test_not_empty() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 300,
+            "id": "300",
             "type": "logical",
             "operator": "and",
             "expressions": [{
-                "id": 302,
+                "id": "302",
                 "type": "comparison",
                 "operator": "not_empty",
                 "operands": [{
@@ -619,7 +619,7 @@ fn test_not_empty() {
                     "value": ["foo"]
                 }]
             }, {
-                "id": 303,
+                "id": "303",
                 "type": "comparison",
                 "operator": "not_empty",
                 "operands": [{
@@ -629,17 +629,17 @@ fn test_not_empty() {
             }]
         }
     });
-    assert_comparison!(definition, vec![1]);
+    assert_comparison!(definition, vec!["1"]);
 }
 
 #[test]
 fn test_equals_operands_amount_invalid() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 302,
+            "id": "302",
             "type": "comparison",
             "operator": "equals",
             "operands": [{
@@ -655,10 +655,10 @@ fn test_equals_operands_amount_invalid() {
 fn test_greater_than_operands_amount_invalid() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 302,
+            "id": "302",
             "type": "comparison",
             "operator": "greater_than",
             "operands": [{
@@ -680,10 +680,10 @@ fn test_greater_than_operands_amount_invalid() {
 fn test_greater_than_operands_empty() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 302,
+            "id": "302",
             "type": "comparison",
             "operator": "greater_than",
             "operands": []
@@ -696,10 +696,10 @@ fn test_greater_than_operands_empty() {
 fn test_greater_than_operand_types_mismatch() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 302,
+            "id": "302",
             "type": "comparison",
             "operator": "greater_than",
             "operands": [{
@@ -719,10 +719,10 @@ fn test_greater_than_operand_types_mismatch() {
 fn test_greater_than_operand_type_invalid() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 302,
+            "id": "302",
             "type": "comparison",
             "operator": "greater_than",
             "operands": [{
@@ -742,10 +742,10 @@ fn test_greater_than_operand_type_invalid() {
 fn test_greater_than_or_equal_operands_amount_invalid() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 302,
+            "id": "302",
             "type": "comparison",
             "operator": "greater_than_or_equal",
             "operands": [{
@@ -767,10 +767,10 @@ fn test_greater_than_or_equal_operands_amount_invalid() {
 fn test_greater_than_or_equal_operands_empty() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 302,
+            "id": "302",
             "type": "comparison",
             "operator": "greater_than_or_equal",
             "operands": []
@@ -783,10 +783,10 @@ fn test_greater_than_or_equal_operands_empty() {
 fn test_greater_than_or_equal_operand_types_mismatch() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 302,
+            "id": "302",
             "type": "comparison",
             "operator": "greater_than_or_equal",
             "operands": [{
@@ -806,10 +806,10 @@ fn test_greater_than_or_equal_operand_types_mismatch() {
 fn test_greater_than_or_equal_operand_type_invalid() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 302,
+            "id": "302",
             "type": "comparison",
             "operator": "greater_than_or_equal",
             "operands": [{
@@ -829,10 +829,10 @@ fn test_greater_than_or_equal_operand_type_invalid() {
 fn test_less_than_operands_amount_invalid() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 302,
+            "id": "302",
             "type": "comparison",
             "operator": "less_than",
             "operands": [{
@@ -855,10 +855,10 @@ fn test_less_than_operands_amount_invalid() {
 fn test_less_than_operands_empty() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 302,
+            "id": "302",
             "type": "comparison",
             "operator": "less_than",
             "operands": []
@@ -871,10 +871,10 @@ fn test_less_than_operands_empty() {
 fn test_less_than_operand_types_mismatch() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 302,
+            "id": "302",
             "type": "comparison",
             "operator": "less_than",
             "operands": [{
@@ -894,10 +894,10 @@ fn test_less_than_operand_types_mismatch() {
 fn test_less_than_operand_type_invalid() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 302,
+            "id": "302",
             "type": "comparison",
             "operator": "less_than",
             "operands": [{
@@ -917,10 +917,10 @@ fn test_less_than_operand_type_invalid() {
 fn test_less_than_or_equal_operands_amount_invalid() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 302,
+            "id": "302",
             "type": "comparison",
             "operator": "less_than_or_equal",
             "operands": [{
@@ -943,10 +943,10 @@ fn test_less_than_or_equal_operands_amount_invalid() {
 fn test_less_than_or_equal_operands_empty() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 302,
+            "id": "302",
             "type": "comparison",
             "operator": "less_than_or_equal",
             "operands": []
@@ -959,10 +959,10 @@ fn test_less_than_or_equal_operands_empty() {
 fn test_less_than_or_equal_operand_types_mismatch() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 302,
+            "id": "302",
             "type": "comparison",
             "operator": "less_than_or_equal",
             "operands": [{
@@ -982,10 +982,10 @@ fn test_less_than_or_equal_operand_types_mismatch() {
 fn test_less_than_or_equal_operand_type_invalid() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 302,
+            "id": "302",
             "type": "comparison",
             "operator": "less_than_or_equal",
             "operands": [{
@@ -1005,10 +1005,10 @@ fn test_less_than_or_equal_operand_type_invalid() {
 fn test_empty_operands_amount_invalid() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 302,
+            "id": "302",
             "type": "comparison",
             "operator": "empty",
             "operands": [{
@@ -1028,10 +1028,10 @@ fn test_empty_operands_amount_invalid() {
 fn test_empty_operands_empty() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 302,
+            "id": "302",
             "type": "comparison",
             "operator": "empty",
             "operands": []
@@ -1044,10 +1044,10 @@ fn test_empty_operands_empty() {
 fn test_contains_operands_amount_invalid() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 302,
+            "id": "302",
             "type": "comparison",
             "operator": "contains",
             "operands": [{
@@ -1063,10 +1063,10 @@ fn test_contains_operands_amount_invalid() {
 fn test_contains_operands_empty() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 302,
+            "id": "302",
             "type": "comparison",
             "operator": "contains",
             "operands": []
@@ -1079,10 +1079,10 @@ fn test_contains_operands_empty() {
 fn test_contains_operand_type_invalid() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 302,
+            "id": "302",
             "type": "comparison",
             "operator": "contains",
             "operands": [{
@@ -1102,10 +1102,10 @@ fn test_contains_operand_type_invalid() {
 fn test_exists_operands_amount_invalid() {
     let definition = json!({
         "type": "binary",
-        "fallbacks": [0],
-        "results": [1],
+        "fallbacks": [ "0" ],
+        "results": [ "1" ],
         "expression": {
-            "id": 302,
+            "id": "302",
             "type": "comparison",
             "operator": "exists",
             "operands": []

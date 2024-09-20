@@ -39,7 +39,7 @@ fn test_get_data_field_not_found() {
 fn test_get_output_field() {
     let context = Context::new(json!({}), DashMap::new());
     context.set_output(
-        30,
+        "30".to_string(),
         json!({
             "foo": {
                 "bar": {
@@ -51,7 +51,7 @@ fn test_get_output_field() {
 
     let definition = json!({
         "type": "output",
-        "output_id": 30,
+        "output_id": "30",
         "path": "/foo/bar/baz"
     });
 
@@ -62,7 +62,7 @@ fn test_get_output_field() {
 fn test_get_output_field_not_found() {
     assert_field_error!({
         "type": "output",
-        "output_id": 30,
+        "output_id": "30",
         "path": "/foo/bar/baz"
     });
 }
