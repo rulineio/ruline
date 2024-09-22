@@ -1,0 +1,11 @@
+*
+!crates/
+!Cargo.toml
+!Cargo.lock
+!ui/src
+!ui/package.json
+!ui/pnpm-lock.yaml
+!ui/postcss.config.cjs
+!ui/rsbuild.config.ts
+!ui/tailwind.config.js
+!ui/tsconfig.json
