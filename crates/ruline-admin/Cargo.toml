@@ -1,0 +1,14 @@
+[package]
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+name              = "ruline-admin"
+readme.workspace  = true
+version           = "0.1.0"
+
+[dependencies]
+anyhow = { workspace = true }
+tokio  = { workspace = true }
+
+axum       = { version = "0.7.6", features = ["macros"] }
+tower-http = { version = "0.6.0", features = ["fs", "compression-gzip"] }

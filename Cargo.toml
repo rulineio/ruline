@@ -6,6 +6,7 @@ members = [
   "crates/ruline-action",
   "crates/ruline-output",
   "crates/ruline-workflow",
+  "crates/ruline-admin",
 ]
 resolver = "2"
 
@@ -36,3 +37,4 @@ serde             = { version = "1.0.204", features = ["derive"] }
 serde_json        = { version = "1.0.121", features = ["unbounded_depth"] }
 serde_stacker     = { version = "0.1.8" }
 thiserror         = { version = "1.0.63" }
+tokio             = { version = "1", features = ["macros", "rt-multi-thread"] }
