@@ -6,7 +6,7 @@ members = [
   "crates/ruline-action",
   "crates/ruline-output",
   "crates/ruline-workflow",
-  "crates/ruline-admin",
+  "crates/ruline-console",
 ]
 resolver = "2"
 

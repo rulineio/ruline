@@ -31,16 +31,16 @@ FROM chef AS planner
 # Prepare the dependencies.
 COPY Cargo.toml Cargo.lock ./
 COPY crates crates
-RUN cargo chef prepare --bin ruline-admin --recipe-path recipe.json
+RUN cargo chef prepare --bin ruline-console --recipe-path recipe.json
 
 FROM chef AS builder
 
 # Build the application.
 COPY --from=planner /app/recipe.json recipe.json
-RUN cargo chef cook --release --bin ruline-admin --recipe-path recipe.json
+RUN cargo chef cook --release --bin ruline-console --recipe-path recipe.json
 COPY Cargo.toml Cargo.lock ./
 COPY crates crates
-RUN cargo build --release --bin ruline-admin
+RUN cargo build --release --bin ruline-console
 
 #
 # --------------------------------------
@@ -52,7 +52,7 @@ WORKDIR /app
 RUN apk add --no-cache openssl ca-certificates
 
 # Copy the built application and the UI.
-COPY --from=builder /app/target/release/ruline-admin /usr/local/bin/
+COPY --from=builder /app/target/release/ruline-console /usr/local/bin/
 COPY --from=ui-builder /ui/dist /app/ui/dist
 
 # Create a user to run the application.
@@ -61,4 +61,4 @@ USER ruline
 
 # Expose the port.
 EXPOSE 8000
-ENTRYPOINT ["/usr/local/bin/ruline-admin"]
+ENTRYPOINT ["/usr/local/bin/ruline-console"]
