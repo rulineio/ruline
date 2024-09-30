@@ -1,10 +1,10 @@
 import * as v from 'valibot';
 
-export const fetchUser = async (): Promise<User> => {
+export async function fetchUser(): Promise<User> {
     const response = await fetch('/users/me');
     const data = await response.json();
     return v.parse(User, data);
-};
+}
 
 const User = v.object({
     email: v.string(),

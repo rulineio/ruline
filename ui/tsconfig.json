@@ -9,8 +9,7 @@
         "isolatedModules": true,
         "resolveJsonModule": true,
         "moduleResolution": "bundler",
-        "useDefineForClassFields": true,
-        "allowImportingTsExtensions": true
+        "useDefineForClassFields": true
     },
     "include": ["src"]
 }

@@ -4,20 +4,26 @@
     "version": "1.0.0",
     "type": "module",
     "scripts": {
-        "build": "rsbuild build",
+        "build": "rsbuild build && pnpm run build:email",
         "dev": "rsbuild dev",
         "format": "prettier --write .",
-        "preview": "rsbuild preview"
+        "preview": "rsbuild preview",
+        "email": "email dev --dir src/emails",
+        "build:email": "email export --dir src/emails --outDir dist/emails"
     },
     "dependencies": {
+        "@hookform/resolvers": "^3.9.0",
         "@tanstack/react-query": "^5.56.2",
         "@tanstack/react-router": "^1.58.3",
         "@tanstack/router-devtools": "^1.58.3",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
-        "valibot": "^0.42.1"
+        "react-hook-form": "^7.53.0",
+        "valibot": "^0.42.1",
+        "zustand": "5.0.0-rc.2"
     },
     "devDependencies": {
+        "@react-email/components": "0.0.25",
         "@rsbuild/core": "^1.0.1",
         "@rsbuild/plugin-react": "^1.0.1",
         "@tanstack/router-plugin": "^1.58.4",
@@ -25,6 +31,7 @@
         "@types/react-dom": "^18.3.0",
         "globals": "^15.9.0",
         "prettier": "^3.3.3",
+        "react-email": "3.0.1",
         "tailwindcss": "^3.4.12",
         "typescript": "^5.5.2",
         "typescript-eslint": "^8.5.0"
