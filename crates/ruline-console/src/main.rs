@@ -8,7 +8,7 @@ async fn main() -> anyhow::Result<()> {
         eprintln!("Failed to load .env file: {}", e);
     }
 
-    let config = envy::from_env::<Config>()?;
+    let config = Config::new()?;
 
     let app = App::new(config).await.map(Arc::new)?;
 

@@ -55,6 +55,9 @@ RUN apk add --no-cache openssl ca-certificates
 COPY --from=builder /app/target/release/ruline-console /usr/local/bin/
 COPY --from=ui-builder /ui/dist /app/ui/dist
 
+# move the emails templates to the right place
+RUN mv /app/ui/dist/emails /app/emails
+
 # Create a user to run the application.
 RUN addgroup -S ruline && adduser -S ruline -G ruline
 USER ruline

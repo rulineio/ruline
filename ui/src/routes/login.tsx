@@ -1,11 +1,10 @@
+import { valibotResolver } from '@hookform/resolvers/valibot';
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import * as v from 'valibot';
 import { useForm } from 'react-hook-form';
 import { login, type LoginForm, LoginSchema } from '../api/login';
-import { valibotResolver } from '@hookform/resolvers/valibot';
-import { create } from 'zustand';
 import { AuthForm } from '../components/AuthForm';
 import { Input } from '../components/Input';
+import { useLinkSentStore } from '../hooks/link';
 
 export const Route = createFileRoute('/login')({
     component: Login,
@@ -18,24 +17,12 @@ export const Route = createFileRoute('/login')({
     },
 });
 
-const useLinkSentStore = create<{
-    linkSent: boolean;
-    email: string;
-    setLink: () => void;
-    setEmail: (email: string) => void;
-}>((set) => ({
-    linkSent: false,
-    email: '',
-    setLink: () => set({ linkSent: true }),
-    setEmail: (email) => set({ email }),
-}));
-
 function Login() {
     const {
         register,
         handleSubmit,
         setError,
-        formState: { errors, disabled },
+        formState: { errors, disabled, isSubmitting },
     } = useForm<LoginForm>({
         resolver: valibotResolver(LoginSchema),
     });
@@ -65,25 +52,35 @@ function Login() {
                     text: 'Don’t have an account?',
                     link: { text: 'Sign up', href: '/signup' },
                 }}
-                linkSent={linkSent}
-                email={email}
-                oauth={{
-                    google: { enabled: true, text: 'Sign in with Google' },
+                magicLink={{
+                    enabled: true,
+                    onSubmit: handleSubmit(submit),
+                    button: {
+                        text: 'Sign In',
+                        disabled: disabled || isSubmitting,
+                    },
+                    form: (
+                        <div className="mb-6">
+                            <Input
+                                name="email"
+                                register={register}
+                                label="Email"
+                                placeholder="john.doe@ruline.io"
+                                error={errors.email?.message}
+                            />
+                        </div>
+                    ),
+                    linkSent,
+                    email,
                 }}
-                onSubmit={handleSubmit(submit)}
-                button={{ text: 'Sign In', disabled }}
+                oauth={{
+                    google: {
+                        enabled: true,
+                        text: 'Sign in with Google',
+                    },
+                }}
                 error={errors.root?.message}
-            >
-                <div className="mb-6">
-                    <Input
-                        name="email"
-                        register={register}
-                        label="Email"
-                        placeholder="john.doe@ruline.io"
-                        error={errors.email?.message}
-                    />
-                </div>
-            </AuthForm>
+            />
         </div>
     );
 }

@@ -35,3 +35,46 @@ impl Session {
         builder::Builder::default()
     }
 }
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct PreSession {
+    pub state: String,
+    pub user: Option<user::User>,
+}
+
+mod pre_builder {
+    use super::*;
+
+    #[derive(Default)]
+    pub struct Builder {
+        state: Option<String>,
+        user: Option<user::User>,
+    }
+
+    impl Builder {
+        #[must_use]
+        pub fn state(mut self, state: String) -> Self {
+            self.state = Some(state);
+            self
+        }
+
+        #[must_use]
+        pub fn user(mut self, user: user::User) -> Self {
+            self.user = Some(user);
+            self
+        }
+
+        pub fn build(self) -> PreSession {
+            PreSession {
+                state: self.state.expect("state is required"),
+                user: self.user,
+            }
+        }
+    }
+}
+
+impl PreSession {
+    pub fn builder() -> pre_builder::Builder {
+        pre_builder::Builder::default()
+    }
+}

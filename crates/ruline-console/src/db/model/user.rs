@@ -21,8 +21,8 @@ mod builder {
     #[derive(Default)]
     pub struct Builder {
         pub email: Option<String>,
-        pub name: Option<String>,
-        pub avatar: Option<String>,
+        pub name: String,
+        pub avatar: String,
     }
 
     impl Builder {
@@ -34,13 +34,13 @@ mod builder {
 
         #[must_use]
         pub fn name(mut self, name: String) -> Self {
-            self.name = Some(name);
+            self.name = name;
             self
         }
 
         #[must_use]
         pub fn avatar(mut self, avatar: String) -> Self {
-            self.avatar = Some(avatar);
+            self.avatar = avatar;
             self
         }
 
@@ -48,8 +48,8 @@ mod builder {
             super::User {
                 id: Ulid::new().to_string(),
                 email: self.email.expect("email is required"),
-                name: self.name.expect("name is required"),
-                avatar: self.avatar.expect("avatar is required"),
+                name: self.name,
+                avatar: self.avatar,
                 status: String::default(),
                 created_at: Utc::now(),
                 updated_at: Utc::now(),

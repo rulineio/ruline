@@ -1,7 +1,7 @@
 use axum::{http, response::IntoResponse};
 use thiserror::Error;
 
-use crate::{cache, client, db};
+use crate::{cache, client, db, template};
 
 #[derive(Debug, Error)]
 pub enum Error {
@@ -19,6 +19,9 @@ pub enum Error {
 
     #[error("Database error: {0}")]
     DatabaseError(#[from] db::error::DatabaseError),
+
+    #[error("Email error: {0}")]
+    EmailError(#[from] template::TemplateError),
 }
 
 impl IntoResponse for Error {

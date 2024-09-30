@@ -14,3 +14,6 @@ target/
 
 # Secret files
 *.secret
+
+# Emails dir
+emails/

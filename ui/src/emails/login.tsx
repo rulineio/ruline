@@ -14,7 +14,7 @@ export default function Email() {
     return (
         <Html lang="en" dir="ltr">
             <Head />
-            <Preview>Your login link for Ruline</Preview>
+            <Preview>Your link for Ruline</Preview>
             <Body
                 style={{
                     backgroundColor: '#ffffff',
@@ -29,7 +29,7 @@ export default function Email() {
                     }}
                 >
                     <Heading style={{ fontSize: '24px' }}>
-                        Your login link for Ruline
+                        Your link for Ruline
                     </Heading>
                     <Section style={{ fontSize: '16px', padding: '16px 0' }}>
                         <Button
