@@ -2,16 +2,18 @@ use super::*;
 
 impl Database {
     pub async fn store_user(&self, user: &user::User) -> Result<user::User> {
-        let res = sqlx::query_as(INSERT)
+        _ = sqlx::query(INSERT)
             .bind(&user.id)
             .bind(&user.email)
             .bind(&user.name)
             .bind(&user.avatar)
-            .fetch_one(&self.pool)
+            .execute(&self.pool)
             .await
             .map_err(DatabaseError::Sqlx)?;
 
-        Ok(res)
+        self.get_user(&user.id)
+            .await?
+            .ok_or(DatabaseError::NotFound.into())
     }
 
     pub async fn get_user(&self, id: &str) -> Result<Option<user::User>> {
@@ -56,12 +58,14 @@ const INSERT: &str = r#"
 "#;
 
 const SELECT: &str = r#"
-    select id, email, status, name, avatar, created_at, updated_at, last_login from users
+    select id, email, status, name, avatar, created_at, updated_at, last_login
+    from users
     where id = ?
 "#;
 
 const SELECT_BY_EMAIL: &str = r#"
-    select id, email, status, name, avatar, created_at, updated_at, last_login from users
+    select id, email, status, name, avatar, created_at, updated_at, last_login
+    from users
     where email = ?
 "#;
 

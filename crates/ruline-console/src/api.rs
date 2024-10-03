@@ -15,6 +15,7 @@ use tower_http::trace::TraceLayer;
 use crate::{error::Error, App, Result};
 
 mod login;
+mod signup;
 mod user;
 
 pub fn router(app: Arc<App>) -> Router {
@@ -22,7 +23,6 @@ pub fn router(app: Arc<App>) -> Router {
     let main_page = tower_http::services::ServeFile::new("ui/dist/index.html");
 
     Router::new()
-        .route("/", get(|| async { Redirect::to("/ui") }))
         .nest("/users", user::router())
         .route_layer(middleware::from_fn_with_state(
             app.clone(),
@@ -30,8 +30,10 @@ pub fn router(app: Arc<App>) -> Router {
         ))
         .nest_service("/static", static_dir)
         .nest_service("/ui", main_page)
+        .route("/", get(|| async { Redirect::to("/ui") }))
         .nest("/login", login::router())
-        .with_state(app)
+        .nest("/signup", signup::router())
+        .with_state(app.clone())
         .layer(TraceLayer::new_for_http())
 }
 

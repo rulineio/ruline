@@ -6,7 +6,7 @@ export const useAuth = () => {
         queryKey: ['user', 'me'],
         queryFn: fetchUser,
         retry: 0,
-        staleTime: Infinity,
+        staleTime: Number.POSITIVE_INFINITY,
     });
 
     return {
