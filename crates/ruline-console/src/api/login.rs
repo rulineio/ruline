@@ -8,16 +8,21 @@ use axum::{
     Json, Router,
 };
 use axum_extra::extract::cookie::{Cookie, CookieJar, SameSite};
-use base64::{prelude::BASE64_STANDARD, Engine};
 use chrono::Duration;
 use serde::Deserialize;
 
 use crate::{
-    cache::session,
-    client::{google, resend},
-    db::user,
+    client::{
+        google::OAuthRequest,
+        resend::{SendEmailRecipient, SendEmailRequest},
+    },
+    domain::{
+        session::Session,
+        user::{User, UserStatus},
+    },
     error::Error,
-    template, util, App, Result,
+    template::{LoginTemplate, Template},
+    util, App, Result,
 };
 
 pub fn router() -> Router<Arc<App>> {
@@ -25,7 +30,7 @@ pub fn router() -> Router<Arc<App>> {
         .route("/", post(login))
         .route("/complete", get(complete))
         .route("/google", get(google_oauth))
-        .route("/google/complete", get(confirm_google_oauth))
+        .route("/google/complete", get(google_oauth_complete))
 }
 
 async fn login(
@@ -39,9 +44,9 @@ async fn login(
         return Err(Error::Unauthorized);
     }
 
-    let pre_sess_id = BASE64_STANDARD.encode(body.email.as_bytes());
+    let pre_sess_id = hex::encode(&body.email);
 
-    if app.cache.get_pre_session(&pre_sess_id).await?.is_some() {
+    if app.cache.get_session(&pre_sess_id).await?.is_some() {
         return Ok((jar, StatusCode::ACCEPTED));
     }
 
@@ -52,29 +57,26 @@ async fn login(
     let state = util::random_string();
     let code = format!("{}.{}", pre_sess_id, state);
 
+    let user = User::builder()
+        .email(body.email.to_owned())
+        .name(String::default())
+        .build();
+
     app.cache
-        .set_pre_session(
+        .set_session(
             &pre_sess_id,
-            &session::PreSession {
-                state,
-                user: Some(
-                    user::User::builder()
-                        .email(body.email.to_owned())
-                        .name(String::default())
-                        .build(),
-                ),
-            },
+            &Session::Unauthenticated { state, user }.into(),
         )
         .await?;
 
-    let template = template::Template::Login(template::LoginTemplate {
+    let template = Template::Login(LoginTemplate {
         url: format!("{}/login/complete?code={}", &app.config.domain, &code),
     });
 
     let _ = resend_client
-        .send_email(&resend::SendEmailRequest {
+        .send_email(&SendEmailRequest {
             from: "Ruline <hello@ruline.io>".to_owned(),
-            to: resend::SendEmailRecipient::Single(body.email),
+            to: SendEmailRecipient::Single(body.email),
             subject: "Login to Ruline".to_owned(),
             html: template.render_email(&app.template_client)?,
             text: template.render_text(),
@@ -97,47 +99,24 @@ async fn complete(
 
     let pre_sess = app
         .cache
-        .get_pre_session(pre_sess_id)
+        .get_session(pre_sess_id)
         .await?
         .ok_or(Error::Unauthorized)?;
 
-    if pre_sess.state != state {
+    let (pre_sess_state, user) = match pre_sess.into() {
+        Session::Unauthenticated { state, user } => (state, user),
+        _ => return Err(Error::Unauthorized),
+    };
+
+    if pre_sess_state != state {
         return Err(Error::Unauthorized);
     }
 
-    app.cache.delete_pre_session(pre_sess_id).await?;
+    app.cache.delete_session(pre_sess_id).await?;
 
-    let user = pre_sess.user.ok_or(Error::Unauthorized)?;
+    let new_user = User::builder().email(user.email).name(user.name).build();
 
-    let user = match app.db.get_user_by_email(&user.email).await? {
-        Some(user) => {
-            app.db.set_last_login(&user.id).await?;
-            user
-        }
-        None => {
-            let user = user::User::builder()
-                .email(user.email)
-                .name(user.name)
-                .build();
-
-            app.db.store_user(&user).await?
-        }
-    };
-
-    let sess_id = util::random_string();
-    let sess = session::Session::builder().user(user).build();
-
-    app.cache.set_session(&sess_id, &sess).await?;
-
-    let cookie = Cookie::build(("sid", sess_id))
-        .same_site(SameSite::Lax)
-        .path("/")
-        .secure(!app.config.is_dev())
-        .http_only(true)
-        .max_age(Duration::days(1).to_std().unwrap().try_into().unwrap())
-        .build();
-
-    Ok((jar.add(cookie), Redirect::to("/ui")))
+    complete_auth(&app, jar, new_user).await
 }
 
 async fn google_oauth(State(app): State<Arc<App>>, jar: CookieJar) -> Result<impl IntoResponse> {
@@ -151,16 +130,16 @@ async fn google_oauth(State(app): State<Arc<App>>, jar: CookieJar) -> Result<imp
     }
 
     app.cache
-        .set_pre_session(
+        .set_session(
             &pre_sess_id,
-            &session::PreSession {
-                state: state.to_owned(),
-                user: None,
-            },
+            &Session::Oauth {
+                state: state.clone(),
+            }
+            .into(),
         )
         .await?;
 
-    let auth_url = google_client.get_oauth_url(&google::OAuthRequest {
+    let auth_url = google_client.get_oauth_url(&OAuthRequest {
         state,
         redirect_uri: format!("{}/login/google/complete", &app.config.domain),
         scope: "openid email profile".to_owned(),
@@ -180,7 +159,7 @@ async fn google_oauth(State(app): State<Arc<App>>, jar: CookieJar) -> Result<imp
     Ok((jar.add(cookie), Redirect::to(&auth_url)))
 }
 
-async fn confirm_google_oauth(
+async fn google_oauth_complete(
     State(app): State<Arc<App>>,
     Query(query): Query<ConfirmGoogleOAuth>,
     jar: CookieJar,
@@ -201,14 +180,18 @@ async fn confirm_google_oauth(
         .value()
         .to_owned();
 
-    let oauth_state = app
+    let pre_sess = app
         .cache
-        .get_pre_session(&pre_sess_id)
+        .get_session(&pre_sess_id)
         .await?
-        .ok_or(Error::Unauthorized)?
-        .state;
+        .ok_or(Error::Unauthorized)?;
 
-    app.cache.delete_pre_session(&pre_sess_id).await?;
+    let oauth_state = match pre_sess.into() {
+        Session::Oauth { state } => state,
+        _ => return Err(Error::Unauthorized),
+    };
+
+    app.cache.delete_session(&pre_sess_id).await?;
 
     if oauth_state != query.state {
         return Err(Error::Unauthorized);
@@ -229,40 +212,67 @@ async fn confirm_google_oauth(
         .await
         .map_err(|_| Error::Unauthorized)?;
 
-    let user = match app.db.get_user_by_email(&user_info.email).await? {
+    let new_user = User::builder()
+        .email(user_info.email)
+        .name(user_info.name)
+        .avatar(user_info.picture)
+        .build();
+
+    complete_auth(&app, jar, new_user).await
+}
+
+async fn complete_auth(
+    app: &Arc<App>,
+    jar: CookieJar,
+    new_user: User,
+) -> Result<(CookieJar, Redirect)> {
+    let user: User = match app.db.get_user_by_email(&new_user.email).await? {
         Some(user) => {
             app.db.set_last_login(&user.id).await?;
             user
         }
-        None => {
-            let user = user::User::builder()
-                .email(user_info.email)
-                .name(user_info.name)
-                .avatar(user_info.picture)
-                .build();
+        None => app.db.store_user(&new_user).await?,
+    };
 
-            app.db.store_user(&user).await?
+    let sess = match user.status {
+        UserStatus::Created => Session::builder().user(user.to_owned()).build(),
+        UserStatus::Active => {
+            let members = app.db.get_members_by_user_id(&user.id).await?;
+
+            match members.is_empty() {
+                true => Session::builder().user(user.to_owned()).build(),
+                false => {
+                    let member = members.into_iter().next().unwrap();
+
+                    let organization = app.db.get_organization(&member.organization_id).await?;
+
+                    Session::builder()
+                        .user(user.to_owned())
+                        .organization(organization)
+                        .member(member)
+                        .build()
+                }
+            }
         }
     };
 
     let sess_id = util::random_string();
-    let sess = session::Session::builder().user(user).build();
 
-    app.cache.set_session(&sess_id, &sess).await?;
+    app.cache.set_session(&sess_id, &sess.into()).await?;
 
     let cookie = Cookie::build(("sid", sess_id))
         .same_site(SameSite::Lax)
         .path("/")
         .secure(!app.config.is_dev())
         .http_only(true)
-        .max_age(Duration::days(1).to_std().unwrap().try_into().unwrap())
+        .max_age(Duration::weeks(1).to_std().unwrap().try_into().unwrap())
         .build();
 
     Ok((jar.add(cookie), Redirect::to("/ui")))
 }
 
 #[derive(Deserialize)]
-pub struct LoginRequest {
+struct LoginRequest {
     pub email: String,
 }
 

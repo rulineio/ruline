@@ -1,7 +1,9 @@
+use crate::domain::user::User;
+
 use super::*;
 
 impl Database {
-    pub async fn store_user(&self, user: &user::User) -> Result<user::User> {
+    pub async fn store_user(&self, user: &User) -> Result<User> {
         _ = sqlx::query(INSERT)
             .bind(&user.id)
             .bind(&user.email)
@@ -16,24 +18,24 @@ impl Database {
             .ok_or(DatabaseError::NotFound.into())
     }
 
-    pub async fn get_user(&self, id: &str) -> Result<Option<user::User>> {
-        let user = sqlx::query_as(SELECT)
+    pub async fn get_user(&self, id: &str) -> Result<Option<User>> {
+        let user: Option<user::User> = sqlx::query_as(SELECT)
             .bind(id)
             .fetch_optional(&self.pool)
             .await
             .map_err(DatabaseError::Sqlx)?;
 
-        Ok(user)
+        Ok(user.map(Into::into))
     }
 
-    pub async fn get_user_by_email(&self, email: &str) -> Result<Option<user::User>> {
-        let user = sqlx::query_as(SELECT_BY_EMAIL)
+    pub async fn get_user_by_email(&self, email: &str) -> Result<Option<User>> {
+        let user: Option<user::User> = sqlx::query_as(SELECT_BY_EMAIL)
             .bind(email)
             .fetch_optional(&self.pool)
             .await
             .map_err(DatabaseError::Sqlx)?;
 
-        Ok(user)
+        Ok(user.map(Into::into))
     }
 
     pub async fn set_last_login(&self, id: &str) -> Result<()> {
@@ -54,7 +56,6 @@ impl Database {
 const INSERT: &str = r#"
     insert into users (id, email, name, avatar)
     values (?, ?, ?, ?)
-    returning id, email, status, name, avatar, created_at, updated_at, last_login
 "#;
 
 const SELECT: &str = r#"

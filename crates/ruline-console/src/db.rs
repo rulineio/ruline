@@ -6,7 +6,7 @@ pub mod error;
 mod model;
 mod query;
 
-pub use model::*;
+use model::*;
 
 pub struct Database {
     pool: sqlx::MySqlPool,

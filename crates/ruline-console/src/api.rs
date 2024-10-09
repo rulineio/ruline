@@ -12,9 +12,11 @@ use axum::{
 use axum_extra::extract::CookieJar;
 use tower_http::trace::TraceLayer;
 
-use crate::{error::Error, App, Result};
+use crate::{domain, error::Error, App, Result};
 
 mod login;
+mod organization;
+mod session;
 mod signup;
 mod user;
 
@@ -23,6 +25,8 @@ pub fn router(app: Arc<App>) -> Router {
     let main_page = tower_http::services::ServeFile::new("ui/dist/index.html");
 
     Router::new()
+        .nest("/session", session::router())
+        .nest("/organizations", organization::router())
         .nest("/users", user::router())
         .route_layer(middleware::from_fn_with_state(
             app.clone(),
@@ -52,7 +56,8 @@ pub async fn authenticate_user(
 
     match sess {
         Some(sess) => {
-            req.extensions_mut().insert(sess);
+            req.extensions_mut()
+                .insert(domain::session::Session::from(sess));
             Ok(next.run(req).await)
         }
         None => Err(Error::Unauthorized),
