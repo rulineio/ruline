@@ -54,7 +54,6 @@ impl Database {
 const INSERT: &str = r#"
     insert into users (id, email, name, avatar)
     values (?, ?, ?, ?)
-    returning id, email, status, name, avatar, created_at, updated_at, last_login
 "#;
 
 const SELECT: &str = r#"

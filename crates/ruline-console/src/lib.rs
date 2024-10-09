@@ -10,6 +10,7 @@ pub mod api;
 pub mod cache;
 pub mod client;
 pub mod db;
+pub mod domain;
 pub mod error;
 pub mod template;
 pub mod util;
