@@ -13,9 +13,7 @@ export async function signup(req: SignupForm): Promise<void> {
     });
 
     if (response.status !== 202) {
-        throw new Error(
-            'Something went wrong while creating your account. Please try again later.',
-        );
+        throw new Error('Something went wrong . Please try again later.');
     }
 }
 
@@ -26,7 +24,7 @@ export const SignupSchema = v.object({
         v.email('Please enter a valid email address'),
     ),
     firstName: v.pipe(
-        v.string(),
+        v.string('Please enter a valid first name'),
         v.nonEmpty('Please enter your first name'),
         v.trim(),
     ),

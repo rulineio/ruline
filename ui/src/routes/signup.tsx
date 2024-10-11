@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 import { signup, type SignupForm, SignupSchema } from '../api/signup';
 import { valibotResolver } from '@hookform/resolvers/valibot';
@@ -8,6 +8,13 @@ import { useLinkSentStore } from '../hooks/link';
 
 export const Route = createFileRoute('/signup')({
     component: Signup,
+    beforeLoad: async ({ context }) => {
+        const { refetch } = context.auth;
+        const { data: session } = await refetch();
+        if (session) {
+            throw redirect({ to: '/' });
+        }
+    },
 });
 
 function Signup() {

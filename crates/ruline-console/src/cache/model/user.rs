@@ -1,17 +1,15 @@
 use chrono::{DateTime, Utc};
-use sqlx::FromRow;
+use serde::{Deserialize, Serialize};
 
 use crate::domain::user;
 
-#[derive(Clone, FromRow)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct User {
     pub id: String,
     pub email: String,
-    pub status: String,
     pub name: String,
+    pub status: String,
     pub avatar: String,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
     pub last_login: DateTime<Utc>,
 }
 
@@ -21,11 +19,9 @@ impl From<user::User> for User {
             id: user.id,
             email: user.email,
             status: user.status.to_string(),
-            name: user.name,
             avatar: user.avatar,
+            name: user.name,
             last_login: user.last_login,
-            created_at: DateTime::default(),
-            updated_at: DateTime::default(),
         }
     }
 }

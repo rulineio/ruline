@@ -1,3 +1,7 @@
 # Lock files
 bun.lockb
+pnpm-lock.yaml
 dist
+
+# Generated files
+*.gen.ts
