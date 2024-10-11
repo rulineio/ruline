@@ -19,6 +19,7 @@ use crate::{
         member::{Member, MemberRole},
         organization::Organization,
         session::Session,
+        user::UserStatus,
     },
     error::Error,
     util, App, Result,
@@ -63,14 +64,11 @@ async fn create_organization(
         .role(MemberRole::Owner)
         .build();
 
+    app.db.store_organization(&organization).await?;
+    app.db.store_member(&member).await?;
     app.db
-        .store_organization(&organization)
-        .await
-        .inspect_err(|e| eprintln!("{:?}", e))?;
-    app.db
-        .store_member(&member)
-        .await
-        .inspect_err(|e| eprintln!("{:?}", e))?;
+        .update_user_status(user.id.as_str(), UserStatus::Active)
+        .await?;
 
     let new_session = Session::Member {
         user,

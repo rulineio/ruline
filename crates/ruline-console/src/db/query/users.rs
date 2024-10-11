@@ -1,4 +1,4 @@
-use crate::domain::user::User;
+use crate::domain::user::{User, UserStatus};
 
 use super::*;
 
@@ -38,8 +38,23 @@ impl Database {
         Ok(user.map(Into::into))
     }
 
-    pub async fn set_last_login(&self, id: &str) -> Result<()> {
+    pub async fn set_user_last_login(&self, id: &str) -> Result<()> {
         let res = sqlx::query(SET_LAST_LOGIN)
+            .bind(id)
+            .execute(&self.pool)
+            .await
+            .map_err(DatabaseError::Sqlx)?;
+
+        if res.rows_affected() == 0 {
+            return Err(DatabaseError::NotFound.into());
+        }
+
+        Ok(())
+    }
+
+    pub async fn update_user_status(&self, id: &str, status: UserStatus) -> Result<()> {
+        let res = sqlx::query(UPDATE_STATUS)
+            .bind(status.to_string())
             .bind(id)
             .execute(&self.pool)
             .await
@@ -73,5 +88,11 @@ const SELECT_BY_EMAIL: &str = r#"
 const SET_LAST_LOGIN: &str = r#"
     update users
     set last_login = now()
+    where id = ?
+"#;
+
+const UPDATE_STATUS: &str = r#"
+    update users
+    set status = ?
     where id = ?
 "#;

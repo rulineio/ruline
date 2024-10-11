@@ -228,7 +228,7 @@ async fn complete_auth(
 ) -> Result<(CookieJar, Redirect)> {
     let user: User = match app.db.get_user_by_email(&new_user.email).await? {
         Some(user) => {
-            app.db.set_last_login(&user.id).await?;
+            app.db.set_user_last_login(&user.id).await?;
             user
         }
         None => app.db.store_user(&new_user).await?,
