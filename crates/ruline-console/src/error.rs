@@ -1,5 +1,6 @@
 use axum::{http, response::IntoResponse};
 use thiserror::Error;
+use tracing::error;
 
 use crate::{cache, client, db, template};
 
@@ -28,7 +29,10 @@ impl IntoResponse for Error {
     fn into_response(self) -> axum::response::Response {
         let status = match self {
             Error::Unauthorized => http::StatusCode::UNAUTHORIZED,
-            _ => http::StatusCode::INTERNAL_SERVER_ERROR,
+            _ => {
+                error!({ error = %self }, "error processing request");
+                http::StatusCode::INTERNAL_SERVER_ERROR
+            }
         };
 
         let body = match status {

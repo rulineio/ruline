@@ -10,6 +10,7 @@ use axum::{
 use axum_extra::extract::cookie::{Cookie, CookieJar, SameSite};
 use chrono::Duration;
 use serde::Deserialize;
+use tracing::warn;
 
 use crate::{
     client::{
@@ -22,7 +23,8 @@ use crate::{
     },
     error::Error,
     template::{LoginTemplate, Template},
-    util, App, Result,
+    util::{self, ResultExt},
+    App, Result,
 };
 
 pub fn router() -> Router<Arc<App>> {
@@ -41,7 +43,7 @@ async fn login(
     let resend_client = app.resend_client.as_ref().ok_or(Error::Unauthorized)?;
 
     if jar.get("sid").is_some() {
-        return Err(Error::Unauthorized);
+        return Ok((jar, StatusCode::ACCEPTED));
     }
 
     let pre_sess_id = hex::encode(&body.email);
@@ -109,6 +111,7 @@ async fn complete(
     };
 
     if pre_sess_state != state {
+        warn!("tried to complete login with invalid state");
         return Err(Error::Unauthorized);
     }
 
@@ -126,7 +129,7 @@ async fn google_oauth(State(app): State<Arc<App>>, jar: CookieJar) -> Result<imp
     let state = util::random_string();
 
     if jar.get("sid").is_some() {
-        return Err(Error::Unauthorized);
+        return Ok((jar, Redirect::to("/ui")));
     }
 
     app.cache
@@ -167,6 +170,7 @@ async fn google_oauth_complete(
     let google_client = app.google_client.as_ref().ok_or(Error::Unauthorized)?;
 
     if query.error.is_some() {
+        warn!({ error = ?query.error }, "Google OAuth error");
         return Err(Error::Unauthorized);
     }
 
@@ -191,9 +195,13 @@ async fn google_oauth_complete(
         _ => return Err(Error::Unauthorized),
     };
 
-    app.cache.delete_session(&pre_sess_id).await?;
+    app.cache
+        .delete_session(&pre_sess_id)
+        .await
+        .log_error("error deleting session")?;
 
     if oauth_state != query.state {
+        warn!("tried to complete Google OAuth with invalid state");
         return Err(Error::Unauthorized);
     }
 
