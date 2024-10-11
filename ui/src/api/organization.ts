@@ -30,7 +30,7 @@ const Organization = v.object({
     id: v.string(),
     name: v.string(),
     status: v.picklist(['active']),
-    avatar: v.string(),
+    logo: v.string(),
 });
 
 export type Organization = v.InferInput<typeof Organization>;

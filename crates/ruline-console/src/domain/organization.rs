@@ -34,7 +34,7 @@ pub struct Organization {
     pub id: String,
     pub name: String,
     pub status: OrganizationStatus,
-    pub avatar: String,
+    pub logo: String,
 }
 
 mod builder {
@@ -45,7 +45,7 @@ mod builder {
     pub struct Builder {
         pub id: Option<String>,
         pub name: Option<String>,
-        pub avatar: Option<String>,
+        pub logo: Option<String>,
         pub status: OrganizationStatus,
     }
 
@@ -61,8 +61,8 @@ mod builder {
             self
         }
 
-        pub fn avatar(mut self, avatar: String) -> Self {
-            self.avatar = Some(avatar);
+        pub fn logo(mut self, logo: String) -> Self {
+            self.logo = Some(logo);
             self
         }
 
@@ -78,7 +78,7 @@ mod builder {
                 id,
                 name: self.name.expect("name is required"),
                 status: self.status,
-                avatar: self.avatar.unwrap_or_default(),
+                logo: self.logo.unwrap_or_default(),
             }
         }
     }

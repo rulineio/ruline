@@ -95,7 +95,7 @@ impl From<Organization> for OrganizationResponse {
             id: organization.id,
             name: organization.name,
             status: organization.status.to_string(),
-            avatar: organization.avatar,
+            avatar: organization.logo,
         }
     }
 }

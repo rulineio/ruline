@@ -7,7 +7,7 @@ pub struct Organization {
     pub id: String,
     pub name: String,
     pub status: String,
-    pub avatar: String,
+    pub logo: String,
 }
 
 impl From<organization::Organization> for Organization {
@@ -16,7 +16,7 @@ impl From<organization::Organization> for Organization {
             id: organization.id,
             name: organization.name,
             status: organization.status.to_string(),
-            avatar: organization.avatar,
+            logo: organization.logo,
         }
     }
 }
@@ -27,7 +27,7 @@ impl From<Organization> for organization::Organization {
             id: organization.id,
             name: organization.name,
             status: organization.status.into(),
-            avatar: organization.avatar,
+            logo: organization.logo,
         }
     }
 }

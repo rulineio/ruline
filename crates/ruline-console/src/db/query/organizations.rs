@@ -7,7 +7,7 @@ impl Database {
         _ = sqlx::query(INSERT)
             .bind(&organization.id)
             .bind(&organization.name)
-            .bind(&organization.avatar)
+            .bind(&organization.logo)
             .execute(&self.pool)
             .await
             .map_err(DatabaseError::Sqlx)?;
@@ -27,12 +27,12 @@ impl Database {
 }
 
 const INSERT: &str = r#"
-    INSERT INTO organizations (id, name, avatar)
+    INSERT INTO organizations (id, name, logo)
     VALUES (?, ?, ?)
 "#;
 
 const SELECT: &str = r#"
-    SELECT id, name, status, avatar, created_at, updated_at
+    SELECT id, name, status, logo, created_at, updated_at
     FROM organizations
     WHERE id = ?
 "#;

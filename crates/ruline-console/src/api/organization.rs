@@ -40,7 +40,7 @@ async fn get_organization(Extension(session): Extension<Session>) -> Result<impl
     Ok(Json(OrganizationResponse {
         id: organization.id,
         name: organization.name,
-        avatar: organization.avatar,
+        logo: organization.logo,
         status: organization.status.to_string(),
     }))
 }
@@ -105,6 +105,6 @@ struct CreateOrganizationRequest {
 struct OrganizationResponse {
     pub id: String,
     pub name: String,
-    pub avatar: String,
+    pub logo: String,
     pub status: String,
 }

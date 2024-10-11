@@ -8,7 +8,7 @@ pub struct Organization {
     pub id: String,
     pub name: String,
     pub status: String,
-    pub avatar: String,
+    pub logo: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
@@ -19,7 +19,7 @@ impl From<organization::Organization> for Organization {
             id: organization.id,
             name: organization.name,
             status: organization.status.to_string(),
-            avatar: organization.avatar,
+            logo: organization.logo,
             created_at: DateTime::default(),
             updated_at: DateTime::default(),
         }
@@ -32,7 +32,7 @@ impl From<Organization> for organization::Organization {
             id: organization.id,
             name: organization.name,
             status: organization.status.into(),
-            avatar: organization.avatar,
+            logo: organization.logo,
         }
     }
 }

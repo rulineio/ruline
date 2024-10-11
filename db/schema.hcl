@@ -57,7 +57,7 @@ table "organizations" {
     type = enum("active")
     default = "active"
   }
-  column "avatar" {
+  column "logo" {
     type = varchar(255)
   }
   column "created_at" {
