@@ -10,8 +10,9 @@ export const Route = createFileRoute('/login')({
     component: Login,
     beforeLoad: async ({ context }) => {
         const { refetch } = context.auth;
-        const { data: user } = await refetch();
-        if (user) {
+        const { data: session } = await refetch();
+        console.log(session);
+        if (session) {
             throw redirect({ to: '/' });
         }
     },

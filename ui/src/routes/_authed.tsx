@@ -4,9 +4,13 @@ export const Route = createFileRoute('/_authed')({
     beforeLoad: async ({ context }) => {
         const { authenticated, refetch } = context.auth;
         if (!authenticated) {
-            const { data: user } = await refetch();
-            if (!user) {
+            const { data: session } = await refetch();
+            if (!session) {
                 throw redirect({ to: '/login' });
+            }
+
+            if (session.type === 'user') {
+                throw redirect({ to: '/onboarding' });
             }
         }
     },
