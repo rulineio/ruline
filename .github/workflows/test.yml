@@ -18,7 +18,28 @@ permissions:
   pull-requests: write
 
 jobs:
-  rust-lint:
+  decision:
+    name: Decide Jobs to Run
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Rust Changes
+        id: rust
+        uses: tj-actions/changed-files@v24
+        with:
+          files: |
+            crates/**/*.rs
+            Cargo.toml
+            Cargo.lock
+
+    outputs:
+      rust: ${{ steps.rust.outputs.any_changed }}
+
+  rust-test:
+    needs: decision
+    if: ${{ needs.decision.outputs.rust == 'true' }}
     name: Rust Test
     runs-on: ubuntu-latest
     steps:

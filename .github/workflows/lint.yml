@@ -18,7 +18,36 @@ permissions:
   pull-requests: write
 
 jobs:
+  decision:
+    name: Decide Jobs to Run
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Rust Changes
+        id: rust
+        uses: tj-actions/changed-files@v24
+        with:
+          files: |
+            crates/**/*.rs
+            Cargo.toml
+            Cargo.lock
+
+      - name: React Changes
+        id: react
+        uses: tj-actions/changed-files@v24
+        with:
+          files: |
+            ui/**
+
+    outputs:
+      rust: ${{ steps.rust.outputs.any_changed }}
+      react: ${{ steps.react.outputs.any_changed }}
+
   rust-lint:
+    needs: decision
+    if: ${{ needs.decision.outputs.rust == 'true' }}
     name: Rust Lint
     runs-on: ubuntu-latest
     steps:
@@ -43,6 +72,8 @@ jobs:
           command: check licenses
 
   rust-clippy:
+    needs: decision
+    if: ${{ needs.decision.outputs.rust == 'true' }}
     name: Rust Clippy
     runs-on: ubuntu-latest
     steps:
@@ -56,3 +87,20 @@ jobs:
 
       - name: Run Clippy
         run: cargo clippy -- -D warnings
+
+  react-lint:
+    needs: decision
+    if: ${{ needs.decision.outputs.react == 'true' }}
+    name: React Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: ./.github/actions/node
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Formatting
+        run: pnpx prettier --check .
