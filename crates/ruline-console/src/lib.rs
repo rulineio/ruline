@@ -5,6 +5,7 @@ use client::{google, resend};
 use db::Database;
 use error::Error;
 use serde::Deserialize;
+use util::ResultExt;
 
 pub mod api;
 pub mod cache;
@@ -28,18 +29,7 @@ pub struct Config {
 
 impl Config {
     pub fn new() -> anyhow::Result<Self> {
-        let config = envy::from_env::<Self>()?;
-
-        // set public environment variables
-        std::env::set_var(
-            "RULINE_PUBLIC_GOOGLE_AUTH_ENABLED",
-            config.google_auth_enabled().to_string(),
-        );
-
-        std::env::set_var(
-            "RULINE_PUBLIC_EMAIL_AUTH_ENABLED",
-            config.email_auth_enabled().to_string(),
-        );
+        let config = envy::from_env::<Self>().log_error("error reading config from env")?;
 
         Ok(config)
     }
@@ -72,11 +62,15 @@ impl App {
     pub async fn new(config: Config) -> Result<Self> {
         let cache = Cache::new(config.cache_url.to_owned())
             .await
-            .map(Arc::new)?;
+            .map(Arc::new)
+            .log_error("error initializing cache")?;
         let db = Database::new(config.database_url.to_owned())
             .await
-            .map(Arc::new)?;
-        let email_template = template::TemplateClient::new().map(Arc::new)?;
+            .map(Arc::new)
+            .log_error("error initializing db")?;
+        let template_client = template::TemplateClient::new()
+            .map(Arc::new)
+            .log_error("error initializing template client")?;
         let google_client = match (
             config.google_client_id.as_ref(),
             config.google_client_secret.as_ref(),
@@ -97,7 +91,7 @@ impl App {
             config,
             cache,
             db,
-            template_client: email_template,
+            template_client,
             google_client: google_client.map(Arc::new),
             resend_client: resend_client.map(Arc::new),
         })

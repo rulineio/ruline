@@ -1,9 +1,9 @@
-use std::sync::Arc;
+use std::{sync::Arc, time::Duration};
 
 use axum::{
     body::Body,
-    extract::State,
-    http::Request,
+    extract::{MatchedPath, State},
+    http::{Request, Response},
     middleware::{self, Next},
     response::{IntoResponse, Redirect},
     routing::get,
@@ -38,10 +38,61 @@ pub fn router(app: Arc<App>) -> Router {
         .nest("/login", login::router())
         .nest("/signup", signup::router())
         .with_state(app.clone())
-        .layer(TraceLayer::new_for_http())
+        .layer(
+            TraceLayer::new_for_http()
+                .make_span_with(|request: &Request<_>| {
+                    let route = request
+                        .extensions()
+                        .get::<MatchedPath>()
+                        .map(MatchedPath::as_str)
+                        .unwrap_or_else(|| request.uri().path());
+
+                    let server_address = request.uri().authority().map(|a| a.as_str());
+
+                    let protocol_str = format!("{:?}", request.version());
+                    let protocol_version = protocol_str.split('/').last();
+
+                    let user_agent = request
+                        .headers()
+                        .get("user-agent")
+                        .map(|v| v.to_str().unwrap_or_default());
+                    let client_address = request
+                        .headers()
+                        .get("x-forwarded-for")
+                        .or_else(|| request.headers().get("x-real-ip"))
+                        .map(|v| v.to_str().unwrap_or_default());
+
+                    tracing::info_span!(
+                        "request",
+                        otel.kind = "server",
+                        otel.name = format!("{} {}", request.method(), route),
+                        http.request.method = ?request.method(),
+                        url.path = request.uri().path(),
+                        url.scheme = request.uri().scheme_str().unwrap_or_default(),
+                        http.route = route,
+                        url.query = request.uri().query().unwrap_or_default(),
+                        server.address = server_address.unwrap_or_default(),
+                        server.port = request.uri().port_u16().unwrap_or_default(),
+                        network.protocol.name = "http",
+                        network.protocol.version = protocol_version.unwrap_or_default(),
+                        user_agent.original = user_agent.unwrap_or_default(),
+                        client.address = client_address.unwrap_or_default(),
+                    )
+                })
+                .on_response(
+                    |response: &Response<_>, latency: Duration, _: &tracing::Span| {
+                        let duration_s = latency.as_micros() as f64 / 1_000_000.;
+                        tracing::info!(
+                            http.server.request.duration = duration_s,
+                            http.response.status_code = response.status().as_u16(),
+                            "finished processing request"
+                        );
+                    },
+                ),
+        )
 }
 
-pub async fn authenticate_user(
+async fn authenticate_user(
     State(app): State<Arc<App>>,
     jar: CookieJar,
     mut req: Request<Body>,
