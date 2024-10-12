@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router';
 import { Alert } from './Alert';
 import { Button, GoogleButton } from './Button';
+import { useSettings } from '../hooks/settings';
 
 export interface AuthFormProps {
     title: string;
@@ -14,12 +15,10 @@ export interface AuthFormProps {
     oauth: {
         google: {
             text: string;
-            enabled: boolean;
         };
     };
     magicLink: {
         email: string;
-        enabled: boolean;
         form: React.ReactNode;
         linkSent: boolean;
         onSubmit: React.FormEventHandler<HTMLFormElement> | undefined;
@@ -34,7 +33,9 @@ export interface AuthFormProps {
 export function AuthForm(props: AuthFormProps) {
     const { title, subtitle, oauth, magicLink, error } = props;
 
-    const oauthEnabled = oauth.google.enabled;
+    const { settings } = useSettings();
+
+    const oauthEnabled = settings?.google_auth_enabled;
 
     const containerClass =
         'flex flex-col justify-center bg-white p-6 md:p-8 rounded-lg shadow-md w-11/12 md:w-1/2 lg:w-1/3 xl:w-1/4';
@@ -76,21 +77,23 @@ export function AuthForm(props: AuthFormProps) {
                 <h2 className="text-sm opacity-75">
                     {subtitle.text}{' '}
                     <span className="font-bold">
-                        <Link to={subtitle.link.href}>
+                        <Link to={subtitle.link.href} preload={false}>
                             {subtitle.link.text}
                         </Link>
                     </span>
                 </h2>
             </div>
-            {oauth.google.enabled && <GoogleButton text={oauth.google.text} />}
-            {oauthEnabled && magicLink.enabled && (
+            {settings?.google_auth_enabled && (
+                <GoogleButton text={oauth.google.text} />
+            )}
+            {oauthEnabled && settings?.magic_link_enabled && (
                 <div className="flex items-center justify-center w-full mt-6 mb-1 opacity-70">
                     <div className="border-t border-gray-300 w-1/2" />
                     <p className="mx-2 text-gray-500 text-sm">or</p>
                     <div className="border-t border-gray-300 w-1/2" />
                 </div>
             )}
-            {magicLink.enabled && magicLink.form && (
+            {settings?.magic_link_enabled && magicLink.form && (
                 <div className="flex flex-col items-center w-full">
                     <form
                         onSubmit={magicLink.onSubmit}

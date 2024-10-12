@@ -50,7 +50,6 @@ function Signup() {
                     link: { text: 'Sign in', href: '/login' },
                 }}
                 magicLink={{
-                    enabled: true,
                     onSubmit: handleSubmit(submit),
                     button: {
                         text: 'Create account',
@@ -89,7 +88,7 @@ function Signup() {
                     email,
                 }}
                 oauth={{
-                    google: { enabled: true, text: 'Sign up with Google' },
+                    google: { text: 'Sign up with Google' },
                 }}
                 error={errors.root?.message}
             />

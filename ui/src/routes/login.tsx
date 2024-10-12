@@ -54,7 +54,6 @@ function Login() {
                     link: { text: 'Sign up', href: '/signup' },
                 }}
                 magicLink={{
-                    enabled: true,
                     onSubmit: handleSubmit(submit),
                     button: {
                         text: 'Sign In',
@@ -76,7 +75,6 @@ function Login() {
                 }}
                 oauth={{
                     google: {
-                        enabled: true,
                         text: 'Sign in with Google',
                     },
                 }}

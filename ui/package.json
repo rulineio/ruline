@@ -9,13 +9,14 @@
         "format": "prettier --write .",
         "preview": "rsbuild preview",
         "email": "email dev --dir src/emails",
-        "build:email": "email export --dir src/emails --outDir dist/emails"
+        "build:email": "email export --dir src/emails --outDir dist/emails",
+        "format:check": "prettier --check ."
     },
     "dependencies": {
         "@hookform/resolvers": "^3.9.0",
-        "@tanstack/react-query": "^5.59.0",
-        "@tanstack/react-router": "^1.58.16",
-        "@tanstack/router-devtools": "^1.58.16",
+        "@tanstack/react-query": "^5.59.11",
+        "@tanstack/react-router": "^1.64.0",
+        "@tanstack/router-devtools": "^1.64.0",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
         "react-hook-form": "^7.53.0",
@@ -24,16 +25,16 @@
     },
     "devDependencies": {
         "@react-email/components": "0.0.25",
-        "@rsbuild/core": "^1.0.9",
+        "@rsbuild/core": "^1.0.13",
         "@rsbuild/plugin-react": "^1.0.3",
-        "@tanstack/router-plugin": "^1.58.12",
+        "@tanstack/router-plugin": "^1.64.0",
         "@types/react": "^18.3.11",
-        "@types/react-dom": "^18.3.0",
-        "globals": "^15.10.0",
+        "@types/react-dom": "^18.3.1",
+        "globals": "^15.11.0",
         "prettier": "^3.3.3",
         "react-email": "3.0.1",
         "tailwindcss": "^3.4.13",
-        "typescript": "^5.6.2",
-        "typescript-eslint": "^8.8.0"
+        "typescript": "^5.6.3",
+        "typescript-eslint": "^8.8.1"
     }
 }
