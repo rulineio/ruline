@@ -79,6 +79,9 @@ allow = [
   "0BSD",
   "Unicode-DFS-2016",
   "BSL-1.0",
+  "BSD-2-Clause-Patent",
+  "CCO-1.0",
+  "MPL-2.0",
 ]
 # The confidence threshold for detecting a license from license text.
 # The higher the value, the more closely the license text must be to the
