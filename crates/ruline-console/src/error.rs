@@ -21,8 +21,8 @@ pub enum Error {
     #[error("Database error: {0}")]
     DatabaseError(#[from] db::error::DatabaseError),
 
-    #[error("Email error: {0}")]
-    EmailError(#[from] template::TemplateError),
+    #[error("Template error: {0}")]
+    TemplateError(#[from] template::TemplateError),
 }
 
 impl IntoResponse for Error {
