@@ -14,8 +14,8 @@ use tracing::warn;
 
 use crate::{
     client::{
+        email::{SendEmailRecipient, SendEmailRequest},
         google::OAuthRequest,
-        resend::{SendEmailRecipient, SendEmailRequest},
     },
     domain::{
         session::Session,
@@ -40,7 +40,7 @@ async fn login(
     jar: CookieJar,
     Json(body): Json<LoginRequest>,
 ) -> Result<impl IntoResponse> {
-    let resend_client = app.resend_client.as_ref().ok_or(Error::Unauthorized)?;
+    let email_client = app.email_client.as_ref().ok_or(Error::Unauthorized)?;
 
     if jar.get("sid").is_some() {
         return Ok((jar, StatusCode::ACCEPTED));
@@ -75,9 +75,8 @@ async fn login(
         url: format!("{}/login/complete?code={}", &app.config.domain, &code),
     });
 
-    let _ = resend_client
+    email_client
         .send_email(&SendEmailRequest {
-            from: "Ruline <hello@ruline.io>".to_owned(),
             to: SendEmailRecipient::Single(body.email),
             subject: "Login to Ruline".to_owned(),
             html: template.render_email(&app.template_client)?,

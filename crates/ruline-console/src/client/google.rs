@@ -1,19 +1,28 @@
+use std::{sync::Arc, time::Duration};
+
 use crate::Result;
 use serde::Deserialize;
 
 use super::error::ClientError;
 
 pub struct Client {
+    client: Arc<reqwest::Client>,
     client_id: String,
     client_secret: String,
 }
 
 impl Client {
-    pub fn new(client_id: String, client_secret: String) -> Self {
-        Self {
+    pub fn new(client_id: String, client_secret: String) -> Result<Self> {
+        let client = reqwest::Client::builder()
+            .timeout(Duration::from_secs(30))
+            .build()
+            .map_err(ClientError::Reqwest)?;
+
+        Ok(Self {
+            client: Arc::new(client),
             client_id,
             client_secret,
-        }
+        })
     }
 
     pub fn get_oauth_url(&self, request: &OAuthRequest) -> String {
@@ -30,8 +39,8 @@ impl Client {
     }
 
     pub async fn get_access_token(&self, code: String, redirect_uri: String) -> Result<String> {
-        let client = reqwest::Client::new();
-        let response = client
+        let response = self
+            .client
             .post("https://oauth2.googleapis.com/token")
             .form(&[
                 ("client_id", &self.client_id),
@@ -53,8 +62,8 @@ impl Client {
     }
 
     pub async fn get_user_info(&self, access_token: String) -> Result<UserInfoResponse> {
-        let client = reqwest::Client::new();
-        let response = client
+        let response = self
+            .client
             .get("https://www.googleapis.com/oauth2/v1/userinfo")
             .header("Authorization", format!("Bearer {}", access_token))
             .send()

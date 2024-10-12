@@ -11,8 +11,8 @@ pub fn router() -> Router<Arc<App>> {
 
 async fn get_settings(app: State<Arc<App>>) -> Result<impl IntoResponse> {
     Ok(Json(SettingsResponse {
-        google_auth_enabled: app.config.google_auth_enabled(),
-        magic_link_enabled: app.config.magic_link_enabled(),
+        google_auth_enabled: app.google_client.is_some(),
+        magic_link_enabled: app.email_client.is_some(),
     }))
 }
 
