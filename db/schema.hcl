@@ -127,6 +127,37 @@ table "members" {
     unique = true
   }
 }
+
+table "projects" {
+  schema = schema.ruline
+  column "id" {
+    type = char(30)
+  }
+  column "organization_id" {
+    type = char(30)
+  }
+  column "name" {
+    type = varchar(255)
+  }
+  column "status" {
+    type = enum("active")
+    default = "active"
+  }
+  column "created_at" {
+    type = timestamp
+    default = sql("CURRENT_TIMESTAMP")
+  }
+  column "updated_at" {
+    type = timestamp
+    default = sql("CURRENT_TIMESTAMP")
+    on_update = sql("CURRENT_TIMESTAMP")
+  }
+
+  primary_key {
+    columns = [column.organization_id, column.id]
+  }
+
+  foreign_key "project_organization_id" {
     columns = [column.organization_id]
     ref_columns = [table.organizations.column.id]
     on_update = NO_ACTION
