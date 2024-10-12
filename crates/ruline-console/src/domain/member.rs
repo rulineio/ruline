@@ -78,6 +78,7 @@ impl From<String> for MemberStatus {
 
 #[derive(Clone)]
 pub struct Member {
+    pub id: String,
     pub user_id: String,
     pub organization_id: String,
     pub role: MemberRole,
@@ -85,10 +86,13 @@ pub struct Member {
 }
 
 mod builder {
+    use ulid::Ulid;
+
     use super::*;
 
     #[derive(Default)]
     pub struct Builder {
+        pub id: Option<String>,
         pub user_id: Option<String>,
         pub organization_id: Option<String>,
         pub role: MemberRole,
@@ -120,8 +124,16 @@ mod builder {
             self
         }
 
+        pub fn id(mut self, id: String) -> Self {
+            self.id = Some(id);
+            self
+        }
+
         pub fn build(self) -> Member {
+            let id = self.id.unwrap_or_else(|| format!("mem_{}", Ulid::new()));
+
             Member {
+                id,
                 user_id: self.user_id.expect("user_id is required"),
                 organization_id: self.organization_id.expect("organization_id is required"),
                 role: self.role,

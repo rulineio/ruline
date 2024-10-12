@@ -77,6 +77,9 @@ table "organizations" {
 
 table "members" {
   schema = schema.ruline
+  column "id" {
+    type = char(30)
+  }
   column "user_id" {
     type = char(30)
   }
@@ -102,17 +105,28 @@ table "members" {
   }
 
   primary_key {
-    columns = [column.user_id, column.organization_id]
+    columns = [column.id]
   }
 
-  foreign_key "user_id" {
+  foreign_key "member_user_id" {
     columns = [column.user_id]
     ref_columns = [table.users.column.id]
     on_update = NO_ACTION
     on_delete = CASCADE
   }
 
-  foreign_key "organization_id" {
+  foreign_key "member_organization_id" {
+    columns = [column.organization_id]
+    ref_columns = [table.organizations.column.id]
+    on_update = NO_ACTION
+    on_delete = CASCADE
+  }
+
+  index "idx_members_user_id_organization_id" {
+    columns = [column.user_id, column.organization_id]
+    unique = true
+  }
+}
     columns = [column.organization_id]
     ref_columns = [table.organizations.column.id]
     on_update = NO_ACTION
