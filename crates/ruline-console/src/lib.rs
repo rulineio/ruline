@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use anyhow::anyhow;
 use cache::Cache;
-use client::{google, resend};
+use client::{email, google};
 use db::Database;
 use error::Error;
 use serde::Deserialize;
@@ -26,6 +26,11 @@ pub struct Config {
     pub google_client_id: Option<String>,
     pub google_client_secret: Option<String>,
     pub resend_api_key: Option<String>,
+    pub smtp_host: Option<String>,
+    pub smtp_port: Option<u16>,
+    pub smtp_user: Option<String>,
+    pub smtp_password: Option<String>,
+    pub email_from: Option<String>,
 }
 
 impl Config {
@@ -44,8 +49,30 @@ impl Config {
             );
         }
 
-        if !self.google_auth_enabled() && !self.magic_link_enabled() {
-            return Err(anyhow!("at least one of oauth or magic link must be enabled").into());
+        if self.smtp_host.is_some() {
+            if self.smtp_port.is_none() {
+                return Err(anyhow!("smtp_port must be set if smtp_host is set").into());
+            }
+
+            if self.smtp_user.is_none() {
+                return Err(anyhow!("smtp_user must be set if smtp_host is set").into());
+            }
+
+            if self.smtp_password.is_none() {
+                return Err(anyhow!("smtp_password must be set if smtp_host is set").into());
+            }
+
+            if self.email_from.is_none() {
+                return Err(anyhow!("email_from must be set if smtp_host is set").into());
+            }
+        }
+
+        if self.resend_api_key.is_some() && self.email_from.is_none() {
+            return Err(anyhow!("email_from must be set if resend_api_key is set").into());
+        }
+
+        if !self.google_client_id.is_some() && !self.email_from.is_some() {
+            return Err(anyhow!("either google oauth or magic link must be enabled").into());
         }
 
         Ok(())
@@ -53,14 +80,6 @@ impl Config {
 
     pub fn is_dev(&self) -> bool {
         self.domain.contains("localhost")
-    }
-
-    pub fn google_auth_enabled(&self) -> bool {
-        self.google_client_id.is_some() && self.google_client_secret.is_some()
-    }
-
-    pub fn magic_link_enabled(&self) -> bool {
-        self.resend_api_key.is_some()
     }
 }
 
@@ -72,7 +91,7 @@ pub struct App {
     pub db: Arc<Database>,
     pub template_client: Arc<template::TemplateClient>,
     pub google_client: Option<Arc<google::Client>>,
-    pub resend_client: Option<Arc<resend::Client>>,
+    pub email_client: Option<Arc<email::Client>>,
 }
 
 impl App {
@@ -95,14 +114,13 @@ impl App {
             (Some(client_id), Some(client_secret)) => Some(google::Client::new(
                 client_id.to_owned(),
                 client_secret.to_owned(),
-            )),
+            )?),
             _ => None,
         };
-
-        let resend_client = config
-            .resend_api_key
-            .as_ref()
-            .map(|api_key| resend::Client::new(api_key.to_owned()));
+        let email_client = match config.email_from.as_ref() {
+            Some(email_from) => Some(email::Client::new(email_from.to_owned(), &config)?),
+            None => None,
+        };
 
         Ok(Self {
             config,
@@ -110,7 +128,7 @@ impl App {
             db,
             template_client,
             google_client: google_client.map(Arc::new),
-            resend_client: resend_client.map(Arc::new),
+            email_client: email_client.map(Arc::new),
         })
     }
 }

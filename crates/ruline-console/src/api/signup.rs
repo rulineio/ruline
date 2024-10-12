@@ -5,7 +5,7 @@ use axum_extra::extract::CookieJar;
 use serde::Deserialize;
 
 use crate::{
-    client::resend::{SendEmailRecipient, SendEmailRequest},
+    client::email::{SendEmailRecipient, SendEmailRequest},
     domain::{session::Session, user::User},
     error::Error,
     template::{LoginTemplate, Template},
@@ -21,7 +21,7 @@ async fn signup(
     jar: CookieJar,
     Json(body): Json<SignupRequest>,
 ) -> Result<impl IntoResponse> {
-    let resend_client = app.resend_client.as_ref().ok_or(Error::Unauthorized)?;
+    let email_client = app.email_client.as_ref().ok_or(Error::Unauthorized)?;
 
     if jar.get("sid").is_some() {
         return Err(Error::Unauthorized);
@@ -52,9 +52,8 @@ async fn signup(
         url: format!("{}/login/complete?code={}", &app.config.domain, &code),
     });
 
-    let _ = resend_client
+    email_client
         .send_email(&SendEmailRequest {
-            from: "Ruline <hello@ruline.io>".to_owned(),
             to: SendEmailRecipient::Single(body.email),
             subject: "Register to Ruline".to_owned(),
             html: template.render_email(&app.template_client)?,
