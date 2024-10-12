@@ -71,7 +71,7 @@ impl Config {
             return Err(anyhow!("email_from must be set if resend_api_key is set").into());
         }
 
-        if !self.google_client_id.is_some() && !self.email_from.is_some() {
+        if self.google_client_id.is_none() && self.email_from.is_none() {
             return Err(anyhow!("either google oauth or magic link must be enabled").into());
         }
 
