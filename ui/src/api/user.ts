@@ -3,7 +3,7 @@ import * as v from 'valibot';
 export async function fetchUser(): Promise<User> {
     const response = await fetch('/users');
 
-    if (response.status !== 200 && response.status !== 401) {
+    if (response.status !== 200) {
         throw new Error(`Error fetching user: ${response.statusText}`);
     }
 

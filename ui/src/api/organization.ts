@@ -3,7 +3,7 @@ import * as v from 'valibot';
 export async function fetchOrganization(): Promise<Organization> {
     const response = await fetch('/organizations');
 
-    if (response.status !== 200 && response.status !== 401) {
+    if (response.status !== 200) {
         throw new Error(`Error fetching organization: ${response.statusText}`);
     }
     const data = await response.json();
