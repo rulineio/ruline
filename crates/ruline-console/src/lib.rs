@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use anyhow::anyhow;
 use cache::Cache;
 use client::{google, resend};
 use db::Database;
@@ -29,9 +30,25 @@ pub struct Config {
 
 impl Config {
     pub fn new() -> anyhow::Result<Self> {
-        let config = envy::from_env::<Self>().log_error("error reading config from env")?;
+        let config = envy::from_env::<Self>()?;
+
+        config.validate()?;
 
         Ok(config)
+    }
+
+    pub fn validate(&self) -> Result<()> {
+        if self.google_client_id.is_some() != self.google_client_secret.is_some() {
+            return Err(
+                anyhow!("google_client_id and google_client_secret must both be set").into(),
+            );
+        }
+
+        if !self.google_auth_enabled() && !self.magic_link_enabled() {
+            return Err(anyhow!("at least one of oauth or magic link must be enabled").into());
+        }
+
+        Ok(())
     }
 
     pub fn is_dev(&self) -> bool {
@@ -42,7 +59,7 @@ impl Config {
         self.google_client_id.is_some() && self.google_client_secret.is_some()
     }
 
-    pub fn email_auth_enabled(&self) -> bool {
+    pub fn magic_link_enabled(&self) -> bool {
         self.resend_api_key.is_some()
     }
 }

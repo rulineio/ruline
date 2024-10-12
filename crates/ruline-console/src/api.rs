@@ -17,6 +17,7 @@ use crate::{domain, error::Error, App, Result};
 mod login;
 mod organization;
 mod session;
+mod settings;
 mod signup;
 mod user;
 
@@ -37,6 +38,7 @@ pub fn router(app: Arc<App>) -> Router {
         .route("/", get(|| async { Redirect::to("/ui") }))
         .nest("/login", login::router())
         .nest("/signup", signup::router())
+        .nest("/settings", settings::router())
         .with_state(app.clone())
         .layer(
             TraceLayer::new_for_http()
