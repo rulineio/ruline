@@ -27,7 +27,7 @@ jobs:
 
       - name: Rust Changes
         id: rust
-        uses: tj-actions/changed-files@v24
+        uses: tj-actions/changed-files@v41
         with:
           files: |
             crates/**/*.rs
@@ -36,7 +36,7 @@ jobs:
 
       - name: React Changes
         id: react
-        uses: tj-actions/changed-files@v24
+        uses: tj-actions/changed-files@v41
         with:
           files: |
             ui/**

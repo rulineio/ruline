@@ -27,7 +27,7 @@ jobs:
 
       - name: Rust Changes
         id: rust
-        uses: tj-actions/changed-files@v24
+        uses: tj-actions/changed-files@v41
         with:
           files: |
             crates/**/*.rs
