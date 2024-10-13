@@ -65,9 +65,10 @@ async fn login(
         .build();
 
     app.cache
-        .set_session(
+        .set_session_exp(
             &pre_sess_id,
             &Session::Unauthenticated { state, user }.into(),
+            5 * 60 * 60,
         )
         .await?;
 

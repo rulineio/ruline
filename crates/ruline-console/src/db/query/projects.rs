@@ -8,7 +8,6 @@ impl Database {
             .bind(&project.id)
             .bind(&project.organization_id)
             .bind(&project.name)
-            .bind(project.status.to_string())
             .execute(&self.pool)
             .await
             .map_err(DatabaseError::Sqlx)?;
@@ -49,7 +48,7 @@ impl Database {
 
 const INSERT: &str = r#"
     INSERT INTO projects (id, organization_id, name)
-    VALUES (?, ?, ?, ?)
+    VALUES (?, ?, ?)
 "#;
 
 const SELECT: &str = r#"
