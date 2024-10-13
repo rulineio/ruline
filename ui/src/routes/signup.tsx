@@ -4,9 +4,11 @@ import { signup, type SignupForm, SignupSchema } from '../api/signup';
 import { valibotResolver } from '@hookform/resolvers/valibot';
 import { Input } from '../components/Input';
 import { AuthForm } from '../components/AuthForm';
-import { useLinkSentStore } from '../hooks/link';
+import { useMagicLinkStore } from '../stores/magic-link';
+import { useShallow } from 'zustand/shallow';
 
 export const Route = createFileRoute('/signup')({
+    preload: false,
     component: Signup,
     beforeLoad: async ({ context }) => {
         const { refetch } = context.auth;
@@ -27,12 +29,19 @@ function Signup() {
         resolver: valibotResolver(SignupSchema),
     });
 
-    const { linkSent, setLink, email, setEmail } = useLinkSentStore();
+    const { sent, setSent, email, setEmail } = useMagicLinkStore(
+        useShallow((state) => ({
+            sent: state.sent,
+            setSent: state.setSent,
+            email: state.email,
+            setEmail: state.setEmail,
+        })),
+    );
 
     const submit = async (data: SignupForm) => {
         try {
             await signup(data);
-            setLink();
+            setSent();
             setEmail(data.email);
         } catch (error) {
             if (error instanceof Error) {
@@ -84,7 +93,7 @@ function Signup() {
                             </div>
                         </div>
                     ),
-                    linkSent,
+                    sent,
                     email,
                 }}
                 oauth={{

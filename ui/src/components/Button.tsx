@@ -1,8 +1,14 @@
+import clsx from 'clsx';
+import { Icon, type IconType } from './Icon';
+
 export interface ButtonProps {
     text: string;
-    color?: 'primary' | 'secondary';
+    color?: 'primary' | 'secondary' | 'transparent';
     size?: 'small' | 'medium' | 'large';
     type?: 'button' | 'submit' | 'reset';
+    style?: 'filled' | 'outlined';
+    icon?: IconType;
+    iconPosition?: 'left' | 'right';
     onClick?: () => void;
     disabled?: boolean;
     className?: string;
@@ -12,30 +18,54 @@ export function Button(props: ButtonProps) {
     const {
         text,
         color = 'primary',
-        size = 'small',
+        size = 'medium',
         type = 'submit',
+        style = 'filled',
+        iconPosition = 'left',
+        icon,
         onClick,
+        disabled,
+        className,
     } = props;
 
-    const colorClasses = {
-        primary: 'bg-blue-500 text-white',
-        secondary: 'bg-gray-500 text-white',
-    };
-
-    const sizeClasses = {
-        small: 'text-sm',
-        medium: 'text-base',
-        large: 'text-lg',
-    };
+    const buttonClass = clsx(
+        'w-full p-3 rounded-md hover:bg-opacity-80 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed',
+        className,
+        {
+            'bg-blue-800 text-gray-200':
+                color === 'primary' && style === 'filled',
+            'bg-gray-800 text-gray-200':
+                color === 'secondary' && style === 'filled',
+            'border border-blue-800 text-blue-800':
+                color === 'primary' && style === 'outlined',
+            'border border-gray-800 text-gray-800':
+                color === 'secondary' && style === 'outlined',
+            'bg-transparent': color === 'transparent',
+            'text-sm': size === 'small',
+            'text-base': size === 'medium',
+            'text-lg': size === 'large',
+            'flex flex-row items-center': !!icon,
+        },
+    );
 
     return (
         <button
-            disabled={props.disabled}
+            disabled={disabled}
             type={type}
-            className={`w-full p-3 rounded-md hover:bg-opacity-80 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed ${colorClasses[color]} ${sizeClasses[size]} ${props.className || ''}`}
+            className={buttonClass}
             onClick={onClick}
         >
-            {text}
+            {icon && iconPosition === 'left' && (
+                <div className="mr-2">
+                    <Icon icon={icon} size={4} />
+                </div>
+            )}
+            <span>{text}</span>
+            {icon && iconPosition === 'right' && (
+                <div className="ml-2">
+                    <Icon icon={icon} size={4} />
+                </div>
+            )}
         </button>
     );
 }

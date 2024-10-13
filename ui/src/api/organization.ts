@@ -12,7 +12,7 @@ export async function fetchOrganization(): Promise<Organization> {
 
 export async function createOrganization(
     organization: CreateOrganizationForm,
-): Promise<void> {
+): Promise<CreateOrganizationResponse> {
     const response = await fetch('/organizations', {
         method: 'POST',
         headers: {
@@ -24,6 +24,9 @@ export async function createOrganization(
     if (response.status !== 201) {
         throw new Error('Something went wrong. Please try again later.');
     }
+
+    const data = await response.json();
+    return v.parse(CreateOrganizationResponse, data);
 }
 
 const Organization = v.object({
@@ -45,4 +48,12 @@ export const CreateOrganizationSchema = v.object({
 
 export type CreateOrganizationForm = v.InferInput<
     typeof CreateOrganizationSchema
+>;
+
+const CreateOrganizationResponse = v.object({
+    project_id: v.string(),
+});
+
+export type CreateOrganizationResponse = v.InferInput<
+    typeof CreateOrganizationResponse
 >;

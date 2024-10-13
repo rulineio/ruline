@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import type { FieldValues, Path, UseFormRegister } from 'react-hook-form';
 
 export interface InputProps<T extends FieldValues>
@@ -12,22 +13,22 @@ export interface InputProps<T extends FieldValues>
 export function Input<T extends FieldValues>(props: InputProps<T>) {
     const { label, name, register, error, className, ...rest } = props;
 
-    const classes = {
-        error: 'ring-red-200 ring-2',
-        normal: 'border border-gray-300 focus:ring-2 focus:ring-blue-500',
-    };
+    const inputClass = clsx(
+        'mt-2 block w-full px-3 py-2 rounded-md shadow-sm focus:outline-none sm:text-sm',
+        className,
+        {
+            'ring-red-200 ring-2': !!error,
+            'border border-gray-300 focus:ring-2 focus:ring-blue-500': !error,
+        },
+    );
 
-    const labelClasses = {
-        error: 'text-red-500',
-        normal: '',
-    };
+    const labelClass = clsx('text-sm', {
+        'text-red-500': !!error,
+    });
 
     return (
         <div className="my-2">
-            <label
-                htmlFor={name}
-                className={`text-sm ${labelClasses[error ? 'error' : 'normal']}`}
-            >
+            <label htmlFor={name} className={labelClass}>
                 {label}
                 {rest.optional && (
                     <span className="text-xs opacity-65"> (optional)</span>
@@ -35,9 +36,7 @@ export function Input<T extends FieldValues>(props: InputProps<T>) {
             </label>
             <input
                 id={name}
-                className={`mt-2 block w-full px-3 py-2 rounded-md shadow-sm focus:outline-none sm:text-sm ${
-                    error ? classes.error : classes.normal
-                } ${className || ''}`}
+                className={inputClass}
                 {...register(name, { required: !rest.optional })}
                 {...rest}
             />

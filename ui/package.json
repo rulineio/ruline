@@ -17,9 +17,11 @@
         "@tanstack/react-query": "^5.59.11",
         "@tanstack/react-router": "^1.64.0",
         "@tanstack/router-devtools": "^1.64.0",
+        "clsx": "^2.1.1",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
         "react-hook-form": "^7.53.0",
+        "remeda": "^2.15.0",
         "valibot": "^0.42.1",
         "zustand": "5.0.0-rc.2"
     },

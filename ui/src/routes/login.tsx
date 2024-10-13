@@ -4,9 +4,11 @@ import { useForm } from 'react-hook-form';
 import { login, type LoginForm, LoginSchema } from '../api/login';
 import { AuthForm } from '../components/AuthForm';
 import { Input } from '../components/Input';
-import { useLinkSentStore } from '../hooks/link';
+import { useMagicLinkStore } from '../stores/magic-link';
+import { useShallow } from 'zustand/shallow';
 
 export const Route = createFileRoute('/login')({
+    preload: false,
     component: Login,
     beforeLoad: async ({ context }) => {
         const { refetch } = context.auth;
@@ -28,12 +30,19 @@ function Login() {
         resolver: valibotResolver(LoginSchema),
     });
 
-    const { linkSent, setLink, email, setEmail } = useLinkSentStore();
+    const { sent, setSent, email, setEmail } = useMagicLinkStore(
+        useShallow((state) => ({
+            sent: state.sent,
+            setSent: state.setSent,
+            email: state.email,
+            setEmail: state.setEmail,
+        })),
+    );
 
     const submit = async (data: LoginForm) => {
         try {
             await login(data);
-            setLink();
+            setSent();
             setEmail(data.email);
         } catch (e: unknown) {
             if (e instanceof Error) {
@@ -70,7 +79,7 @@ function Login() {
                             />
                         </div>
                     ),
-                    linkSent,
+                    sent,
                     email,
                 }}
                 oauth={{
