@@ -18,6 +18,7 @@ use crate::{
     domain::{
         member::{Member, MemberRole},
         organization::Organization,
+        project::Project,
         session::Session,
         user::UserStatus,
     },
@@ -63,12 +64,17 @@ async fn create_organization(
         .user_id(user.id.to_owned())
         .role(MemberRole::Owner)
         .build();
+    let project = Project::builder()
+        .organization_id(organization.id.to_owned())
+        .name("Default".to_owned())
+        .build();
 
     app.db.store_organization(&organization).await?;
     app.db.store_member(&member).await?;
     app.db
-        .update_user_status(user.id.as_str(), UserStatus::Active)
+        .update_user_status(&user.id, UserStatus::Active)
         .await?;
+    app.db.store_project(&project).await?;
 
     let new_session = Session::Member {
         user,
@@ -93,12 +99,13 @@ async fn create_organization(
         .max_age(Duration::weeks(1).to_std().unwrap().try_into().unwrap())
         .build();
 
-    Ok((jar.remove("sid").add(cookie), StatusCode::CREATED))
-}
-
-#[derive(Deserialize)]
-struct CreateOrganizationRequest {
-    pub name: String,
+    Ok((
+        StatusCode::CREATED,
+        jar.remove("sid").add(cookie),
+        Json(CreateOrganizationResponse {
+            project_id: project.id,
+        }),
+    ))
 }
 
 #[derive(Serialize)]
@@ -107,4 +114,14 @@ struct OrganizationResponse {
     pub name: String,
     pub logo: String,
     pub status: String,
+}
+
+#[derive(Deserialize)]
+struct CreateOrganizationRequest {
+    pub name: String,
+}
+
+#[derive(Serialize)]
+struct CreateOrganizationResponse {
+    pub project_id: String,
 }

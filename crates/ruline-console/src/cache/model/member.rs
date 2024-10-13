@@ -4,6 +4,7 @@ use crate::domain::member;
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct Member {
+    pub id: String,
     pub organization_id: String,
     pub user_id: String,
     pub role: String,
@@ -13,6 +14,7 @@ pub struct Member {
 impl From<member::Member> for Member {
     fn from(member: member::Member) -> Self {
         Self {
+            id: member.id,
             organization_id: member.organization_id,
             user_id: member.user_id,
             role: member.role.to_string(),
@@ -24,6 +26,7 @@ impl From<member::Member> for Member {
 impl From<Member> for member::Member {
     fn from(member: Member) -> Self {
         Self {
+            id: member.id,
             organization_id: member.organization_id,
             user_id: member.user_id,
             role: member.role.into(),

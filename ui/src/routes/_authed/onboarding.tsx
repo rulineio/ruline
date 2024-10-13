@@ -33,8 +33,12 @@ function Onboarding() {
 
     const submit = async (data: CreateOrganizationForm) => {
         try {
-            await createOrganization(data);
-            navigate({ to: '/' });
+            const res = await createOrganization(data);
+            navigate({
+                to: '/projects/$projectId',
+                params: { projectId: res.project_id },
+                replace: true,
+            });
         } catch (error) {
             if (error instanceof Error) {
                 setError('root', { message: error.message });
@@ -54,7 +58,6 @@ function Onboarding() {
                             register={register}
                             label="Name"
                             placeholder="Ruline"
-                            optional
                             error={errors.name?.message}
                         />
                     </div>

@@ -20,7 +20,7 @@ export interface AuthFormProps {
     magicLink: {
         email: string;
         form: React.ReactNode;
-        linkSent: boolean;
+        sent: boolean;
         onSubmit: React.FormEventHandler<HTMLFormElement> | undefined;
         button: {
             text: string;
@@ -32,15 +32,12 @@ export interface AuthFormProps {
 
 export function AuthForm(props: AuthFormProps) {
     const { title, subtitle, oauth, magicLink, error } = props;
-
     const { settings } = useSettings();
-
     const oauthEnabled = settings?.google_auth_enabled;
-
     const containerClass =
         'flex flex-col justify-center bg-white p-6 md:p-8 rounded-lg shadow-md w-11/12 md:w-1/2 lg:w-1/3 xl:w-1/4';
 
-    if (magicLink.linkSent) {
+    if (magicLink.sent) {
         return (
             <div className={containerClass}>
                 <div className="space-y-6 text-center">
@@ -77,7 +74,7 @@ export function AuthForm(props: AuthFormProps) {
                 <h2 className="text-sm opacity-75">
                     {subtitle.text}{' '}
                     <span className="font-bold">
-                        <Link to={subtitle.link.href} preload={false}>
+                        <Link to={subtitle.link.href}>
                             {subtitle.link.text}
                         </Link>
                     </span>

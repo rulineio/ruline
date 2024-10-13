@@ -9,6 +9,9 @@ pub enum Error {
     #[error("unauthorized")]
     Unauthorized,
 
+    #[error("bad request")]
+    BadRequest,
+
     #[error(transparent)]
     Anyhow(#[from] anyhow::Error),
 
@@ -29,6 +32,7 @@ impl IntoResponse for Error {
     fn into_response(self) -> axum::response::Response {
         let status = match self {
             Error::Unauthorized => http::StatusCode::UNAUTHORIZED,
+            Error::BadRequest => http::StatusCode::BAD_REQUEST,
             _ => {
                 error!({ error = %self }, "error processing request");
                 http::StatusCode::INTERNAL_SERVER_ERROR
@@ -37,6 +41,7 @@ impl IntoResponse for Error {
 
         let body = match status {
             http::StatusCode::UNAUTHORIZED => "Unauthorized",
+            http::StatusCode::BAD_REQUEST => "Bad Request",
             _ => "Internal Server Error",
         };
 

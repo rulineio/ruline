@@ -6,11 +6,13 @@ const SESSION_KEY: &str = "session";
 
 impl Cache {
     pub async fn set_session(&self, id: &str, sess: &session::Session) -> Result<()> {
+        self.set_session_exp(id, sess, 7 * 24 * 60 * 60).await
+    }
+
+    pub async fn set_session_exp(&self, id: &str, sess: &session::Session, exp: u64) -> Result<()> {
         let mut con = self.client.to_owned();
         let str_sess = serde_json::to_string(&sess).map_err(CacheError::Serde)?;
-        let res: Result<(), RedisError> = con
-            .set_ex(session_key(id), str_sess, 7 * 24 * 60 * 60)
-            .await;
+        let res: Result<(), RedisError> = con.set_ex(session_key(id), str_sess, exp).await;
         Ok(res.map_err(CacheError::Redis)?)
     }
 

@@ -16,6 +16,7 @@ use crate::{domain, error::Error, App, Result};
 
 mod login;
 mod organization;
+mod project;
 mod session;
 mod settings;
 mod signup;
@@ -29,6 +30,7 @@ pub fn router(app: Arc<App>) -> Router {
         .nest("/session", session::router())
         .nest("/organizations", organization::router())
         .nest("/users", user::router())
+        .nest("/projects", project::router())
         .route_layer(middleware::from_fn_with_state(
             app.clone(),
             authenticate_user,

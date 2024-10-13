@@ -9,7 +9,7 @@ export async function login(req: LoginForm): Promise<void> {
         body: JSON.stringify({ email: req.email }),
     });
 
-    if (response.status !== 202 && response.status !== 401) {
+    if (response.status !== 202) {
         throw new Error('Something went wrong. Please try again later.');
     }
 }
