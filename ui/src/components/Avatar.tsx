@@ -1,5 +1,5 @@
-import * as R from 'remeda';
 import clsx from 'clsx';
+import * as R from 'remeda';
 
 export type AvatarProps = {
     size?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
@@ -29,11 +29,11 @@ export function Avatar(props: AvatarProps) {
         'size-8': size === 8,
         'size-9': size === 9,
         'size-10': size === 10,
-        'flex items-center justify-center bg-blue-500 text-white': !src,
+        'flex items-center justify-center bg-accent text-accent-text': !src,
     });
 
     if (src) {
-        return <img src={src} alt={name} className={avatarClass} />;
+        return <img src={src} alt={name || 'avatar'} className={avatarClass} />;
     }
 
     if (name) {

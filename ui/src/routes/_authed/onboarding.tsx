@@ -1,13 +1,13 @@
-import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
-import { useForm } from 'react-hook-form';
 import {
     createOrganization,
     CreateOrganizationSchema,
     type CreateOrganizationForm,
-} from '../../api/organization';
+} from '@api/organization';
+import { Input } from '@components/Input';
+import { OnboardingForm } from '@components/OnboardingForm';
 import { valibotResolver } from '@hookform/resolvers/valibot';
-import { OnboardingForm } from '../../components/OnboardingForm';
-import { Input } from '../../components/Input';
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
+import { useForm } from 'react-hook-form';
 
 export const Route = createFileRoute('/_authed/onboarding')({
     component: Onboarding,
@@ -35,7 +35,7 @@ function Onboarding() {
         try {
             const res = await createOrganization(data);
             navigate({
-                to: '/projects/$projectId',
+                to: '/project/$projectId',
                 params: { projectId: res.project_id },
                 replace: true,
             });
@@ -47,7 +47,7 @@ function Onboarding() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-blue-800">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-background">
             <OnboardingForm
                 title="Create an Organization"
                 onSubmit={handleSubmit(submit)}

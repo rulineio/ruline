@@ -1,23 +1,23 @@
 import * as v from 'valibot';
 
-export async function signup(req: SignupForm): Promise<void> {
-    const response = await fetch('/signup', {
+export async function inviteMember(member: InviteMemberForm): Promise<void> {
+    const response = await fetch('/invitations', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            email: req.email,
-            name: `${req.firstName} ${req.lastName}`,
+            email: member.email,
+            role: member.role,
+            name: `${member.firstName} ${member.lastName}`,
         }),
     });
 
-    if (response.status !== 202) {
-        throw new Error('Something went wrong . Please try again later.');
+    if (response.status !== 201) {
+        throw new Error('Something went wrong. Please try again later.');
     }
 }
-
-export const SignupSchema = v.object({
+export const InviteMemberSchema = v.object({
     email: v.pipe(
         v.string('Please enter a valid email address'),
         v.nonEmpty('Please enter your email address'),
@@ -29,5 +29,6 @@ export const SignupSchema = v.object({
         v.trim(),
     ),
     lastName: v.optional(v.pipe(v.string(), v.trim())),
+    role: v.optional(v.picklist(['admin', 'editor', 'viewer']), 'viewer'),
 });
-export type SignupForm = v.InferInput<typeof SignupSchema>;
+export type InviteMemberForm = v.InferInput<typeof InviteMemberSchema>;

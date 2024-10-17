@@ -21,5 +21,4 @@ export const LoginSchema = v.object({
         v.email('Please enter a valid email address'),
     ),
 });
-
 export type LoginForm = v.InferInput<typeof LoginSchema>;

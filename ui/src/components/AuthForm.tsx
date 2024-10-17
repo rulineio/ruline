@@ -1,7 +1,7 @@
+import { useSettings } from '@hooks/settings';
 import { Link } from '@tanstack/react-router';
 import { Alert } from './Alert';
 import { Button, GoogleButton } from './Button';
-import { useSettings } from '../hooks/settings';
 
 export interface AuthFormProps {
     title: string;
@@ -35,7 +35,7 @@ export function AuthForm(props: AuthFormProps) {
     const { settings } = useSettings();
     const oauthEnabled = settings?.google_auth_enabled;
     const containerClass =
-        'flex flex-col justify-center bg-white p-6 md:p-8 rounded-lg shadow-md w-11/12 md:w-1/2 lg:w-1/3 xl:w-1/4';
+        'flex flex-col justify-center bg-surface text-surface-text p-6 md:p-8 rounded-lg shadow-md w-11/12 md:w-1/2 lg:w-1/3 xl:w-1/4';
 
     if (magicLink.sent) {
         return (
@@ -44,14 +44,14 @@ export function AuthForm(props: AuthFormProps) {
                     <h1 className="text-2xl font-bold mb-4">
                         Check your inbox
                     </h1>
-                    <p className="text-gray-500 text-center px-4">
+                    <p className="text-primary-text text-center px-4">
                         Use the link we sent to{' '}
-                        <span className="font-bold text-blue-500">
+                        <span className="font-bold text-accent">
                             {magicLink.email}
                         </span>{' '}
                         to continue!
                     </p>
-                    <p className="text-gray-500 text-center px-4 text-xs">
+                    <p className="text-primary-text text-opacity-60 text-center px-4 text-xs">
                         If you don't see the email, check your spam folder or
                         contact us{' '}
                         <a
@@ -85,9 +85,9 @@ export function AuthForm(props: AuthFormProps) {
             )}
             {oauthEnabled && settings?.magic_link_enabled && (
                 <div className="flex items-center justify-center w-full mt-6 mb-1 opacity-70">
-                    <div className="border-t border-gray-300 w-1/2" />
-                    <p className="mx-2 text-gray-500 text-sm">or</p>
-                    <div className="border-t border-gray-300 w-1/2" />
+                    <div className="border-t border-surface-text w-1/2" />
+                    <p className="mx-2 text-primary-text text-sm">or</p>
+                    <div className="border-t border-surface-text w-1/2" />
                 </div>
             )}
             {settings?.magic_link_enabled && magicLink.form && (
@@ -102,6 +102,7 @@ export function AuthForm(props: AuthFormProps) {
                                 disabled={magicLink.button.disabled}
                                 type="submit"
                                 text={magicLink.button.text}
+                                size="small"
                             />
                         </div>
                     </form>
