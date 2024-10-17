@@ -38,7 +38,7 @@ async fn signup(
 
     let user = User::builder()
         .email(body.email.to_owned())
-        .name(body.name.clone())
+        .name(body.name.to_owned())
         .build();
 
     app.cache
