@@ -32,7 +32,7 @@ export function Button(props: ButtonProps) {
         'p-3 rounded-md hover:bg-opacity-80 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed',
         className,
         {
-            'w-full': className && !className.includes('w-'),
+            'w-full': !className || !className.includes('w-'),
             'ring-1 ring-inset hover:ring-2': style === 'outlined',
             'bg-primary text-primary-text':
                 color === 'primary' && style === 'filled',
