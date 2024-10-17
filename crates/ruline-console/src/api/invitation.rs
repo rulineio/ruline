@@ -15,6 +15,7 @@ use chrono::Duration;
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    client::email::{SendEmailRecipient, SendEmailRequest},
     domain::{
         invitation::{Invitation, InvitationStatus},
         member::{Member, MemberRole, MemberStatus},
@@ -22,6 +23,7 @@ use crate::{
         user::{User, UserStatus},
     },
     error::Error,
+    template::{InvitationTemplate, Template},
     util, App, Result,
 };
 
@@ -38,12 +40,12 @@ async fn create_invitation(
     Extension(session): Extension<Session>,
     Json(body): Json<CreateInvitationRequest>,
 ) -> Result<impl IntoResponse> {
-    let (role, organization_id) = match session {
+    let (role, organization_id, organization_name) = match session {
         Session::Member {
             member,
             organization,
             ..
-        } => (member.role, organization.id),
+        } => (member.role, organization.id, organization.name),
         _ => return Err(Error::Unauthorized),
     };
 
@@ -72,6 +74,22 @@ async fn create_invitation(
     app.db.store_member(&member, &mut trx).await?;
     app.db.store_invitation(&invitation, &mut trx).await?;
     app.db.commit(trx).await?;
+
+    let template = Template::Invitation(InvitationTemplate {
+        organization: organization_name,
+        url: app.config.domain.to_owned(),
+    });
+
+    if let Some(email_client) = app.email_client.as_ref() {
+        email_client
+            .send_email(&SendEmailRequest {
+                to: SendEmailRecipient::Single(body.email),
+                subject: "Invitation to Ruline".to_owned(),
+                html: template.render_email(&app.template_client)?,
+                text: template.render_text(),
+            })
+            .await?;
+    }
 
     Ok(StatusCode::CREATED)
 }

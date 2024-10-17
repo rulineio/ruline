@@ -74,6 +74,7 @@ async fn login(
 
     let template = Template::Login(LoginTemplate {
         url: format!("{}/login/complete?code={}", &app.config.domain, &code),
+        label: "Log in".to_owned(),
     });
 
     email_client
