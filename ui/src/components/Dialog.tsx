@@ -26,16 +26,19 @@ export function Dialog(props: DialogProps) {
         'flex items-center justify-between p-4 border-b border-surface-container',
         {
             'border-b-0': props.variant === 'popup',
+            'p-12': props.variant === 'popup',
         },
     );
     const bodyClass = clsx({
         'p-4': props.variant !== 'form',
         'p-3 sm:p-8': props.variant === 'form',
+        hidden: !props.content && !props.form,
     });
     const footerClass = clsx(
-        'flex items-center justify-end p-4 border-t border-surface-container',
+        'flex items-center justify-end p-4 border-t border-surface-container space-x-4',
         {
             'border-t-0': props.variant === 'popup',
+            'p-8': props.variant === 'popup',
             hidden: !props.buttons || props.variant === 'form',
         },
     );
@@ -54,7 +57,7 @@ export function Dialog(props: DialogProps) {
             >
                 <div className="flex items-center text-center justify-center min-h-screen">
                     <div
-                        className="relative transform rounded-lg bg-surface text-left"
+                        className="relative transform rounded-lg bg-surface text-left text-surface-text"
                         onClick={(e) => e.stopPropagation()}
                         onKeyUp={(e) => e.stopPropagation()}
                     >

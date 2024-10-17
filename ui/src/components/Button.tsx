@@ -3,7 +3,7 @@ import { Icon, type IconType } from './Icon';
 
 export interface ButtonProps {
     text: string;
-    color?: 'primary' | 'secondary' | 'accent' | 'transparent';
+    color?: 'primary' | 'secondary' | 'accent' | 'transparent' | 'error';
     size?: 'small' | 'medium' | 'large';
     type?: 'button' | 'submit' | 'reset';
     variant?: 'filled' | 'outlined';
@@ -45,10 +45,13 @@ export function Button(props: ButtonProps) {
                 color === 'accent' && style === 'filled',
             'border border-accent text-accent ring-accent':
                 color === 'accent' && style === 'outlined',
+            'bg-error text-error-text': color === 'error' && style === 'filled',
+            'border border-error text-error ring-error':
+                color === 'error' && style === 'outlined',
             'bg-transparent': color === 'transparent',
-            'text-sm': size === 'small',
-            'text-base': size === 'medium',
-            'text-lg': size === 'large',
+            'text-xs': size === 'small',
+            'text-sm': size === 'medium',
+            'text-md': size === 'large',
             'flex flex-row items-center': !!icon,
         },
     );

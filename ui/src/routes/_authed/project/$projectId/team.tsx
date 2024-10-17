@@ -55,6 +55,7 @@ function Team() {
         left: 'error',
         removed: 'error',
         invited: 'warning',
+        declined: 'error',
     };
     const items: ListItem[] = [];
     if (organizationMembers) {

@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { Avatar, type AvatarProps } from './Avatar';
 import { Badge, type BadgeProps } from './Badge';
 
@@ -12,15 +13,21 @@ export interface ListItem {
 
 export interface ListProps {
     items: ListItem[];
+    className?: string;
 }
 
 export function List(props: ListProps) {
-    const { items } = props;
+    const { items, className } = props;
+
+    const listClass = clsx('flex flex-col space-y-6 w-full', className);
 
     return (
-        <ul className="flex flex-col space-y-6 w-full">
+        <ul className={listClass}>
             {items.map((item) => (
-                <li key={item.id} className="flex flex-row justify-between">
+                <li
+                    key={item.id}
+                    className="flex flex-row justify-between items-center"
+                >
                     <div className="flex items-center space-x-3">
                         {item.avatar && <Avatar {...item.avatar} />}
                         <div>
@@ -33,14 +40,14 @@ export function List(props: ListProps) {
                         </div>
                     </div>
                     {item.badges && (
-                        <div className="mt-2 flex space-x-2">
+                        <div className="space-x-2 flex flex-row items-center">
                             {item.badges.map((badge) => (
                                 <Badge key={badge.label} {...badge} />
                             ))}
                         </div>
                     )}
                     {item.actions && (
-                        <div className="mt-2 flex space-x-2">
+                        <div className="space-x-2 flex flex-row items-center">
                             {item.actions.map((action) => (
                                 <div key={`action_${action.id}`}>
                                     {action.action}
