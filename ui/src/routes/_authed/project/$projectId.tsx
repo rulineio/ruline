@@ -1,7 +1,7 @@
+import { Sidebar } from '@components/Sidebar';
 import { createFileRoute, Outlet } from '@tanstack/react-router';
-import { Sidebar } from '../../../components/Sidebar';
 
-export const Route = createFileRoute('/_authed/projects/$projectId')({
+export const Route = createFileRoute('/_authed/project/$projectId')({
     component: Layout,
 });
 
@@ -11,7 +11,7 @@ function Layout() {
     return (
         <>
             <Sidebar projectId={projectId} />
-            <main className="md:ml-48">
+            <main className="md:ml-48 bg-background min-h-screen text-background-text">
                 <Outlet />
             </main>
         </>

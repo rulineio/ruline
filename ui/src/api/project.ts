@@ -22,14 +22,12 @@ export async function fetchProjects(): Promise<ProjectList> {
     return v.parse(ProjectList, data);
 }
 
-const Project = v.object({
+export const Project = v.object({
     id: v.string(),
     name: v.string(),
     status: v.picklist(['active']),
 });
-
 export type Project = v.InferInput<typeof Project>;
 
-const ProjectList = v.array(Project);
-
+export const ProjectList = v.array(Project);
 export type ProjectList = v.InferInput<typeof ProjectList>;

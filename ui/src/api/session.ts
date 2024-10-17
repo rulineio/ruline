@@ -11,14 +11,16 @@ export async function fetchSession(): Promise<Session> {
     return v.parse(Session, data);
 }
 
-const Session = v.object({
+export const Session = v.object({
     type: v.picklist(['user', 'member', 'unauthenticated']),
     user_status: v.picklist(['created', 'active']),
     organization_status: v.optional(v.picklist(['active'])),
     member_role: v.optional(
         v.picklist(['owner', 'admin', 'editor', 'viewer', 'member']),
     ),
-    member_status: v.optional(v.picklist(['active', 'left', 'removed'])),
+    member_status: v.optional(
+        v.picklist(['active', 'left', 'removed', 'invited', 'declined']),
+    ),
 });
 
 export type Session = v.InferInput<typeof Session>;

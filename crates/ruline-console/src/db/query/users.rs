@@ -18,6 +18,23 @@ impl Database {
             .ok_or(DatabaseError::NotFound.into())
     }
 
+    pub async fn store_user_trx(
+        &self,
+        user: &User,
+        trx: &mut Transaction<'_, MySql>,
+    ) -> Result<()> {
+        _ = sqlx::query(INSERT)
+            .bind(&user.id)
+            .bind(&user.email)
+            .bind(&user.name)
+            .bind(&user.avatar)
+            .execute(&mut **trx)
+            .await
+            .map_err(DatabaseError::Sqlx)?;
+
+        Ok(())
+    }
+
     pub async fn get_user(&self, id: &str) -> Result<Option<User>> {
         let user: Option<user::User> = sqlx::query_as(SELECT)
             .bind(id)
@@ -38,10 +55,14 @@ impl Database {
         Ok(user.map(Into::into))
     }
 
-    pub async fn set_user_last_login(&self, id: &str) -> Result<()> {
+    pub async fn set_user_last_login(
+        &self,
+        id: &str,
+        trx: &mut Transaction<'_, MySql>,
+    ) -> Result<()> {
         let res = sqlx::query(SET_LAST_LOGIN)
             .bind(id)
-            .execute(&self.pool)
+            .execute(&mut **trx)
             .await
             .map_err(DatabaseError::Sqlx)?;
 
@@ -52,17 +73,55 @@ impl Database {
         Ok(())
     }
 
-    pub async fn update_user_status(&self, id: &str, status: UserStatus) -> Result<()> {
-        let res = sqlx::query(UPDATE_STATUS)
+    pub async fn set_user_status(
+        &self,
+        id: &str,
+        status: UserStatus,
+        trx: &mut Transaction<'_, MySql>,
+    ) -> Result<()> {
+        let res = sqlx::query(SET_STATUS)
             .bind(status.to_string())
             .bind(id)
-            .execute(&self.pool)
+            .execute(&mut **trx)
             .await
             .map_err(DatabaseError::Sqlx)?;
 
         if res.rows_affected() == 0 {
             return Err(DatabaseError::NotFound.into());
         }
+
+        Ok(())
+    }
+
+    pub async fn update_user(
+        &self,
+        id: &str,
+        avatar: Option<&str>,
+        name: Option<&str>,
+        trx: &mut Transaction<'_, MySql>,
+    ) -> Result<()> {
+        let _ = match (avatar, name) {
+            (Some(avatar), Some(name)) => sqlx::query(SET_AVATAR_NAME)
+                .bind(avatar)
+                .bind(name)
+                .bind(id)
+                .execute(&mut **trx)
+                .await
+                .map_err(DatabaseError::Sqlx)?,
+            (Some(avatar), None) => sqlx::query(SET_AVATAR)
+                .bind(avatar)
+                .bind(id)
+                .execute(&mut **trx)
+                .await
+                .map_err(DatabaseError::Sqlx)?,
+            (None, Some(name)) => sqlx::query(SET_NAME)
+                .bind(name)
+                .bind(id)
+                .execute(&mut **trx)
+                .await
+                .map_err(DatabaseError::Sqlx)?,
+            _ => return Ok(()),
+        };
 
         Ok(())
     }
@@ -91,8 +150,26 @@ const SET_LAST_LOGIN: &str = r#"
     where id = ?
 "#;
 
-const UPDATE_STATUS: &str = r#"
+const SET_STATUS: &str = r#"
     update users
     set status = ?
+    where id = ?
+"#;
+
+const SET_AVATAR: &str = r#"
+    update users
+    set avatar = ?
+    where id = ?
+"#;
+
+const SET_NAME: &str = r#"
+    update users
+    set name = ?
+    where id = ?
+"#;
+
+const SET_AVATAR_NAME: &str = r#"
+    update users
+    set avatar = ?, name = ?
     where id = ?
 "#;

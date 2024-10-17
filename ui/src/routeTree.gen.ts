@@ -18,15 +18,16 @@ import { Route as LoginImport } from './routes/login'
 import { Route as AuthedImport } from './routes/_authed'
 import { Route as AuthedIndexImport } from './routes/_authed/index'
 import { Route as AuthedOnboardingImport } from './routes/_authed/onboarding'
-import { Route as AuthedProjectsProjectIdImport } from './routes/_authed/projects/$projectId'
+import { Route as AuthedProjectProjectIdImport } from './routes/_authed/project/$projectId'
+import { Route as AuthedProjectProjectIdTeamImport } from './routes/_authed/project/$projectId/team'
 
 // Create Virtual Routes
 
-const AuthedProjectsProjectIdIndexLazyImport = createFileRoute(
-  '/_authed/projects/$projectId/',
+const AuthedProjectProjectIdIndexLazyImport = createFileRoute(
+  '/_authed/project/$projectId/',
 )()
-const AuthedProjectsProjectIdSettingsLazyImport = createFileRoute(
-  '/_authed/projects/$projectId/settings',
+const AuthedProjectProjectIdSettingsLazyImport = createFileRoute(
+  '/_authed/project/$projectId/settings',
 )()
 
 // Create/Update Routes
@@ -56,30 +57,37 @@ const AuthedOnboardingRoute = AuthedOnboardingImport.update({
   getParentRoute: () => AuthedRoute,
 } as any)
 
-const AuthedProjectsProjectIdRoute = AuthedProjectsProjectIdImport.update({
-  path: '/projects/$projectId',
+const AuthedProjectProjectIdRoute = AuthedProjectProjectIdImport.update({
+  path: '/project/$projectId',
   getParentRoute: () => AuthedRoute,
 } as any)
 
-const AuthedProjectsProjectIdIndexLazyRoute =
-  AuthedProjectsProjectIdIndexLazyImport.update({
+const AuthedProjectProjectIdIndexLazyRoute =
+  AuthedProjectProjectIdIndexLazyImport.update({
     path: '/',
-    getParentRoute: () => AuthedProjectsProjectIdRoute,
+    getParentRoute: () => AuthedProjectProjectIdRoute,
   } as any).lazy(() =>
-    import('./routes/_authed/projects/$projectId/index.lazy').then(
+    import('./routes/_authed/project/$projectId/index.lazy').then(
       (d) => d.Route,
     ),
   )
 
-const AuthedProjectsProjectIdSettingsLazyRoute =
-  AuthedProjectsProjectIdSettingsLazyImport.update({
+const AuthedProjectProjectIdSettingsLazyRoute =
+  AuthedProjectProjectIdSettingsLazyImport.update({
     path: '/settings',
-    getParentRoute: () => AuthedProjectsProjectIdRoute,
+    getParentRoute: () => AuthedProjectProjectIdRoute,
   } as any).lazy(() =>
-    import('./routes/_authed/projects/$projectId/settings.lazy').then(
+    import('./routes/_authed/project/$projectId/settings.lazy').then(
       (d) => d.Route,
     ),
   )
+
+const AuthedProjectProjectIdTeamRoute = AuthedProjectProjectIdTeamImport.update(
+  {
+    path: '/team',
+    getParentRoute: () => AuthedProjectProjectIdRoute,
+  } as any,
+)
 
 // Populate the FileRoutesByPath interface
 
@@ -120,60 +128,68 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedIndexImport
       parentRoute: typeof AuthedImport
     }
-    '/_authed/projects/$projectId': {
-      id: '/_authed/projects/$projectId'
-      path: '/projects/$projectId'
-      fullPath: '/projects/$projectId'
-      preLoaderRoute: typeof AuthedProjectsProjectIdImport
+    '/_authed/project/$projectId': {
+      id: '/_authed/project/$projectId'
+      path: '/project/$projectId'
+      fullPath: '/project/$projectId'
+      preLoaderRoute: typeof AuthedProjectProjectIdImport
       parentRoute: typeof AuthedImport
     }
-    '/_authed/projects/$projectId/settings': {
-      id: '/_authed/projects/$projectId/settings'
-      path: '/settings'
-      fullPath: '/projects/$projectId/settings'
-      preLoaderRoute: typeof AuthedProjectsProjectIdSettingsLazyImport
-      parentRoute: typeof AuthedProjectsProjectIdImport
+    '/_authed/project/$projectId/team': {
+      id: '/_authed/project/$projectId/team'
+      path: '/team'
+      fullPath: '/project/$projectId/team'
+      preLoaderRoute: typeof AuthedProjectProjectIdTeamImport
+      parentRoute: typeof AuthedProjectProjectIdImport
     }
-    '/_authed/projects/$projectId/': {
-      id: '/_authed/projects/$projectId/'
+    '/_authed/project/$projectId/settings': {
+      id: '/_authed/project/$projectId/settings'
+      path: '/settings'
+      fullPath: '/project/$projectId/settings'
+      preLoaderRoute: typeof AuthedProjectProjectIdSettingsLazyImport
+      parentRoute: typeof AuthedProjectProjectIdImport
+    }
+    '/_authed/project/$projectId/': {
+      id: '/_authed/project/$projectId/'
       path: '/'
-      fullPath: '/projects/$projectId/'
-      preLoaderRoute: typeof AuthedProjectsProjectIdIndexLazyImport
-      parentRoute: typeof AuthedProjectsProjectIdImport
+      fullPath: '/project/$projectId/'
+      preLoaderRoute: typeof AuthedProjectProjectIdIndexLazyImport
+      parentRoute: typeof AuthedProjectProjectIdImport
     }
   }
 }
 
 // Create and export the route tree
 
-interface AuthedProjectsProjectIdRouteChildren {
-  AuthedProjectsProjectIdSettingsLazyRoute: typeof AuthedProjectsProjectIdSettingsLazyRoute
-  AuthedProjectsProjectIdIndexLazyRoute: typeof AuthedProjectsProjectIdIndexLazyRoute
+interface AuthedProjectProjectIdRouteChildren {
+  AuthedProjectProjectIdTeamRoute: typeof AuthedProjectProjectIdTeamRoute
+  AuthedProjectProjectIdSettingsLazyRoute: typeof AuthedProjectProjectIdSettingsLazyRoute
+  AuthedProjectProjectIdIndexLazyRoute: typeof AuthedProjectProjectIdIndexLazyRoute
 }
 
-const AuthedProjectsProjectIdRouteChildren: AuthedProjectsProjectIdRouteChildren =
+const AuthedProjectProjectIdRouteChildren: AuthedProjectProjectIdRouteChildren =
   {
-    AuthedProjectsProjectIdSettingsLazyRoute:
-      AuthedProjectsProjectIdSettingsLazyRoute,
-    AuthedProjectsProjectIdIndexLazyRoute:
-      AuthedProjectsProjectIdIndexLazyRoute,
+    AuthedProjectProjectIdTeamRoute: AuthedProjectProjectIdTeamRoute,
+    AuthedProjectProjectIdSettingsLazyRoute:
+      AuthedProjectProjectIdSettingsLazyRoute,
+    AuthedProjectProjectIdIndexLazyRoute: AuthedProjectProjectIdIndexLazyRoute,
   }
 
-const AuthedProjectsProjectIdRouteWithChildren =
-  AuthedProjectsProjectIdRoute._addFileChildren(
-    AuthedProjectsProjectIdRouteChildren,
+const AuthedProjectProjectIdRouteWithChildren =
+  AuthedProjectProjectIdRoute._addFileChildren(
+    AuthedProjectProjectIdRouteChildren,
   )
 
 interface AuthedRouteChildren {
   AuthedOnboardingRoute: typeof AuthedOnboardingRoute
   AuthedIndexRoute: typeof AuthedIndexRoute
-  AuthedProjectsProjectIdRoute: typeof AuthedProjectsProjectIdRouteWithChildren
+  AuthedProjectProjectIdRoute: typeof AuthedProjectProjectIdRouteWithChildren
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedOnboardingRoute: AuthedOnboardingRoute,
   AuthedIndexRoute: AuthedIndexRoute,
-  AuthedProjectsProjectIdRoute: AuthedProjectsProjectIdRouteWithChildren,
+  AuthedProjectProjectIdRoute: AuthedProjectProjectIdRouteWithChildren,
 }
 
 const AuthedRouteWithChildren =
@@ -185,9 +201,10 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/onboarding': typeof AuthedOnboardingRoute
   '/': typeof AuthedIndexRoute
-  '/projects/$projectId': typeof AuthedProjectsProjectIdRouteWithChildren
-  '/projects/$projectId/settings': typeof AuthedProjectsProjectIdSettingsLazyRoute
-  '/projects/$projectId/': typeof AuthedProjectsProjectIdIndexLazyRoute
+  '/project/$projectId': typeof AuthedProjectProjectIdRouteWithChildren
+  '/project/$projectId/team': typeof AuthedProjectProjectIdTeamRoute
+  '/project/$projectId/settings': typeof AuthedProjectProjectIdSettingsLazyRoute
+  '/project/$projectId/': typeof AuthedProjectProjectIdIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
@@ -195,8 +212,9 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/onboarding': typeof AuthedOnboardingRoute
   '/': typeof AuthedIndexRoute
-  '/projects/$projectId/settings': typeof AuthedProjectsProjectIdSettingsLazyRoute
-  '/projects/$projectId': typeof AuthedProjectsProjectIdIndexLazyRoute
+  '/project/$projectId/team': typeof AuthedProjectProjectIdTeamRoute
+  '/project/$projectId/settings': typeof AuthedProjectProjectIdSettingsLazyRoute
+  '/project/$projectId': typeof AuthedProjectProjectIdIndexLazyRoute
 }
 
 export interface FileRoutesById {
@@ -206,9 +224,10 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/_authed/onboarding': typeof AuthedOnboardingRoute
   '/_authed/': typeof AuthedIndexRoute
-  '/_authed/projects/$projectId': typeof AuthedProjectsProjectIdRouteWithChildren
-  '/_authed/projects/$projectId/settings': typeof AuthedProjectsProjectIdSettingsLazyRoute
-  '/_authed/projects/$projectId/': typeof AuthedProjectsProjectIdIndexLazyRoute
+  '/_authed/project/$projectId': typeof AuthedProjectProjectIdRouteWithChildren
+  '/_authed/project/$projectId/team': typeof AuthedProjectProjectIdTeamRoute
+  '/_authed/project/$projectId/settings': typeof AuthedProjectProjectIdSettingsLazyRoute
+  '/_authed/project/$projectId/': typeof AuthedProjectProjectIdIndexLazyRoute
 }
 
 export interface FileRouteTypes {
@@ -219,17 +238,19 @@ export interface FileRouteTypes {
     | '/signup'
     | '/onboarding'
     | '/'
-    | '/projects/$projectId'
-    | '/projects/$projectId/settings'
-    | '/projects/$projectId/'
+    | '/project/$projectId'
+    | '/project/$projectId/team'
+    | '/project/$projectId/settings'
+    | '/project/$projectId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
     | '/signup'
     | '/onboarding'
     | '/'
-    | '/projects/$projectId/settings'
-    | '/projects/$projectId'
+    | '/project/$projectId/team'
+    | '/project/$projectId/settings'
+    | '/project/$projectId'
   id:
     | '__root__'
     | '/_authed'
@@ -237,9 +258,10 @@ export interface FileRouteTypes {
     | '/signup'
     | '/_authed/onboarding'
     | '/_authed/'
-    | '/_authed/projects/$projectId'
-    | '/_authed/projects/$projectId/settings'
-    | '/_authed/projects/$projectId/'
+    | '/_authed/project/$projectId'
+    | '/_authed/project/$projectId/team'
+    | '/_authed/project/$projectId/settings'
+    | '/_authed/project/$projectId/'
   fileRoutesById: FileRoutesById
 }
 
@@ -277,7 +299,7 @@ export const routeTree = rootRoute
       "children": [
         "/_authed/onboarding",
         "/_authed/",
-        "/_authed/projects/$projectId"
+        "/_authed/project/$projectId"
       ]
     },
     "/login": {
@@ -294,21 +316,26 @@ export const routeTree = rootRoute
       "filePath": "_authed/index.tsx",
       "parent": "/_authed"
     },
-    "/_authed/projects/$projectId": {
-      "filePath": "_authed/projects/$projectId.tsx",
+    "/_authed/project/$projectId": {
+      "filePath": "_authed/project/$projectId.tsx",
       "parent": "/_authed",
       "children": [
-        "/_authed/projects/$projectId/settings",
-        "/_authed/projects/$projectId/"
+        "/_authed/project/$projectId/team",
+        "/_authed/project/$projectId/settings",
+        "/_authed/project/$projectId/"
       ]
     },
-    "/_authed/projects/$projectId/settings": {
-      "filePath": "_authed/projects/$projectId/settings.lazy.tsx",
-      "parent": "/_authed/projects/$projectId"
+    "/_authed/project/$projectId/team": {
+      "filePath": "_authed/project/$projectId/team.tsx",
+      "parent": "/_authed/project/$projectId"
     },
-    "/_authed/projects/$projectId/": {
-      "filePath": "_authed/projects/$projectId/index.lazy.tsx",
-      "parent": "/_authed/projects/$projectId"
+    "/_authed/project/$projectId/settings": {
+      "filePath": "_authed/project/$projectId/settings.lazy.tsx",
+      "parent": "/_authed/project/$projectId"
+    },
+    "/_authed/project/$projectId/": {
+      "filePath": "_authed/project/$projectId/index.lazy.tsx",
+      "parent": "/_authed/project/$projectId"
     }
   }
 }

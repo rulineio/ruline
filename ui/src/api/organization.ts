@@ -29,13 +29,25 @@ export async function createOrganization(
     return v.parse(CreateOrganizationResponse, data);
 }
 
-const Organization = v.object({
+export async function fetchOrganizationMembers(): Promise<OrganizationMembers> {
+    const response = await fetch('/organizations/members');
+
+    if (response.status !== 200) {
+        throw new Error(
+            `Error fetching organization members: ${response.statusText}`,
+        );
+    }
+
+    const data = await response.json();
+    return v.parse(OrganizationMembers, data);
+}
+
+export const Organization = v.object({
     id: v.string(),
     name: v.string(),
     status: v.picklist(['active']),
     logo: v.string(),
 });
-
 export type Organization = v.InferInput<typeof Organization>;
 
 export const CreateOrganizationSchema = v.object({
@@ -45,15 +57,30 @@ export const CreateOrganizationSchema = v.object({
         v.trim(),
     ),
 });
-
 export type CreateOrganizationForm = v.InferInput<
     typeof CreateOrganizationSchema
 >;
 
-const CreateOrganizationResponse = v.object({
+export const CreateOrganizationResponse = v.object({
     project_id: v.string(),
 });
-
 export type CreateOrganizationResponse = v.InferInput<
     typeof CreateOrganizationResponse
 >;
+
+export const OrganizationMembers = v.array(
+    v.object({
+        name: v.string(),
+        email: v.pipe(v.string(), v.email()),
+        avatar: v.string(),
+        role: v.picklist(['owner', 'admin', 'editor', 'viewer', 'member']),
+        status: v.picklist([
+            'active',
+            'left',
+            'removed',
+            'invited',
+            'declined',
+        ]),
+    }),
+);
+export type OrganizationMembers = v.InferInput<typeof OrganizationMembers>;

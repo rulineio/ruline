@@ -1,6 +1,6 @@
 use std::fmt::{self, Display, Formatter};
 
-#[derive(Default, Clone)]
+#[derive(Default, Clone, PartialEq)]
 pub enum MemberRole {
     Owner,
     Admin,
@@ -8,6 +8,18 @@ pub enum MemberRole {
     Viewer,
     #[default]
     Member,
+}
+
+impl MemberRole {
+    pub fn is_at_least(&self, role: MemberRole) -> bool {
+        match self {
+            MemberRole::Owner => true,
+            MemberRole::Admin => role != MemberRole::Owner,
+            MemberRole::Editor => role != MemberRole::Owner && role != MemberRole::Admin,
+            MemberRole::Viewer => role == MemberRole::Viewer || role == MemberRole::Member,
+            MemberRole::Member => role == MemberRole::Member,
+        }
+    }
 }
 
 impl Display for MemberRole {
@@ -41,12 +53,14 @@ impl From<String> for MemberRole {
     }
 }
 
-#[derive(Default, Clone)]
+#[derive(Default, Clone, PartialEq)]
 pub enum MemberStatus {
     #[default]
     Active,
     Removed,
     Left,
+    Invited,
+    Declined,
 }
 
 impl Display for MemberStatus {
@@ -55,6 +69,8 @@ impl Display for MemberStatus {
             MemberStatus::Active => write!(f, "active"),
             MemberStatus::Removed => write!(f, "removed"),
             MemberStatus::Left => write!(f, "left"),
+            MemberStatus::Invited => write!(f, "invited"),
+            MemberStatus::Declined => write!(f, "declined"),
         }
     }
 }
@@ -65,6 +81,8 @@ impl From<&str> for MemberStatus {
             "active" => MemberStatus::Active,
             "removed" => MemberStatus::Removed,
             "left" => MemberStatus::Left,
+            "invited" => MemberStatus::Invited,
+            "declined" => MemberStatus::Declined,
             _ => MemberStatus::default(),
         }
     }

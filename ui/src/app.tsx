@@ -1,8 +1,7 @@
-import './app.css';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
-
-import { routeTree } from './routeTree.gen';
+import './app.css';
 import { useAuth } from './hooks/auth';
+import { routeTree } from './routeTree.gen';
 
 const router = createRouter({
     basepath: '/ui',

@@ -11,9 +11,8 @@ export async function fetchSettings(): Promise<Settings> {
     return v.parse(Settings, data);
 }
 
-const Settings = v.object({
+export const Settings = v.object({
     google_auth_enabled: v.boolean(),
     magic_link_enabled: v.boolean(),
 });
-
 export type Settings = v.InferInput<typeof Settings>;

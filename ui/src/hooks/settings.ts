@@ -1,5 +1,5 @@
+import { fetchSettings } from '@api/settings';
 import { useQuery } from '@tanstack/react-query';
-import { fetchSettings } from '../api/settings';
 
 export function useSettings() {
     const { data, isLoading, error } = useQuery({

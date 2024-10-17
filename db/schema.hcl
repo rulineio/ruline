@@ -91,7 +91,7 @@ table "members" {
     default = "member"
   }
   column "status" {
-    type = enum("active", "left", "removed")
+    type = enum("active", "left", "removed", "invited", "declined")
     default = "active"
   }
   column "created_at" {
@@ -122,9 +122,13 @@ table "members" {
     on_delete = CASCADE
   }
 
-  index "idx_members_user_id_organization_id" {
-    columns = [column.user_id, column.organization_id]
+  index "idx_members_user_id_status" {
+    columns = [column.user_id, column.status]
     unique = true
+  }
+
+  index "idx_members_organization_id" {
+    columns = [column.organization_id]
   }
 }
 
@@ -162,5 +166,63 @@ table "projects" {
     ref_columns = [table.organizations.column.id]
     on_update = NO_ACTION
     on_delete = CASCADE
+  }
+}
+
+table "invitations" {
+  schema = schema.ruline
+  column "id" {
+    type = char(30)
+  }
+  column "organization_id" {
+    type = char(30)
+  }
+  column "user_id" {
+    type = varchar(30)
+  }
+  column "member_id" {
+    type = char(30)
+  }
+  column "status" {
+    type = enum("created", "accepted", "declined")
+    default = "created"
+  }
+  column "created_at" {
+    type = timestamp
+    default = sql("CURRENT_TIMESTAMP")
+  }
+  column "updated_at" {
+    type = timestamp
+    default = sql("CURRENT_TIMESTAMP")
+    on_update = sql("CURRENT_TIMESTAMP")
+  }
+
+  primary_key {
+    columns = [column.id]
+  }
+
+  foreign_key "invitation_organization_id" {
+    columns = [column.organization_id]
+    ref_columns = [table.organizations.column.id]
+    on_update = NO_ACTION
+    on_delete = CASCADE
+  }
+
+  foreign_key "invitation_user_id" {
+    columns = [column.user_id]
+    ref_columns = [table.users.column.id]
+    on_update = NO_ACTION
+    on_delete = CASCADE
+  }
+
+  foreign_key "invitation_member_id" {
+    columns = [column.member_id]
+    ref_columns = [table.members.column.id]
+    on_update = NO_ACTION
+    on_delete = CASCADE
+  }
+
+  index "idx_invitations_user_id_status" {
+    columns = [column.user_id, column.status]
   }
 }

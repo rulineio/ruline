@@ -3,18 +3,20 @@ use crate::domain::project::Project;
 use super::*;
 
 impl Database {
-    pub async fn store_project(&self, project: &Project) -> Result<Project> {
+    pub async fn store_project(
+        &self,
+        project: &Project,
+        trx: &mut Transaction<'_, MySql>,
+    ) -> Result<()> {
         _ = sqlx::query(INSERT)
             .bind(&project.id)
             .bind(&project.organization_id)
             .bind(&project.name)
-            .execute(&self.pool)
+            .execute(&mut **trx)
             .await
             .map_err(DatabaseError::Sqlx)?;
 
-        self.get_project(&project.organization_id, &project.id)
-            .await?
-            .ok_or(DatabaseError::NotFound.into())
+        Ok(())
     }
 
     pub async fn get_project(

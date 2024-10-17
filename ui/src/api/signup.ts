@@ -8,7 +8,7 @@ export async function signup(req: SignupForm): Promise<void> {
         },
         body: JSON.stringify({
             email: req.email,
-            name: `${req.firstName} ${req.lastName}`.trim(),
+            name: `${req.firstName} ${req.lastName}`,
         }),
     });
 
@@ -30,5 +30,4 @@ export const SignupSchema = v.object({
     ),
     lastName: v.optional(v.pipe(v.string(), v.trim())),
 });
-
 export type SignupForm = v.InferInput<typeof SignupSchema>;

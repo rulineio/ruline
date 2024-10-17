@@ -28,13 +28,13 @@ export function IconButton(props: IconButtonProps) {
         'p-3 hover:bg-opacity-80 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed',
         className,
         {
-            'bg-blue-800 text-gray-200':
+            'bg-primary text-primary-text':
                 color === 'primary' && style === 'filled',
-            'bg-gray-800 text-gray-200':
+            'bg-secondary text-secondary-text':
                 color === 'secondary' && style === 'filled',
-            'border border-blue-800 text-blue-800':
+            'border border-primary text-primary':
                 color === 'primary' && style === 'outlined',
-            'border border-gray-800 text-gray-800':
+            'border border-secondary text-secondary':
                 color === 'secondary' && style === 'outlined',
             'rounded-md': shape === 'rounded',
             'rounded-full': shape === 'circle',

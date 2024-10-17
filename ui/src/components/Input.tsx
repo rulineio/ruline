@@ -14,16 +14,19 @@ export function Input<T extends FieldValues>(props: InputProps<T>) {
     const { label, name, register, error, className, ...rest } = props;
 
     const inputClass = clsx(
-        'mt-2 block w-full px-3 py-2 rounded-md shadow-sm focus:outline-none sm:text-sm',
+        'mt-2 block w-full px-3 py-2 rounded-md shadow-sm focus:outline-none',
+        'sm:text-sm bg-background text-primary-text autofill:bg-transparent',
         className,
         {
             'ring-red-200 ring-2': !!error,
-            'border border-gray-300 focus:ring-2 focus:ring-blue-500': !error,
+            'border border-primary focus:ring-2 focus:ring-accent': !error,
         },
     );
-
-    const labelClass = clsx('text-sm', {
-        'text-red-500': !!error,
+    const labelClass = clsx('text-xs', {
+        'text-error': !!error,
+    });
+    const errorClass = clsx('mt-1 text-xs text-error leading-3', {
+        hidden: !error,
     });
 
     return (
@@ -40,11 +43,7 @@ export function Input<T extends FieldValues>(props: InputProps<T>) {
                 {...register(name, { required: !rest.optional })}
                 {...rest}
             />
-            {error && (
-                <span className="mt-1 text-xs text-red-500 leading-3">
-                    {error}
-                </span>
-            )}
+            <span className={errorClass}>{error}</span>
         </div>
     );
 }

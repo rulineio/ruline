@@ -14,5 +14,8 @@ export default defineConfig({
     },
     html: {
         title: 'Ruline',
+        meta: {
+            description: 'Ruline console',
+        },
     },
 });

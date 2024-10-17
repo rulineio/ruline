@@ -1,10 +1,10 @@
+import { login, type LoginForm, LoginSchema } from '@api/login';
+import { AuthForm } from '@components/AuthForm';
+import { Input } from '@components/Input';
 import { valibotResolver } from '@hookform/resolvers/valibot';
+import { useMagicLinkStore } from '@stores/magic-link';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
-import { login, type LoginForm, LoginSchema } from '../api/login';
-import { AuthForm } from '../components/AuthForm';
-import { Input } from '../components/Input';
-import { useMagicLinkStore } from '../stores/magic-link';
 import { useShallow } from 'zustand/shallow';
 
 export const Route = createFileRoute('/login')({
@@ -55,7 +55,7 @@ function Login() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-blue-800">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-background">
             <AuthForm
                 title="Login"
                 subtitle={{

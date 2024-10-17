@@ -9,7 +9,13 @@
         "isolatedModules": true,
         "resolveJsonModule": true,
         "moduleResolution": "bundler",
-        "useDefineForClassFields": true
+        "useDefineForClassFields": true,
+        "paths": {
+            "@components/*": ["./src/components/*"],
+            "@hooks/*": ["./src/hooks/*"],
+            "@stores/*": ["./src/stores/*"],
+            "@api/*": ["./src/api/*"]
+        }
     },
     "include": ["src"]
 }

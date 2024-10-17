@@ -1,5 +1,5 @@
+import { fetchProjects } from '@api/project';
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { fetchProjects } from '../../api/project';
 
 export const Route = createFileRoute('/_authed/')({
     preload: false,
@@ -10,7 +10,7 @@ export const Route = createFileRoute('/_authed/')({
         }
 
         throw redirect({
-            to: '/projects/$projectId',
+            to: '/project/$projectId',
             params: { projectId: projects[0].id },
         });
     },
