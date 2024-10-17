@@ -7,6 +7,11 @@ use axum::{
     routing::{get, post},
     Extension, Json, Router,
 };
+use axum_extra::extract::{
+    cookie::{Cookie, SameSite},
+    CookieJar,
+};
+use chrono::Duration;
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -17,15 +22,15 @@ use crate::{
         user::{User, UserStatus},
     },
     error::Error,
-    App, Result,
+    util, App, Result,
 };
 
 pub fn router() -> Router<Arc<App>> {
     Router::new()
+        .route("/:invitation_id/accept", post(accept_invitation))
+        .route("/:invitation_id/decline", post(decline_invitation))
         .route("/", post(create_invitation))
         .route("/", get(get_invitations))
-        .route("/{invitation_id}/accept", post(accept_invitation))
-        .route("/{invitation_id}/decline", post(decline_invitation))
 }
 
 async fn create_invitation(
@@ -99,6 +104,7 @@ async fn get_invitations(
 async fn accept_invitation(
     State(app): State<Arc<App>>,
     Extension(session): Extension<Session>,
+    jar: CookieJar,
     Path(invitation_id): Path<String>,
 ) -> Result<impl IntoResponse> {
     let user_id = match session {
@@ -125,9 +131,37 @@ async fn accept_invitation(
     app.db
         .set_user_status(&user_id, UserStatus::Active, &mut trx)
         .await?;
+
+    let member = match app.db.get_member(&invitation.member_id).await? {
+        Some(member) => member,
+        None => return Err(Error::BadRequest),
+    };
+    let user = match app.db.get_user(&user_id).await? {
+        Some(user) => user,
+        None => return Err(Error::BadRequest),
+    };
+    let organization = app.db.get_organization(&member.organization_id).await?;
+
     app.db.commit(trx).await?;
 
-    Ok(StatusCode::ACCEPTED)
+    let sess = Session::builder()
+        .user(user)
+        .organization(organization)
+        .member(member)
+        .build();
+
+    let sess_id = util::random_string();
+    app.cache.set_session(&sess_id, &sess.into()).await?;
+
+    let cookie = Cookie::build(("sid", sess_id))
+        .same_site(SameSite::Lax)
+        .path("/")
+        .secure(!app.config.is_dev())
+        .http_only(true)
+        .max_age(Duration::weeks(1).to_std().unwrap().try_into().unwrap())
+        .build();
+
+    Ok((jar.add(cookie), StatusCode::NO_CONTENT))
 }
 
 async fn decline_invitation(
@@ -158,7 +192,7 @@ async fn decline_invitation(
         .await?;
     app.db.commit(trx).await?;
 
-    Ok(StatusCode::ACCEPTED)
+    Ok(StatusCode::NO_CONTENT)
 }
 
 #[derive(Deserialize)]
