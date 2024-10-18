@@ -1,4 +1,5 @@
 interface BreadcrumbItem {
+    id: string;
     text?: string;
     component?: React.ReactNode;
 }
@@ -12,7 +13,7 @@ export function Breadcrumb(props: BreadcrumbProps) {
     return (
         <ol className="inline-flex items-center space-x-2 rtl:space-x-reverse ">
             {items.map((item, index) => (
-                <li key={`breadcrumb_${index}`}>
+                <li key={`breadcrumb_${item.id}`}>
                     <div className="flex items-center">
                         {index !== 0 && (
                             <svg
@@ -24,9 +25,9 @@ export function Breadcrumb(props: BreadcrumbProps) {
                             >
                                 <path
                                     stroke="currentColor"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
                                     d="m1 9 4-4-4-4"
                                 />
                             </svg>

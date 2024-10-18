@@ -26,6 +26,7 @@ pub enum ComponentDefinition {
     },
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug)]
 pub enum Component {
     Condition(Condition),

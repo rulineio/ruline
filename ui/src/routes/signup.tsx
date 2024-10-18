@@ -1,10 +1,10 @@
+import { signup, type SignupForm, SignupSchema } from '@api/signup';
+import { AuthForm } from '@components/AuthForm';
+import { Input } from '@components/Input';
+import { valibotResolver } from '@hookform/resolvers/valibot';
+import { useMagicLinkStore } from '@stores/magic-link';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
-import { signup, type SignupForm, SignupSchema } from '../api/signup';
-import { valibotResolver } from '@hookform/resolvers/valibot';
-import { Input } from '../components/Input';
-import { AuthForm } from '../components/AuthForm';
-import { useMagicLinkStore } from '../stores/magic-link';
 import { useShallow } from 'zustand/shallow';
 
 export const Route = createFileRoute('/signup')({
@@ -51,7 +51,7 @@ function Signup() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-blue-800">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-background">
             <AuthForm
                 title="Create an account"
                 subtitle={{

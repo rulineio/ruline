@@ -14,6 +14,7 @@ use tower_http::trace::TraceLayer;
 
 use crate::{domain, error::Error, App, Result};
 
+mod invitation;
 mod login;
 mod organization;
 mod project;
@@ -31,6 +32,7 @@ pub fn router(app: Arc<App>) -> Router {
         .nest("/organizations", organization::router())
         .nest("/users", user::router())
         .nest("/projects", project::router())
+        .nest("/invitations", invitation::router())
         .route_layer(middleware::from_fn_with_state(
             app.clone(),
             authenticate_user,

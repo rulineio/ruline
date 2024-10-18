@@ -16,7 +16,7 @@ export function OnboardingForm(props: OnboardingFormProps) {
     const { title, form, onSubmit, button, error } = props;
 
     return (
-        <div className="flex flex-col justify-center bg-white p-6 md:p-8 rounded-lg shadow-md w-11/12 md:w-1/2 lg:w-1/3 xl:w-1/4">
+        <div className="flex flex-col justify-center bg-surface text-surface-text p-6 md:p-8 rounded-lg shadow-md w-11/12 md:w-1/2 lg:w-1/3 xl:w-1/4">
             <div className="mb-6">
                 <h1 className="text-2xl font-bold">{title}</h1>
             </div>

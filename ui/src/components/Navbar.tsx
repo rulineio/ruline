@@ -1,11 +1,10 @@
+import { useOrganization } from '@hooks/organization';
+import { useProject, useProjects } from '@hooks/project';
 import { useNavigate } from '@tanstack/react-router';
-import type { Project, ProjectList } from '../api/project';
-import { Button, type ButtonProps } from './Button';
-import { useProject, useProjects } from '../hooks/project';
-import { Breadcrumb } from './Breadcrumb';
-import Dropdown from './Dropdown';
-import { useOrganization } from '../hooks/organization';
 import { Avatar } from './Avatar';
+import { Breadcrumb } from './Breadcrumb';
+import { Button, type ButtonProps } from './Button';
+import Dropdown from './Dropdown';
 
 export interface NavbarProps {
     projectId: string;
@@ -17,13 +16,15 @@ export function Navbar(props: NavbarProps) {
     const { title, actions, projectId } = props;
 
     return (
-        <nav className="flex items-center justify-between p-4 bg-blue-900 text-white sm:border-l-2 border-blue-200">
+        <nav className="flex items-center justify-between p-4 bg-background text-white border-b-2 border-background-container">
             <Breadcrumb
                 items={[
                     {
+                        id: 'organization',
                         component: <OrganizationSelector />,
                     },
                     {
+                        id: 'project',
                         component: (
                             <div className="-mr-2">
                                 <ProjectSelector projectId={projectId} />
@@ -31,6 +32,7 @@ export function Navbar(props: NavbarProps) {
                         ),
                     },
                     {
+                        id: 'title',
                         text: title,
                     },
                 ]}
@@ -39,9 +41,9 @@ export function Navbar(props: NavbarProps) {
                 {actions?.map((action) => (
                     <div
                         key={`nav_action_${action.className}`}
-                        className="px-4 py-2 bg-blue-500 hover:bg-blue-700 rounded"
+                        className="px-4"
                     >
-                        <Button {...action} />
+                        <Button {...{ ...action, size: 'small' }} />
                     </div>
                 ))}
             </div>
@@ -69,7 +71,7 @@ function ProjectSelector(props: { projectId: string }) {
                         return;
                     }
                     navigate({
-                        to: '/projects/$projectId',
+                        to: '/project/$projectId',
                         params: { projectId: project.id },
                     });
                 },

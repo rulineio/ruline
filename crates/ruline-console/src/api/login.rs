@@ -74,6 +74,7 @@ async fn login(
 
     let template = Template::Login(LoginTemplate {
         url: format!("{}/login/complete?code={}", &app.config.domain, &code),
+        label: "Log in".to_owned(),
     });
 
     email_client
@@ -136,7 +137,7 @@ async fn google_oauth(State(app): State<Arc<App>>, jar: CookieJar) -> Result<imp
         .set_session(
             &pre_sess_id,
             &Session::Oauth {
-                state: state.clone(),
+                state: state.to_owned(),
             }
             .into(),
         )
@@ -236,7 +237,20 @@ async fn complete_auth(
 ) -> Result<(CookieJar, Redirect)> {
     let user: User = match app.db.get_user_by_email(&new_user.email).await? {
         Some(user) => {
-            app.db.set_user_last_login(&user.id).await?;
+            let (avatar, name) = match (user.avatar != new_user.avatar, user.name != new_user.name)
+            {
+                (true, true) => (Some(new_user.avatar), Some(new_user.name)),
+                (true, false) => (Some(new_user.avatar), None),
+                (false, true) => (None, Some(new_user.name)),
+                (false, false) => (None, None),
+            };
+
+            let mut trx = app.db.begin().await?;
+            app.db
+                .update_user(&user.id, avatar.as_deref(), name.as_deref(), &mut trx)
+                .await?;
+            app.db.set_user_last_login(&user.id, &mut trx).await?;
+            app.db.commit(trx).await?;
             user
         }
         None => app.db.store_user(&new_user).await?,

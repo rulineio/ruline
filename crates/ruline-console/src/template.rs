@@ -44,18 +44,21 @@ impl TemplateClient {
 
 pub enum Template {
     Login(LoginTemplate),
+    Invitation(InvitationTemplate),
 }
 
 impl Template {
     pub fn render_email(&self, client: &TemplateClient) -> Result<String> {
         match self {
             Template::Login(data) => client.render("login", data),
+            Template::Invitation(data) => client.render("invitation", data),
         }
     }
 
     pub fn render_text(&self) -> String {
         match self {
             Template::Login(data) => format!("Your link for Ruline: {}. The link is valid for 5 minutes. If you didn't request this link, you can safely ignore this email.", data.url),
+            Template::Invitation(data) => format!("You have been invited to join {} on Ruline. To review the invitation, click on the following link: {}. If you are not aware of this invitation, please ignore this email.", data.organization, data.url),
         }
     }
 }
@@ -63,6 +66,13 @@ impl Template {
 #[derive(Serialize)]
 pub struct LoginTemplate {
     pub url: String,
+    pub label: String,
+}
+
+#[derive(Serialize)]
+pub struct InvitationTemplate {
+    pub url: String,
+    pub organization: String,
 }
 
 #[derive(Debug, Error)]

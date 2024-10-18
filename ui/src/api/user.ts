@@ -11,12 +11,11 @@ export async function fetchUser(): Promise<User> {
     return v.parse(User, data);
 }
 
-const User = v.object({
+export const User = v.object({
     id: v.string(),
     email: v.string(),
     status: v.picklist(['created', 'active']),
     name: v.string(),
     avatar: v.string(),
 });
-
 export type User = v.InferInput<typeof User>;

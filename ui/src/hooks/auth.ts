@@ -1,12 +1,11 @@
+import { fetchSession } from '@api/session';
 import { useQuery } from '@tanstack/react-query';
-import { fetchSession } from '../api/session';
 
 export function useAuth() {
     const { data, refetch, error } = useQuery({
         queryKey: ['session'],
         queryFn: fetchSession,
         retry: 0,
-        staleTime: Number.POSITIVE_INFINITY,
     });
 
     if (error) {

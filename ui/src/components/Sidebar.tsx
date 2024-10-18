@@ -1,22 +1,11 @@
-import * as R from 'remeda';
-import { useShallow } from 'zustand/shallow';
-import { IconButton } from './IconButton';
-import { useUser } from '../hooks/user';
+import { useUser } from '@hooks/user';
 import { Link } from '@tanstack/react-router';
-import { Icon } from './Icon';
 import clsx from 'clsx';
-import { create } from 'zustand';
+import * as R from 'remeda';
 import { Avatar } from './Avatar';
-
-export const useSidebarOpenStore = create<{
-    isOpen: boolean;
-    open: () => void;
-    close: () => void;
-}>((set) => ({
-    isOpen: false,
-    open: () => set({ isOpen: true }),
-    close: () => set({ isOpen: false }),
-}));
+import { Icon } from './Icon';
+import { IconButton } from './IconButton';
+import { useState } from 'react';
 
 export interface SidebarProps {
     projectId: string;
@@ -24,43 +13,37 @@ export interface SidebarProps {
 
 export function Sidebar(props: SidebarProps) {
     const { projectId } = props;
-    const { isOpen, open, close } = useSidebarOpenStore(
-        useShallow((state) => ({
-            isOpen: state.isOpen,
-            open: state.open,
-            close: state.close,
-        })),
-    );
+    const [open, setOpen] = useState(false);
     const { user } = useUser();
 
     const itemClass = clsx(
-        'flex items-center py-3 text-gray-200 space-x-2 hover:text-white',
+        'flex items-center py-3 text-background-text space-x-2 hover:text-white',
     );
 
     const sidebarClass = clsx(
         'sm:block fixed top-0 left-0 z-30 w-48 h-screen transition-transform -translate-x-full sm:translate-x-0',
         {
-            'translate-x-0': isOpen,
-            '-translate-x-full': !isOpen,
+            'translate-x-0': open,
+            '-translate-x-full': !open,
         },
     );
 
     return (
         <>
-            {isOpen ? (
+            {open ? (
                 <div
                     className="z-10 absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 sm:hidden"
-                    onClick={close}
+                    onClick={() => setOpen(false)}
                     onKeyUp={(e) => {
                         if (e.key === 'Escape') {
-                            close();
+                            setOpen(false);
                         }
                     }}
                 />
             ) : (
                 <div className="fixed bottom-4 left-4 sm:hidden">
                     <IconButton
-                        onClick={open}
+                        onClick={() => setOpen(true)}
                         icon="hamburger"
                         size="small"
                         shape="circle"
@@ -69,11 +52,11 @@ export function Sidebar(props: SidebarProps) {
             )}
 
             <aside className={sidebarClass} aria-label="Sidebar">
-                <div className="h-full p-4 overflow-y-auto bg-blue-900 flex flex-col justify-between overflow-hidden">
+                <div className="h-full p-4 overflow-y-auto bg-background flex flex-col justify-between overflow-hidden border-r-2 border-background-container">
                     <ul className="space-y-2 font-medium">
                         <li>
                             <Link
-                                to="/projects/$projectId"
+                                to="/project/$projectId"
                                 params={{ projectId }}
                                 className={itemClass}
                             >
@@ -86,7 +69,15 @@ export function Sidebar(props: SidebarProps) {
                     <ul className="space-y-2 font-medium">
                         <li>
                             <Link
-                                to="/projects/$projectId/settings"
+                                to="/project/$projectId/team"
+                                params={{ projectId }}
+                                className={itemClass}
+                            >
+                                <Icon icon="team" />
+                                <span>Team</span>
+                            </Link>
+                            <Link
+                                to="/project/$projectId/settings"
                                 params={{ projectId }}
                                 className={itemClass}
                             >

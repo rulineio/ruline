@@ -30,6 +30,7 @@ pub fn router() -> Router<Arc<App>> {
     Router::new()
         .route("/", get(get_organization))
         .route("/", post(create_organization))
+        .route("/members", get(get_organization_members))
 }
 
 async fn get_organization(Extension(session): Extension<Session>) -> Result<impl IntoResponse> {
@@ -69,12 +70,14 @@ async fn create_organization(
         .name("Default".to_owned())
         .build();
 
-    app.db.store_organization(&organization).await?;
-    app.db.store_member(&member).await?;
+    let mut trx = app.db.begin().await?;
+    app.db.store_organization(&organization, &mut trx).await?;
+    app.db.store_member(&member, &mut trx).await?;
     app.db
-        .update_user_status(&user.id, UserStatus::Active)
+        .set_user_status(&user.id, UserStatus::Active, &mut trx)
         .await?;
-    app.db.store_project(&project).await?;
+    app.db.store_project(&project, &mut trx).await?;
+    app.db.commit(trx).await?;
 
     let new_session = Session::Member {
         user,
@@ -108,6 +111,31 @@ async fn create_organization(
     ))
 }
 
+async fn get_organization_members(
+    State(app): State<Arc<App>>,
+    Extension(session): Extension<Session>,
+) -> Result<impl IntoResponse> {
+    let organization = match session {
+        Session::Member { organization, .. } => organization,
+        _ => return Err(Error::Unauthorized),
+    };
+
+    let members = app.db.get_organization_members(&organization.id).await?;
+
+    Ok(Json(
+        members
+            .into_iter()
+            .map(|member| OrganizationMemberResponse {
+                name: member.name,
+                email: member.email,
+                avatar: member.avatar,
+                role: member.role.to_string(),
+                status: member.status.to_string(),
+            })
+            .collect::<Vec<_>>(),
+    ))
+}
+
 #[derive(Serialize)]
 struct OrganizationResponse {
     pub id: String,
@@ -124,4 +152,13 @@ struct CreateOrganizationRequest {
 #[derive(Serialize)]
 struct CreateOrganizationResponse {
     pub project_id: String,
+}
+
+#[derive(Serialize)]
+struct OrganizationMemberResponse {
+    pub name: String,
+    pub email: String,
+    pub avatar: String,
+    pub role: String,
+    pub status: String,
 }

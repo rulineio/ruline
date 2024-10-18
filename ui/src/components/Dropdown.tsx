@@ -1,6 +1,6 @@
-import { IconType } from './Icon';
-import { Button } from './Button';
-import { create } from 'zustand';
+import clsx from 'clsx';
+import { Button, type ButtonProps } from './Button';
+import { useState } from 'react';
 
 interface DropdowProps {
     title?: string;
@@ -9,81 +9,91 @@ interface DropdowProps {
         label: string;
         onClick: () => void;
     }[];
+    button?: Omit<
+        ButtonProps,
+        'text' | 'onClick' | 'type' | 'icon' | 'iconPostion'
+    >;
+    className?: string;
 }
 
-const useOpenStore = create<{ isOpen: boolean; toggle: () => void }>((set) => ({
-    isOpen: false,
-    toggle: () => set((state) => ({ isOpen: !state.isOpen })),
-}));
-
 export function Dropdown(props: DropdowProps) {
-    const { title, selectedOption, items } = props;
+    const {
+        title,
+        selectedOption,
+        items,
+        className,
+        button = {
+            color: 'transparent',
+        },
+    } = props;
+    const [open, setOpen] = useState(false);
 
-    const isOpen = useOpenStore((state) => state.isOpen);
-    const toggle = useOpenStore((state) => state.toggle);
+    const dropdownClass = clsx('relative inline-block text-left', className);
+    const dropdownContentClass = clsx(
+        'absolute right-0 z-40 mt-2 w-36 origin-top-right rounded-md bg-surface shadow-lg focus:outline-none',
+        {
+            hidden: !open,
+        },
+    );
+    const dropdownOverlayClass = clsx('fixed inset-0 z-30', {
+        hidden: !open,
+    });
 
     return (
-        <div className="relative inline-block text-left">
+        <div className={dropdownClass}>
             <div>
                 <Button
-                    onClick={() => {
-                        toggle();
-                    }}
-                    color="transparent"
+                    onClick={() => setOpen(!open)}
+                    text={selectedOption}
+                    type="button"
                     icon="chevron-down"
                     iconPosition="right"
-                    text={selectedOption}
+                    {...button}
                 />
             </div>
-            {isOpen && (
-                <>
-                    <div
-                        className="origin-top-right absolute right-0 mt-2 w-36 rounded-md shadow-lg bg-white z-50"
-                        role="menu"
-                        aria-orientation="vertical"
-                        aria-labelledby="menu-button"
-                        tabIndex={-1}
-                    >
-                        {title && (
-                            <>
-                                <div className="py-1">
-                                    <p className="block px-2 py-1 text-sm text-gray-700">
-                                        {title}
-                                    </p>
-                                </div>
-                                <div className="border-t border-gray-200" />
-                            </>
-                        )}
-                        <ul className="z-40">
-                            {items.map((item) => (
-                                <li key={item.label}>
-                                    <Button
-                                        onClick={() => {
-                                            item.onClick();
-                                            toggle();
-                                        }}
-                                        size="small"
-                                        color="transparent"
-                                        text={item.label}
-                                        className="text-gray-900 font-bold text-left"
-                                    />
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                    <div
-                        className="fixed inset-0 z-30"
-                        onClick={() => {
-                            toggle();
-                        }}
-                        onKeyUp={(e) => {
-                            if (e.key === 'Escape') {
-                                toggle();
-                            }
-                        }}
-                    />
-                </>
-            )}
+            <div
+                className={dropdownContentClass}
+                aria-orientation="vertical"
+                aria-labelledby="menu-button"
+                tabIndex={-1}
+                role="menu"
+            >
+                {title && (
+                    <>
+                        <div className="py-1">
+                            <p className="block px-2 py-1 text-sm">{title}</p>
+                        </div>
+                        <div className="border-t border-surface-container" />
+                    </>
+                )}
+                <ul>
+                    {items.map((item) => (
+                        <li key={item.label}>
+                            <Button
+                                onClick={() => {
+                                    item.onClick();
+                                    setOpen(false);
+                                }}
+                                size="small"
+                                color="transparent"
+                                text={item.label}
+                                className="font-bold text-left"
+                            />
+                        </li>
+                    ))}
+                </ul>
+            </div>
+            <div
+                className={dropdownOverlayClass}
+                onClick={() => {
+                    setOpen(false);
+                }}
+                onKeyUp={(e) => {
+                    if (e.key === 'Escape') {
+                        setOpen(false);
+                    }
+                }}
+            />
         </div>
     );
 }

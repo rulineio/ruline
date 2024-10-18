@@ -14,7 +14,10 @@ export default function Email() {
     return (
         <Html lang="en" dir="ltr">
             <Head />
-            <Preview>Your link for Ruline</Preview>
+            <Preview>
+                You have been invited to join the {'{organization}'}{' '}
+                organization on Ruline
+            </Preview>
             <Body
                 style={{
                     backgroundColor: '#ffffff',
@@ -29,8 +32,15 @@ export default function Email() {
                     }}
                 >
                     <Heading style={{ fontSize: '24px' }}>
-                        Your link for Ruline
+                        You have been invited to join {'{organization}'} on
+                        Ruline
                     </Heading>
+                    <Section style={{ fontSize: '16px' }}>
+                        <Text>
+                            Use the following link to log in and review the
+                            invitation.
+                        </Text>
+                    </Section>
                     <Section style={{ fontSize: '16px', padding: '16px 0' }}>
                         <Button
                             href={'{url}'}
@@ -47,12 +57,12 @@ export default function Email() {
                                 border: 'none',
                             }}
                         >
-                            {'{label}'}
+                            Log in
                         </Button>
                     </Section>
                     <Text style={{ fontSize: '12px', opacity: 0.7 }}>
-                        The link is valid for 5 minutes. If you didn't request
-                        this link, you can safely ignore this email.
+                        If you are not aware of this invitation, please ignore
+                        this email.
                     </Text>
                 </Container>
             </Body>

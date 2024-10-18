@@ -38,7 +38,7 @@ async fn signup(
 
     let user = User::builder()
         .email(body.email.to_owned())
-        .name(body.name.clone())
+        .name(body.name.to_owned())
         .build();
 
     app.cache
@@ -51,6 +51,7 @@ async fn signup(
 
     let template = Template::Login(LoginTemplate {
         url: format!("{}/login/complete?code={}", &app.config.domain, &code),
+        label: "Sign up".to_owned(),
     });
 
     email_client

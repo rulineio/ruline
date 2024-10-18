@@ -36,3 +36,12 @@ impl From<Organization> for organization::Organization {
         }
     }
 }
+
+#[derive(Clone, FromRow)]
+pub struct OrganizationMember {
+    pub name: String,
+    pub email: String,
+    pub avatar: String,
+    pub role: String,
+    pub status: String,
+}

@@ -3,10 +3,10 @@ import { Icon, type IconType } from './Icon';
 
 export interface ButtonProps {
     text: string;
-    color?: 'primary' | 'secondary' | 'transparent';
+    color?: 'primary' | 'secondary' | 'accent' | 'transparent' | 'error';
     size?: 'small' | 'medium' | 'large';
     type?: 'button' | 'submit' | 'reset';
-    style?: 'filled' | 'outlined';
+    variant?: 'filled' | 'outlined';
     icon?: IconType;
     iconPosition?: 'left' | 'right';
     onClick?: () => void;
@@ -20,7 +20,7 @@ export function Button(props: ButtonProps) {
         color = 'primary',
         size = 'medium',
         type = 'submit',
-        style = 'filled',
+        variant: style = 'filled',
         iconPosition = 'left',
         icon,
         onClick,
@@ -29,21 +29,30 @@ export function Button(props: ButtonProps) {
     } = props;
 
     const buttonClass = clsx(
-        'w-full p-3 rounded-md hover:bg-opacity-80 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed',
+        'p-3 rounded-md hover:bg-opacity-80 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed',
         className,
         {
-            'bg-blue-800 text-gray-200':
+            'w-full': !className || !className.includes('w-'),
+            'ring-1 ring-inset hover:ring-2': style === 'outlined',
+            'bg-primary text-primary-text':
                 color === 'primary' && style === 'filled',
-            'bg-gray-800 text-gray-200':
-                color === 'secondary' && style === 'filled',
-            'border border-blue-800 text-blue-800':
+            'border border-primary text-primary ring-primary':
                 color === 'primary' && style === 'outlined',
-            'border border-gray-800 text-gray-800':
+            'bg-secondary text-secondary-text':
+                color === 'secondary' && style === 'filled',
+            'border border-secondary text-secondary ring-secondary':
                 color === 'secondary' && style === 'outlined',
+            'bg-accent text-accent-text':
+                color === 'accent' && style === 'filled',
+            'border border-accent text-accent ring-accent':
+                color === 'accent' && style === 'outlined',
+            'bg-error text-error-text': color === 'error' && style === 'filled',
+            'border border-error text-error ring-error':
+                color === 'error' && style === 'outlined',
             'bg-transparent': color === 'transparent',
-            'text-sm': size === 'small',
-            'text-base': size === 'medium',
-            'text-lg': size === 'large',
+            'text-xs': size === 'small',
+            'text-sm': size === 'medium',
+            'text-md': size === 'large',
             'flex flex-row items-center': !!icon,
         },
     );
@@ -77,7 +86,7 @@ export function GoogleButton(props: ButtonProps) {
         <form action="/login/google" method="get" className="mt-4">
             <button
                 type="submit"
-                className="w-full border border-1 border-[#747775] text-sm text-[#1f1f1f] bg-white p-3 rounded-md"
+                className="w-full border border-1 border-[#747775] text-sm text-[#1f1f1f] p-3 rounded-md bg-white"
             >
                 <div className="flex items-center justify-center">
                     <svg
