@@ -33,7 +33,7 @@ export function List(props: ListProps) {
                         <div>
                             <div className="font-italic">{item.title}</div>
                             {item.subtitle && (
-                                <div className="text-sm opacity-65">
+                                <div className="text-sm text-gray-11">
                                     {item.subtitle}
                                 </div>
                             )}

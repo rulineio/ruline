@@ -4,12 +4,12 @@ import {
     InviteMemberSchema,
 } from '@api/invitation';
 import { Alert } from '@components/Alert';
-import type { BadgeColor } from '@components/Badge';
 import { Button, type ButtonProps } from '@components/Button';
 import { Dialog } from '@components/Dialog';
 import { Input } from '@components/Input';
 import { List, type ListItem } from '@components/List';
 import { Navbar } from '@components/Navbar';
+import type colors from '@components/props/color';
 import { Select } from '@components/Select';
 import { valibotResolver } from '@hookform/resolvers/valibot';
 import { useAuth } from '@hooks/auth';
@@ -34,28 +34,26 @@ function Team() {
         return null;
     }
 
-    const actions: ButtonProps[] = [];
+    const actions: React.PropsWithChildren<{ id: string }>[] = [];
     if (session.member_role === 'owner' || session.member_role === 'admin') {
         actions.push({
-            text: 'Invite Member',
-            color: 'accent',
-            variant: 'outlined',
-            onClick: () => setOpen(true),
+            id: 'invite',
+            children: <InviteMemberButton />,
         });
     }
 
-    const rolesColors: Record<string, BadgeColor> = {
-        owner: 'secondary',
-        admin: 'accent',
-        editor: 'accent',
-        viewer: 'accent',
-        member: 'accent',
+    const rolesColors: Record<string, (typeof colors)[number]> = {
+        owner: 'teal',
+        admin: 'white',
+        editor: 'white',
+        viewer: 'white',
+        member: 'white',
     };
-    const statusColors: Record<string, BadgeColor> = {
-        left: 'error',
-        removed: 'error',
-        invited: 'warning',
-        declined: 'error',
+    const statusColors: Record<string, (typeof colors)[number]> = {
+        left: 'red',
+        removed: 'red',
+        invited: 'amber',
+        declined: 'red',
     };
     const items: ListItem[] = [];
     if (organizationMembers) {
@@ -66,11 +64,13 @@ function Team() {
                 subtitle: member.email,
                 avatar: {
                     src: member.avatar,
+                    name: member.name,
                 },
                 badges: [
                     {
                         label: member.role as string,
                         color: rolesColors[member.role],
+                        className: 'w-16',
                     },
                 ],
             };
@@ -82,6 +82,8 @@ function Team() {
                 });
             }
 
+            item.badges?.reverse();
+
             items.push(item);
         }
     }
@@ -89,13 +91,6 @@ function Team() {
     return (
         <>
             <Navbar title="Team" projectId={projectId} actions={actions} />
-            <Dialog
-                open={open}
-                onClose={() => setOpen(false)}
-                title="Invite Member"
-                variant="form"
-                form={<InviteMember onClose={() => setOpen(false)} />}
-            />
             <div className="p-8">
                 <h1 className="text-xl font-bold mb-8">Organization Members</h1>
                 <div className="sm:w-1/2 pl-4">
@@ -106,7 +101,8 @@ function Team() {
     );
 }
 
-function InviteMember({ onClose }: { onClose: () => void }) {
+function InviteMemberButton() {
+    const [open, setOpen] = useState(false);
     const {
         register,
         handleSubmit,
@@ -128,7 +124,7 @@ function InviteMember({ onClose }: { onClose: () => void }) {
                 exact: true,
             });
             reset();
-            onClose();
+            setOpen(false);
         } catch (error) {
             if (error instanceof Error) {
                 setError('root', { message: error.message });
@@ -137,71 +133,86 @@ function InviteMember({ onClose }: { onClose: () => void }) {
     };
 
     return (
-        <form onSubmit={handleSubmit(submit)}>
-            <div className="grid grid-cols-4 grid-rows-2 gap-x-4 mb-6">
-                <div className="col-span-2">
-                    <Input
-                        name="firstName"
-                        register={register}
-                        label="First Name"
-                        placeholder="John"
-                        error={errors.firstName?.message}
-                    />
-                </div>
+        <Dialog
+            button={{
+                children: 'Invite Member',
+                color: 'teal',
+                variant: 'outline',
+                disabled: disabled || isSubmitting,
+            }}
+            title="Invite Member"
+            description="Invite a new member to your organization."
+            open={open}
+            onOpenChange={setOpen}
+        >
+            <form onSubmit={handleSubmit(submit)}>
+                <div className="grid grid-cols-4 grid-rows-2 gap-x-4  gap-y-4">
+                    <div className="col-span-2">
+                        <Input
+                            name="firstName"
+                            register={register}
+                            label="First Name"
+                            placeholder="John"
+                            error={errors.firstName?.message}
+                        />
+                    </div>
 
-                <div className="col-span-2">
-                    <Input
-                        name="lastName"
-                        register={register}
-                        label="Last Name"
-                        placeholder="Doe"
-                        optional
-                        error={errors.lastName?.message}
-                    />
-                </div>
+                    <div className="col-span-2">
+                        <Input
+                            name="lastName"
+                            register={register}
+                            label="Last Name"
+                            placeholder="Doe"
+                            optional
+                            error={errors.lastName?.message}
+                        />
+                    </div>
 
-                <div className="col-span-3">
-                    <Input
-                        name="email"
-                        register={register}
-                        label="Email"
-                        placeholder="john.doe@ruline.io"
-                        error={errors.email?.message}
-                    />
-                </div>
+                    <div className="col-span-3">
+                        <Input
+                            name="email"
+                            register={register}
+                            label="Email"
+                            placeholder="john.doe@ruline.io"
+                            error={errors.email?.message}
+                        />
+                    </div>
 
-                <div className="col-span-1">
-                    <Controller
-                        name="role"
-                        control={control}
-                        render={({ field }) => (
-                            <Select
-                                value={field.value ?? 'viewer'}
-                                onChange={field.onChange}
-                                label="Role"
-                                className="sm:min-w-28"
-                                options={[
-                                    { value: 'admin', label: 'admin' },
-                                    { value: 'editor', label: 'editor' },
-                                    { value: 'viewer', label: 'viewer' },
-                                ]}
-                            />
-                        )}
-                    />
+                    <div className="col-span-1">
+                        <Controller
+                            name="role"
+                            control={control}
+                            render={({ field }) => (
+                                <Select
+                                    value={field.value ?? 'viewer'}
+                                    onChange={field.onChange}
+                                    label="Role"
+                                    className="sm:min-w-28"
+                                    options={[
+                                        { value: 'admin', label: 'admin' },
+                                        { value: 'editor', label: 'editor' },
+                                        { value: 'viewer', label: 'viewer' },
+                                    ]}
+                                />
+                            )}
+                        />
+                    </div>
                 </div>
-            </div>
-            <Button
-                text="Invite"
-                type="submit"
-                color="primary"
-                size="small"
-                disabled={disabled || isSubmitting}
-            />
-            {errors.root?.message && (
-                <div className="mt-4">
-                    <Alert message={errors.root.message} type="error" />
-                </div>
-            )}
-        </form>
+                <Button
+                    as="submit"
+                    color="teal"
+                    variant="classic"
+                    className="mt-6"
+                    disabled={disabled || isSubmitting}
+                >
+                    Invite Member
+                </Button>
+                {errors.root?.message && (
+                    <div className="mt-4">
+                        <Alert message={errors.root.message} type="error" />
+                    </div>
+                )}
+            </form>
+        </Dialog>
     );
 }

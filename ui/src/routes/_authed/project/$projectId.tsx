@@ -11,7 +11,7 @@ function Layout() {
     return (
         <>
             <Sidebar projectId={projectId} />
-            <main className="md:ml-48 bg-background min-h-screen text-background-text">
+            <main className="md:ml-48 bg-teal-1 min-h-screen text-white">
                 <Outlet />
             </main>
         </>

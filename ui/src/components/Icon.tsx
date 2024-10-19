@@ -1,27 +1,22 @@
-export type IconType =
-    | 'settings'
-    | 'home'
-    | 'hamburger'
-    | 'chevron-down'
-    | 'team';
+import type { iconSizes } from './props/size';
 
-export type IconSize = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+const types = [
+    'settings',
+    'home',
+    'hamburger',
+    'chevron-down',
+    'team',
+] as const;
 
 export interface IconProps {
-    icon: IconType;
-    size?: IconSize;
+    icon: (typeof types)[number];
+    size?: (typeof iconSizes)[number];
 }
 
 const classes = {
-    1: 'size-1',
-    2: 'size-2',
-    3: 'size-3',
     4: 'size-4',
-    5: 'size-5',
     6: 'size-6',
-    7: 'size-7',
     8: 'size-8',
-    9: 'size-9',
     10: 'size-10',
 };
 
@@ -37,7 +32,7 @@ export function Icon({ icon, size = 6 }: IconProps) {
     return icons[icon]({ size });
 }
 
-export function SettingsIcon({ size = 6 }: { size?: IconSize }) {
+export function SettingsIcon({ size = 6 }: Pick<IconProps, 'size'>) {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -62,7 +57,7 @@ export function SettingsIcon({ size = 6 }: { size?: IconSize }) {
     );
 }
 
-export function HomeIcon({ size = 6 }: { size?: IconSize }) {
+export function HomeIcon({ size = 6 }: Pick<IconProps, 'size'>) {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -82,7 +77,7 @@ export function HomeIcon({ size = 6 }: { size?: IconSize }) {
     );
 }
 
-export function HamburgerIcon({ size = 6 }: { size?: IconSize }) {
+export function HamburgerIcon({ size = 6 }: Pick<IconProps, 'size'>) {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -102,7 +97,7 @@ export function HamburgerIcon({ size = 6 }: { size?: IconSize }) {
     );
 }
 
-export function ChevronDownIcon({ size = 6 }: { size?: IconSize }) {
+export function ChevronDownIcon({ size = 6 }: Pick<IconProps, 'size'>) {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -122,7 +117,7 @@ export function ChevronDownIcon({ size = 6 }: { size?: IconSize }) {
     );
 }
 
-export function TeamIcon({ size = 6 }: { size?: IconSize }) {
+export function TeamIcon({ size = 6 }: Pick<IconProps, 'size'>) {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"

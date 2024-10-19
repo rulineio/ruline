@@ -1,5 +1,6 @@
-import clsx from 'clsx';
+import * as Label from '@radix-ui/react-label';
 import type { FieldValues, Path, UseFormRegister } from 'react-hook-form';
+import cn from './utils/cn';
 
 export interface InputProps<T extends FieldValues>
     extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -11,39 +12,41 @@ export interface InputProps<T extends FieldValues>
 }
 
 export function Input<T extends FieldValues>(props: InputProps<T>) {
-    const { label, name, register, error, className, ...rest } = props;
+    const { label, name, register, error, className, optional, ...rest } =
+        props;
 
-    const inputClass = clsx(
-        'mt-2 block w-full px-3 py-2 rounded-md shadow-sm focus:outline-none',
-        'sm:text-sm bg-background text-primary-text autofill:bg-transparent',
-        className,
+    const inputClass = cn(
+        'w-full px-3 py-2 rounded-md shadow-sm',
+        'outline outline-1 focus:ring-2',
+        'sm:text-sm',
         {
-            'ring-red-200 ring-2': !!error,
-            'border border-primary focus:ring-2 focus:ring-accent': !error,
+            'bg-gray-2 outline-gray-6 focus:ring-teal-8 text-gray-11': !error,
+            'bg-red-2 outline-red-6 focus:ring-red-8 text-red-11': !!error,
         },
+        className,
     );
-    const labelClass = clsx('text-xs', {
-        'text-error': !!error,
-    });
-    const errorClass = clsx('mt-1 text-xs text-error leading-3', {
+    const errorClass = cn('text-red-11 text-xs', {
         hidden: !error,
     });
 
     return (
-        <div className="my-2">
-            <label htmlFor={name} className={labelClass}>
+        <div className="space-y-2">
+            <Label.Root
+                htmlFor={name}
+                className="text-xs text-white text-opacity-60"
+            >
                 {label}
-                {rest.optional && (
+                {optional && (
                     <span className="text-xs opacity-65"> (optional)</span>
                 )}
-            </label>
+            </Label.Root>
             <input
                 id={name}
                 className={inputClass}
-                {...register(name, { required: !rest.optional })}
+                {...register(name, { required: !optional })}
                 {...rest}
             />
-            <span className={errorClass}>{error}</span>
+            <span className={errorClass}>{error ?? 'Some Error'}</span>
         </div>
     );
 }

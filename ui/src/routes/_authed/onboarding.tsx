@@ -14,6 +14,7 @@ import { Dialog } from '@components/Dialog';
 import { Input } from '@components/Input';
 import { List } from '@components/List';
 import { OnboardingForm } from '@components/OnboardingForm';
+import cn from '@components/utils/cn';
 import { valibotResolver } from '@hookform/resolvers/valibot';
 import { useInvitations } from '@hooks/invitation';
 import { useQueryClient } from '@tanstack/react-query';
@@ -67,7 +68,7 @@ function Onboarding() {
     }
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-background">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-teal-1">
             <OnboardingForm
                 title="Create an Organization"
                 onSubmit={handleSubmit(submit)}
@@ -127,44 +128,44 @@ function InvitationsPage({ invitations }: { invitations: Invitations }) {
         }
     };
 
+    const errorClass = cn('mt-8', { hidden: !error });
+
     return (
         <>
             <Dialog
-                variant="popup"
+                variant="alert"
                 title="Are you sure you want to decline the invitation?"
-                buttons={[
-                    {
-                        text: 'Decline',
-                        color: 'error',
-                        onClick: () => {
-                            if (toDecline) {
-                                decline(toDecline);
-                            }
-                        },
-                    },
-                    {
-                        text: 'Go Back',
-                        color: 'accent',
-                        variant: 'outlined',
-                        onClick: () => setOpen(false),
-                    },
-                ]}
+                description="You will not be able to join the organization after declining."
                 open={open}
-                onClose={() => setOpen(false)}
+                onOpenChange={setOpen}
+                action={{
+                    children: 'Decline',
+                    color: 'red',
+                    onClick: () => {
+                        if (toDecline) {
+                            decline(toDecline);
+                        }
+                    },
+                }}
+                cancel={{
+                    children: 'Cancel',
+                    color: 'gray',
+                    onClick: () => setOpen(false),
+                }}
             />
-            <div className="flex flex-col items-center justify-center min-h-screen bg-background">
-                <div className="flex flex-col justify-center bg-surface text-surface-text p-6 md:p-8 rounded-lg shadow-md w-11/12 md:w-1/2 lg:w-1/3 xl:w-1/4">
+            <div className="flex flex-col items-center justify-center min-h-screen bg-teal-1 text-white">
+                <div className="flex flex-col justify-center bg-gray-1 p-6 md:p-8 rounded-lg shadow-md w-11/12 md:w-1/2 lg:w-1/3 xl:w-1/4">
                     <div className="mb-8">
                         <h1 className="text-2xl font-bold">Invitations</h1>
                         <div className="mt-2">
-                            <p className="italic opacity-65 text-sm">
+                            <p className="italic text-gray-11 text-sm">
                                 You have been invited to join the following
                                 organizations.
                             </p>
                         </div>
                     </div>
                     <List
-                        className="bg-primary p-4 rounded-xl"
+                        className="bg-teal-2 p-4 rounded-xl"
                         items={invitations.map((inv) => ({
                             id: inv.id,
                             title: inv.organization_name,
@@ -173,40 +174,41 @@ function InvitationsPage({ invitations }: { invitations: Invitations }) {
                                     id: 'accept',
                                     action: (
                                         <Button
-                                            color="accent"
-                                            size="small"
-                                            text="Join"
+                                            color="teal"
+                                            variant="soft"
+                                            size="xs"
                                             className="w-20"
-                                            type="button"
+                                            as="button"
                                             onClick={() => accept(inv.id)}
-                                        />
+                                        >
+                                            Join
+                                        </Button>
                                     ),
                                 },
                                 {
                                     id: 'decline',
                                     action: (
                                         <Button
-                                            color="error"
-                                            variant="outlined"
-                                            size="small"
-                                            text="Decline"
+                                            color="red"
+                                            variant="text"
+                                            size="xs"
                                             className="w-20"
-                                            type="button"
+                                            as="button"
                                             onClick={() => {
                                                 setToDecline(inv.id);
                                                 setOpen(true);
                                             }}
-                                        />
+                                        >
+                                            Decline
+                                        </Button>
                                     ),
                                 },
                             ],
                         }))}
                     />
-                    {error && (
-                        <div className="mt-8">
-                            <Alert type="error" message={error} />
-                        </div>
-                    )}
+                    <div className={errorClass}>
+                        <Alert type="error" message={error ?? ''} />
+                    </div>
                 </div>
             </div>
         </>

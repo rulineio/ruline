@@ -11,9 +11,9 @@ export const Alert: React.FC<AlertProps> = (props: AlertProps) => {
     const alertClass = clsx(
         'px-3 py-2 ring-2 ring-inset rounded-md text-center',
         {
-            'bg-success/10 ring-success/30 text-success': type === 'success',
-            'bg-error/10 ring-error/30 text-error': type === 'error',
-            'bg-warn/10 ring-warn/30 text-warn': type === 'warning',
+            'bg-green-3 ring-green-7 text-green-11': type === 'success',
+            'bg-red-3 ring-red-7 text-red-11': type === 'error',
+            'bg-amber-3 ring-amber-7 text-amber-11': type === 'warning',
         },
     );
 
