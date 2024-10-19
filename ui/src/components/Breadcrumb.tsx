@@ -13,7 +13,7 @@ export function Breadcrumb(props: BreadcrumbProps) {
     return (
         <ol className="inline-flex items-center space-x-2 rtl:space-x-reverse ">
             {items.map((item, index) => (
-                <li key={`breadcrumb_${item.id}`}>
+                <li key={item.id}>
                     <div className="flex items-center">
                         {index !== 0 && (
                             <svg
@@ -35,9 +35,7 @@ export function Breadcrumb(props: BreadcrumbProps) {
                         {item.component && (
                             <span className="">{item.component}</span>
                         )}
-                        {item.text && (
-                            <span className="text-white ml-2">{item.text}</span>
-                        )}
+                        {item.text && <span className="ml-2">{item.text}</span>}
                     </div>
                 </li>
             ))}

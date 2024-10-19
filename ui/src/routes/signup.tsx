@@ -51,7 +51,7 @@ function Signup() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-background">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-teal-1">
             <AuthForm
                 title="Create an account"
                 subtitle={{
@@ -65,7 +65,7 @@ function Signup() {
                         disabled: disabled || isSubmitting,
                     },
                     form: (
-                        <div className="grid grid-cols-2 gap-x-4 mb-6">
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-4 mb-6">
                             <Input
                                 name="firstName"
                                 register={register}

@@ -1,11 +1,11 @@
 import { useUser } from '@hooks/user';
 import { Link } from '@tanstack/react-router';
-import clsx from 'clsx';
 import * as R from 'remeda';
 import { Avatar } from './Avatar';
 import { Icon } from './Icon';
 import { IconButton } from './IconButton';
 import { useState } from 'react';
+import cn from './utils/cn';
 
 export interface SidebarProps {
     projectId: string;
@@ -16,11 +16,11 @@ export function Sidebar(props: SidebarProps) {
     const [open, setOpen] = useState(false);
     const { user } = useUser();
 
-    const itemClass = clsx(
-        'flex items-center py-3 text-background-text space-x-2 hover:text-white',
+    const itemClass = cn(
+        'flex items-center py-3 text-gray-11 space-x-2 hover:text-gray-12',
     );
 
-    const sidebarClass = clsx(
+    const sidebarClass = cn(
         'sm:block fixed top-0 left-0 z-30 w-48 h-screen transition-transform -translate-x-full sm:translate-x-0',
         {
             'translate-x-0': open,
@@ -44,15 +44,15 @@ export function Sidebar(props: SidebarProps) {
                 <div className="fixed bottom-4 left-4 sm:hidden">
                     <IconButton
                         onClick={() => setOpen(true)}
-                        icon="hamburger"
-                        size="small"
+                        icon={{ icon: 'hamburger' }}
+                        size="sm"
                         shape="circle"
                     />
                 </div>
             )}
 
             <aside className={sidebarClass} aria-label="Sidebar">
-                <div className="h-full p-4 overflow-y-auto bg-background flex flex-col justify-between overflow-hidden border-r-2 border-background-container">
+                <div className="h-full p-4 overflow-y-auto bg-teal-1 flex flex-col justify-between overflow-hidden border-r-2 border-teal-6">
                     <ul className="space-y-2 font-medium">
                         <li>
                             <Link
@@ -87,13 +87,13 @@ export function Sidebar(props: SidebarProps) {
                         </li>
                         <li>
                             <div className={itemClass}>
-                                <Avatar src={user?.avatar} />
+                                <Avatar
+                                    src={user?.avatar}
+                                    name={user?.name ?? 'R'}
+                                />
                                 <span>
                                     {user?.name &&
-                                        R.pipe(
-                                            R.split(user.name, ' '),
-                                            R.first(),
-                                        )}
+                                        R.first(R.split(user.name, ' '))}
                                 </span>
                             </div>
                         </li>

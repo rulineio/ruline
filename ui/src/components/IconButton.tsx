@@ -1,13 +1,20 @@
-import clsx from 'clsx';
-import { Icon, type IconType } from './Icon';
+import { Button } from './Button';
+import { Icon, type IconProps } from './Icon';
+import type colors from './props/color';
+import type { sizes } from './props/size';
+import cn from './utils/cn';
+
+const as = ['button', 'submit', 'reset'] as const;
+const variants = ['classic', 'outline'] as const;
+const shapes = ['rounded', 'circle'] as const;
 
 export interface IconButtonProps {
-    color?: 'primary' | 'secondary';
-    size?: 'small' | 'medium' | 'large';
-    type?: 'button' | 'submit' | 'reset';
-    style?: 'filled' | 'outlined';
-    shape?: 'rounded' | 'circle';
-    icon: IconType;
+    color?: (typeof colors)[number];
+    size?: (typeof sizes)[number];
+    as?: (typeof as)[number];
+    variant?: (typeof variants)[number];
+    shape?: (typeof shapes)[number];
+    icon: IconProps;
     onClick?: () => void;
     disabled?: boolean;
     className?: string;
@@ -15,40 +22,32 @@ export interface IconButtonProps {
 
 export function IconButton(props: IconButtonProps) {
     const {
-        color = 'primary',
-        type = 'submit',
-        style = 'filled',
+        color = 'teal',
+        as = 'button',
+        variant = 'classic',
         shape = 'rounded',
         icon,
         onClick,
         className,
     } = props;
 
-    const buttonClass = clsx(
-        'p-3 hover:bg-opacity-80 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed',
-        className,
+    const btnClass = cn(
         {
-            'bg-primary text-primary-text':
-                color === 'primary' && style === 'filled',
-            'bg-secondary text-secondary-text':
-                color === 'secondary' && style === 'filled',
-            'border border-primary text-primary':
-                color === 'primary' && style === 'outlined',
-            'border border-secondary text-secondary':
-                color === 'secondary' && style === 'outlined',
-            'rounded-md': shape === 'rounded',
             'rounded-full': shape === 'circle',
         },
+        className,
     );
 
     return (
-        <button
-            disabled={props.disabled}
-            type={type}
-            className={buttonClass}
+        <Button
+            as={as}
+            variant={variant}
+            color={color}
             onClick={onClick}
+            disabled={props.disabled}
+            className={btnClass}
         >
-            <Icon icon={icon} />
-        </button>
+            <Icon {...icon} />
+        </Button>
     );
 }

@@ -4,19 +4,20 @@ import { useNavigate } from '@tanstack/react-router';
 import { Avatar } from './Avatar';
 import { Breadcrumb } from './Breadcrumb';
 import { Button, type ButtonProps } from './Button';
-import Dropdown from './Dropdown';
+import { Popover } from './Popover';
+import { Icon } from './Icon';
 
 export interface NavbarProps {
     projectId: string;
     title: string;
-    actions?: ButtonProps[];
+    actions?: React.PropsWithChildren<{ id: string }>[];
 }
 
 export function Navbar(props: NavbarProps) {
     const { title, actions, projectId } = props;
 
     return (
-        <nav className="flex items-center justify-between p-4 bg-background text-white border-b-2 border-background-container">
+        <nav className="flex items-center justify-between p-4 bg-teal-1 border-b-2 border-teal-6">
             <Breadcrumb
                 items={[
                     {
@@ -39,11 +40,8 @@ export function Navbar(props: NavbarProps) {
             />
             <div className="flex space-x-2">
                 {actions?.map((action) => (
-                    <div
-                        key={`nav_action_${action.className}`}
-                        className="px-4"
-                    >
-                        <Button {...{ ...action, size: 'small' }} />
+                    <div key={action.id} className="px-4">
+                        {action.children}
                     </div>
                 ))}
             </div>
@@ -61,22 +59,38 @@ function ProjectSelector(props: { projectId: string }) {
     }
 
     return (
-        <Dropdown
-            title="Projects"
-            selectedOption={selectedProject.name}
-            items={projects.map((project) => ({
-                label: project.name,
-                onClick: () => {
-                    if (project.id === selectedProject.id) {
-                        return;
-                    }
-                    navigate({
-                        to: '/project/$projectId',
-                        params: { projectId: project.id },
-                    });
-                },
-            }))}
-        />
+        <Popover
+            button={{
+                size: 'md',
+                color: 'black',
+                variant: 'text',
+                children: (
+                    <div className="flex items-center justify-center space-x-2">
+                        <span>{selectedProject.name}</span>
+                        <Icon size={4} icon="chevron-down" />
+                    </div>
+                ),
+            }}
+        >
+            {projects.map((project) => (
+                <Button
+                    key={project.id}
+                    variant="soft"
+                    color={project.id === selectedProject.id ? 'teal' : 'gray'}
+                    size="xs"
+                    onClick={() => {
+                        if (project.id !== selectedProject.id) {
+                            navigate({
+                                to: '/project/$projectId',
+                                params: { projectId: project.id },
+                            });
+                        }
+                    }}
+                >
+                    {project.name}
+                </Button>
+            ))}
+        </Popover>
     );
 }
 

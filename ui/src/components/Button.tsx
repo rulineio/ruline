@@ -1,87 +1,112 @@
-import clsx from 'clsx';
-import { Icon, type IconType } from './Icon';
+import React from 'react';
+import type colors from './props/color';
+import type { sizes } from './props/size';
+import cn from './utils/cn';
+
+const variants = ['classic', 'outline', 'soft', 'text'] as const;
+const as = ['button', 'submit', 'reset'] as const;
 
 export interface ButtonProps {
-    text: string;
-    color?: 'primary' | 'secondary' | 'accent' | 'transparent' | 'error';
-    size?: 'small' | 'medium' | 'large';
-    type?: 'button' | 'submit' | 'reset';
-    variant?: 'filled' | 'outlined';
-    icon?: IconType;
-    iconPosition?: 'left' | 'right';
+    color?: (typeof colors)[number];
+    size?: (typeof sizes)[number];
+    as?: (typeof as)[number];
+    variant?: (typeof variants)[number];
     onClick?: () => void;
     disabled?: boolean;
     className?: string;
 }
 
-export function Button(props: ButtonProps) {
+function ButtonComponent(
+    props: React.PropsWithChildren<ButtonProps>,
+    ref: React.Ref<HTMLButtonElement>,
+) {
     const {
-        text,
-        color = 'primary',
-        size = 'medium',
-        type = 'submit',
-        variant: style = 'filled',
-        iconPosition = 'left',
-        icon,
+        color = 'teal',
+        size = 'sm',
+        variant = 'classic',
+        as = 'button',
+        children,
         onClick,
         disabled,
         className,
     } = props;
 
-    const buttonClass = clsx(
-        'p-3 rounded-md hover:bg-opacity-80 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed',
+    const btnColor = disabled ? 'gray' : color;
+
+    const classicClass = cn('text-white', {
+        'bg-teal-9 hover:bg-teal-10': btnColor === 'teal',
+        'bg-blue-9 hover:bg-blue-10': btnColor === 'blue',
+        'bg-red-9 hover:bg-red-10': btnColor === 'red',
+        'bg-green-9 hover:bg-green-10': btnColor === 'green',
+        'bg-amber-9 hover:bg-amber-10': btnColor === 'amber',
+        'bg-gray-9 hover:bg-gray-10': btnColor === 'gray',
+        'bg-white bg-opacity-50 hover:bg-opacity-70 text-black':
+            btnColor === 'white',
+    });
+    const outlineClass = cn('text-teal outline outline-2', {
+        'outline-teal-7 hover:outline-teal-8  text-teal-11':
+            btnColor === 'teal',
+        'outline-blue-7 hover:outline-blue-8 text-blue-11': btnColor === 'blue',
+        'outline-red-7 hover:outline-red-8 text-red-11': btnColor === 'red',
+        'outline-green-7 hover:outline-green-8 text-green-11':
+            btnColor === 'green',
+        'outline-amber-7 hover:outline-amber-8 text-amber-11':
+            btnColor === 'amber',
+        'outline-gray-7 hover:outline-gray-8 text-gray-11': btnColor === 'gray',
+    });
+    const softClass = cn('text-teal', {
+        'bg-teal-3 hover:bg-teal-4 text-teal-11': btnColor === 'teal',
+        'bg-blue-3 hover:bg-blue-4 text-blue-11': btnColor === 'blue',
+        'bg-red-3 hover:bg-red-4 text-red-11': btnColor === 'red',
+        'bg-green-3 hover:bg-green-4 text-green-11': btnColor === 'green',
+        'bg-amber-3 hover:bg-amber-4 text-amber-11': btnColor === 'amber',
+        'bg-gray-3 hover:bg-gray-4 text-gray-11': btnColor === 'gray',
+        'bg-white/3 hover:bg-white/4 text-white/11': btnColor === 'white',
+        'bg-black/3 hover:bg-black/4 text-black/11': btnColor === 'black',
+    });
+    const textClass = cn('text-teal', {
+        'text-teal-11 hover:bg-teal-3': btnColor === 'teal',
+        'text-blue-11 hover:bg-blue-3': btnColor === 'blue',
+        'text-red-11 hover:bg-red-3': btnColor === 'red',
+        'text-green-11 hover:bg-green-3': btnColor === 'green',
+        'text-amber-11 hover:bg-amber-3': btnColor === 'amber',
+        'text-gray-11 hover:bg-gray-3': btnColor === 'gray',
+    });
+    const sizeClass = cn({
+        'text-xs': size === 'xs',
+        'text-sm': size === 'sm',
+        'text-base': size === 'md',
+        'text-lg': size === 'lg',
+    });
+
+    const btnClass = cn(
+        'p-3 rounded-md cursor-pointer disabled:cursor-not-allowed',
+        'w-full flex items-center justify-center focus:outline-none',
+        sizeClass,
+        variant === 'classic' && classicClass,
+        variant === 'outline' && outlineClass,
+        variant === 'soft' && softClass,
+        variant === 'text' && textClass,
         className,
-        {
-            'w-full': !className || !className.includes('w-'),
-            'ring-1 ring-inset hover:ring-2': style === 'outlined',
-            'bg-primary text-primary-text':
-                color === 'primary' && style === 'filled',
-            'border border-primary text-primary ring-primary':
-                color === 'primary' && style === 'outlined',
-            'bg-secondary text-secondary-text':
-                color === 'secondary' && style === 'filled',
-            'border border-secondary text-secondary ring-secondary':
-                color === 'secondary' && style === 'outlined',
-            'bg-accent text-accent-text':
-                color === 'accent' && style === 'filled',
-            'border border-accent text-accent ring-accent':
-                color === 'accent' && style === 'outlined',
-            'bg-error text-error-text': color === 'error' && style === 'filled',
-            'border border-error text-error ring-error':
-                color === 'error' && style === 'outlined',
-            'bg-transparent': color === 'transparent',
-            'text-xs': size === 'small',
-            'text-sm': size === 'medium',
-            'text-md': size === 'large',
-            'flex flex-row items-center': !!icon,
-        },
     );
 
     return (
         <button
+            ref={ref}
             disabled={disabled}
-            type={type}
-            className={buttonClass}
+            type={as}
+            className={btnClass}
             onClick={onClick}
         >
-            {icon && iconPosition === 'left' && (
-                <div className="mr-2">
-                    <Icon icon={icon} size={4} />
-                </div>
-            )}
-            <span>{text}</span>
-            {icon && iconPosition === 'right' && (
-                <div className="ml-2">
-                    <Icon icon={icon} size={4} />
-                </div>
-            )}
+            <span className="contents" aria-hidden>
+                {children}
+            </span>
         </button>
     );
 }
 
-export function GoogleButton(props: ButtonProps) {
-    const { text } = props;
-
+export function GoogleButton(props: React.PropsWithChildren<ButtonProps>) {
+    const { children } = props;
     return (
         <form action="/login/google" method="get" className="mt-4">
             <button
@@ -114,9 +139,11 @@ export function GoogleButton(props: ButtonProps) {
                         />
                         <path fill="none" d="M0 0h48v48H0z" />
                     </svg>
-                    {text}
+                    {children}
                 </div>
             </button>
         </form>
     );
 }
+
+export const Button = React.forwardRef(ButtonComponent);

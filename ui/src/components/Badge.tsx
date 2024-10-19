@@ -1,62 +1,64 @@
-import clsx from 'clsx';
+import type colors from './props/color';
+import type { sizes } from './props/size';
+import cn from './utils/cn';
 
-export type BadgeColor =
-    | 'primary'
-    | 'secondary'
-    | 'accent'
-    | 'error'
-    | 'warning'
-    | 'success';
+const variants = ['normal', 'pill'] as const;
+const types = ['filled', 'outlined'] as const;
 
 export interface BadgeProps {
     label: string;
-    color?: BadgeColor;
-    size?: 'small' | 'medium' | 'large';
-    variant?: 'normal' | 'pill';
-    type?: 'filled' | 'outlined';
+    color?: (typeof colors)[number];
+    size?: (typeof sizes)[number];
+    variant?: (typeof variants)[number];
+    type?: (typeof types)[number];
+    className?: string;
 }
 
 export function Badge(props: BadgeProps) {
     const {
         label,
-        color = 'primary',
-        size = 'small',
+        color = 'teal',
+        size = 'sm',
         variant = 'normal',
         type = 'filled',
+        className,
     } = props;
 
-    const badgeClass = clsx(
-        'inline-flex items-center py-1 px-3 ring-1 ring-inset',
+    const classicClass = cn({
+        'ring-teal-7 bg-teal-3 text-teal-11': color === 'teal',
+        'ring-blue-7 bg-blue-3 text-blue-11': color === 'blue',
+        'ring-red-7 bg-red-3 text-red-11': color === 'red',
+        'ring-green-7 bg-green-3 text-green-11': color === 'green',
+        'ring-amber-7 bg-amber-3 text-amber-11': color === 'amber',
+        'ring-gray-7 bg-gray-3 text-gray-11': color === 'gray',
+        'ring-white/50 bg-white bg-opacity-15 text-white': color === 'white',
+    });
+    const outlinedClass = cn({
+        'ring-teal-7 text-teal-11': color === 'teal',
+        'ring-blue-7 text-blue-11': color === 'blue',
+        'ring-red-7 text-red-11': color === 'red',
+        'ring-green-7 text-green-11': color === 'green',
+        'ring-amber-7 text-amber-11': color === 'amber',
+        'ring-gray-7 text-gray-11': color === 'gray',
+        'ring-white/50 text-white': color === 'white',
+    });
+    const sizeClass = cn({
+        'text-xs': size === 'xs',
+        'text-sm': size === 'sm',
+        'text-md': size === 'md',
+        'text-lg': size === 'lg',
+    });
+
+    const badgeClass = cn(
+        'inline-flex items-center justify-center py-1',
+        'px-3 ring-1 ring-inset truncate',
         {
-            'text-primary': color === 'primary',
-            'text-secondary': color === 'secondary',
-            'text-accent': color === 'accent',
-            'text-error': color === 'error',
-            'text-warning': color === 'warning',
-            'text-success': color === 'success',
-            'ring-primary/10 bg-primary/10':
-                color === 'primary' && type === 'filled',
-            'ring-secondary/10 bg-secondary/10':
-                color === 'secondary' && type === 'filled',
-            'ring-accent/10 bg-accent/10':
-                color === 'accent' && type === 'filled',
-            'ring-error/10 bg-error/10': color === 'error' && type === 'filled',
-            'ring-warning/10 bg-warning/10':
-                color === 'warning' && type === 'filled',
-            'ring-success/10 bg-success/10':
-                color === 'success' && type === 'filled',
-            'ring-primary': color === 'primary' && type === 'outlined',
-            'ring-secondary': color === 'secondary' && type === 'outlined',
-            'ring-accent': color === 'accent' && type === 'outlined',
-            'ring-error': color === 'error' && type === 'outlined',
-            'ring-warning': color === 'warning' && type === 'outlined',
-            'ring-success': color === 'success' && type === 'outlined',
             'rounded-full': variant === 'pill',
             'rounded-md': variant === 'normal',
-            'text-xs': size === 'small',
-            'text-sm': size === 'medium',
-            'text-base': size === 'large',
         },
+        type === 'filled' ? classicClass : outlinedClass,
+        sizeClass,
+        className,
     );
 
     return <span className={badgeClass}>{label}</span>;

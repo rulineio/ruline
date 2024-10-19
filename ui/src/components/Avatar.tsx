@@ -1,46 +1,38 @@
-import clsx from 'clsx';
+import * as RAvatar from '@radix-ui/react-avatar';
 import * as R from 'remeda';
+import cn from './utils/cn';
 
-export type AvatarProps = {
+export interface AvatarProps {
     size?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
     className?: string;
-} & (
-    | {
-          src?: string;
-          name?: never;
-      }
-    | {
-          src?: never;
-          name: string;
-      }
-);
-
+    src?: string;
+    name: string;
+}
 export function Avatar(props: AvatarProps) {
     const { src, name, size = 6, className } = props;
 
-    const avatarClass = clsx('rounded-full', className, {
-        'size-1': size === 1,
-        'size-2': size === 2,
-        'size-3': size === 3,
-        'size-4': size === 4,
-        'size-5': size === 5,
-        'size-6': size === 6,
-        'size-7': size === 7,
-        'size-8': size === 8,
-        'size-9': size === 9,
-        'size-10': size === 10,
-        'flex items-center justify-center bg-accent text-accent-text': !src,
-    });
+    const avatarClass = cn(
+        {
+            'size-1': size === 1,
+            'size-2': size === 2,
+            'size-3': size === 3,
+            'size-4': size === 4,
+            'size-5': size === 5,
+            'size-6': size === 6,
+            'size-7': size === 7,
+            'size-8': size === 8,
+            'size-9': size === 9,
+            'size-10': size === 10,
+        },
+        className,
+    );
 
-    if (src) {
-        return <img src={src} alt={name || 'avatar'} className={avatarClass} />;
-    }
-
-    if (name) {
-        return (
-            <div className={avatarClass}>
-                <span>{R.capitalize(name[0])}</span>
-            </div>
-        );
-    }
+    return (
+        <RAvatar.Root className={avatarClass}>
+            <RAvatar.Image className="rounded-full" src={src} alt={name} />
+            <RAvatar.Fallback className="text-sm rounded-full bg-teal-9 text-white w-full h-full flex items-center justify-center">
+                {R.first(R.split(name, ''))}
+            </RAvatar.Fallback>
+        </RAvatar.Root>
+    );
 }
