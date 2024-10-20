@@ -22,6 +22,7 @@ mod session;
 mod settings;
 mod signup;
 mod user;
+mod workflow;
 
 pub fn router(app: Arc<App>) -> Router {
     let static_dir = tower_http::services::ServeDir::new("ui/dist/static");
@@ -31,7 +32,7 @@ pub fn router(app: Arc<App>) -> Router {
         .nest("/session", session::router())
         .nest("/organizations", organization::router())
         .nest("/users", user::router())
-        .nest("/projects", project::router())
+        .nest("/projects", project::router().merge(workflow::router()))
         .nest("/invitations", invitation::router())
         .route_layer(middleware::from_fn_with_state(
             app.clone(),

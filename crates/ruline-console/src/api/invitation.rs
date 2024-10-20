@@ -53,10 +53,18 @@ async fn create_invitation(
         return Err(Error::Unauthorized);
     }
 
-    let user = User::builder()
-        .email(body.email.to_owned())
-        .name(body.name)
-        .build();
+    let mut trx = app.db.begin().await?;
+    let user = match app.db.get_user_by_email(&body.email).await? {
+        Some(user) => user,
+        None => {
+            let new_user = User::builder()
+                .email(body.email.to_owned())
+                .name(body.name)
+                .build();
+            app.db.store_user_trx(&new_user, &mut trx).await?;
+            new_user
+        }
+    };
     let member = Member::builder()
         .organization_id(organization_id.to_owned())
         .role(MemberRole::from(body.role))
@@ -69,8 +77,6 @@ async fn create_invitation(
         .user_id(user.id.to_owned())
         .build();
 
-    let mut trx = app.db.begin().await?;
-    app.db.store_user_trx(&user, &mut trx).await?;
     app.db.store_member(&member, &mut trx).await?;
     app.db.store_invitation(&invitation, &mut trx).await?;
     app.db.commit(trx).await?;
