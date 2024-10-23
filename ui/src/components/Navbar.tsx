@@ -1,29 +1,38 @@
-import { useOrganization } from '@hooks/organization';
 import { useProject, useProjects } from '@hooks/project';
-import { useNavigate } from '@tanstack/react-router';
-import { Avatar } from './Avatar';
-import { Breadcrumb } from './Breadcrumb';
-import { Button, type ButtonProps } from './Button';
+import { Link, type LinkProps, useNavigate } from '@tanstack/react-router';
+import { Breadcrumb, type BreadcrumbItem } from './Breadcrumb';
+import { Button } from './Button';
 import { Popover } from './Popover';
 import { Icon } from './Icon';
 
 export interface NavbarProps {
     projectId: string;
     title: string;
+    previous?: LinkProps[];
     actions?: React.PropsWithChildren<{ id: string }>[];
 }
 
 export function Navbar(props: NavbarProps) {
-    const { title, actions, projectId } = props;
+    const { title, actions, projectId, previous } = props;
+
+    const previousItems: BreadcrumbItem[] = [];
+    if (previous) {
+        previousItems.push(
+            ...previous.map((p) => ({
+                id: p.to?.toString() ?? '',
+                component: (
+                    <Link {...p} className="ml-2">
+                        {p.children}
+                    </Link>
+                ),
+            })),
+        );
+    }
 
     return (
-        <nav className="flex items-center justify-between p-4 bg-teal-1 border-b-2 border-teal-6">
+        <nav className="flex items-center justify-between p-4 border-b border-gray-6 max-w-full overflow-hidden">
             <Breadcrumb
                 items={[
-                    {
-                        id: 'organization',
-                        component: <OrganizationSelector />,
-                    },
                     {
                         id: 'project',
                         component: (
@@ -32,6 +41,7 @@ export function Navbar(props: NavbarProps) {
                             </div>
                         ),
                     },
+                    ...previousItems,
                     {
                         id: 'title',
                         text: title,
@@ -91,20 +101,5 @@ function ProjectSelector(props: { projectId: string }) {
                 </Button>
             ))}
         </Popover>
-    );
-}
-
-function OrganizationSelector() {
-    const { organization } = useOrganization();
-
-    if (!organization) {
-        return null;
-    }
-
-    return (
-        <div className="flex items-center space-x-2">
-            <Avatar name={organization.name} />
-            <span>{organization.name}</span>
-        </div>
     );
 }

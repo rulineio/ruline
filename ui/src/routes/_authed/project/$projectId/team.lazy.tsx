@@ -4,7 +4,7 @@ import {
     InviteMemberSchema,
 } from '@api/invitation';
 import { Alert } from '@components/Alert';
-import { Button, type ButtonProps } from '@components/Button';
+import { Button } from '@components/Button';
 import { Dialog } from '@components/Dialog';
 import { Input } from '@components/Input';
 import { List, type ListItem } from '@components/List';
@@ -15,27 +15,21 @@ import { valibotResolver } from '@hookform/resolvers/valibot';
 import { useAuth } from '@hooks/auth';
 import { useOrganizationMembers } from '@hooks/organization';
 import { useQueryClient } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
+import { createLazyFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
-export const Route = createFileRoute('/_authed/project/$projectId/team')({
+export const Route = createLazyFileRoute('/_authed/project/$projectId/team')({
     component: Team,
 });
 
 function Team() {
     const { projectId } = Route.useParams();
-    const { session } = useAuth();
+    const { isAdmin } = useAuth();
     const { organizationMembers } = useOrganizationMembers();
 
-    const [open, setOpen] = useState(false);
-
-    if (!session || !session.member_role) {
-        return null;
-    }
-
     const actions: React.PropsWithChildren<{ id: string }>[] = [];
-    if (session.member_role === 'owner' || session.member_role === 'admin') {
+    if (isAdmin) {
         actions.push({
             id: 'invite',
             children: <InviteMemberButton />,
@@ -83,7 +77,6 @@ function Team() {
             }
 
             item.badges?.reverse();
-
             items.push(item);
         }
     }

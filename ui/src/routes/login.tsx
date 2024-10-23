@@ -55,7 +55,7 @@ function Login() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-teal-1">
+        <div className="flex flex-col items-center justify-center min-h-screen">
             <AuthForm
                 title="Login"
                 subtitle={{

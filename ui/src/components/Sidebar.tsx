@@ -41,18 +41,19 @@ export function Sidebar(props: SidebarProps) {
                     }}
                 />
             ) : (
-                <div className="fixed bottom-4 left-4 sm:hidden">
+                <div className="bottom-4 left-4 sm:hidden fixed">
                     <IconButton
                         onClick={() => setOpen(true)}
                         icon={{ icon: 'hamburger' }}
                         size="sm"
                         shape="circle"
+                        className="bottom-4"
                     />
                 </div>
             )}
 
             <aside className={sidebarClass} aria-label="Sidebar">
-                <div className="h-full p-4 overflow-y-auto bg-teal-1 flex flex-col justify-between overflow-hidden border-r-2 border-teal-6">
+                <div className="h-full p-4 overflow-y-auto flex flex-col justify-between overflow-hidden bg-teal-1 border-r border-gray-6">
                     <ul className="space-y-2 font-medium">
                         <li>
                             <Link
@@ -62,6 +63,14 @@ export function Sidebar(props: SidebarProps) {
                             >
                                 <Icon icon="home" />
                                 <span>Home</span>
+                            </Link>
+                            <Link
+                                to="/project/$projectId/workflows"
+                                params={{ projectId }}
+                                className={itemClass}
+                            >
+                                <Icon icon="puzzle" />
+                                <span>Workflows</span>
                             </Link>
                         </li>
                     </ul>

@@ -116,11 +116,11 @@ function InvitationsPage({ invitations }: { invitations: Invitations }) {
     const decline = async (id: string) => {
         try {
             await declineInvitation(id);
+            setOpen(false);
             queryClient.invalidateQueries({
                 queryKey: ['invitations'],
                 exact: true,
             });
-            setOpen(false);
         } catch (error) {
             if (error instanceof Error) {
                 setError(error.message);

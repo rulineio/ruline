@@ -12,10 +12,19 @@ export function useAuth() {
         console.error('Error fetching session:', error);
     }
 
+    const isOwner = data?.member_role === 'owner';
+    const isAdmin = isOwner || data?.member_role === 'admin';
+    const isEditor = ['editor', 'admin', 'owner'].includes(
+        data?.member_role ?? '',
+    );
+
     return {
         session: data,
         authenticated: !!data && data.type !== 'unauthenticated',
         refetch,
+        isOwner,
+        isAdmin,
+        isEditor,
     };
 }
 

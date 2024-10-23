@@ -1,4 +1,4 @@
-interface BreadcrumbItem {
+export interface BreadcrumbItem {
     id: string;
     text?: string;
     component?: React.ReactNode;
@@ -33,9 +33,15 @@ export function Breadcrumb(props: BreadcrumbProps) {
                             </svg>
                         )}
                         {item.component && (
-                            <span className="">{item.component}</span>
+                            <span className="select-none">
+                                {item.component}
+                            </span>
                         )}
-                        {item.text && <span className="ml-2">{item.text}</span>}
+                        {item.text && (
+                            <span className="select-none ml-2">
+                                {item.text}
+                            </span>
+                        )}
                     </div>
                 </li>
             ))}

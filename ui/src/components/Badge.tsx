@@ -18,7 +18,7 @@ export function Badge(props: BadgeProps) {
     const {
         label,
         color = 'teal',
-        size = 'sm',
+        size = 'xs',
         variant = 'normal',
         type = 'filled',
         className,
@@ -52,6 +52,7 @@ export function Badge(props: BadgeProps) {
     const badgeClass = cn(
         'inline-flex items-center justify-center py-1',
         'px-3 ring-1 ring-inset truncate',
+        'select-none',
         {
             'rounded-full': variant === 'pill',
             'rounded-md': variant === 'normal',
