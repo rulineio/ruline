@@ -1,0 +1,41 @@
+services:
+  proxy:
+    extends:
+      file: docker-compose.base.yml
+      service: proxy
+    ports:
+      - 8010:8000
+    depends_on:
+      - console
+
+  db:
+    extends:
+      file: docker-compose.base.yml
+      service: db
+    ports:
+      - 3306:3306
+
+  redis:
+    extends:
+      file: docker-compose.base.yml
+      service: redis
+    ports:
+      - 6379:6379
+
+  console:
+    extends:
+      file: docker-compose.base.yml
+      service: console
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+
+  migrate:
+    extends:
+      file: docker-compose.base.yml
+      service: migrate
+    depends_on:
+      db:
+        condition: service_healthy
