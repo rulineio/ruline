@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import cn from './utils/cn';
 
 export interface AlertProps {
     message: string;
@@ -8,7 +8,7 @@ export interface AlertProps {
 export const Alert: React.FC<AlertProps> = (props: AlertProps) => {
     const { message, type } = props;
 
-    const alertClass = clsx(
+    const alertClass = cn(
         'px-3 py-2 ring-2 ring-inset rounded-md text-center',
         {
             'bg-green-3 ring-green-7 text-green-11': type === 'success',

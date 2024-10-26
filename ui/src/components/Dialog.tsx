@@ -12,7 +12,7 @@ export interface DialogProps {
     variant?: (typeof variants)[number];
     action?: React.PropsWithChildren<ButtonProps>;
     cancel?: React.PropsWithChildren<ButtonProps>;
-    onOpenChange?: (open: boolean) => void;
+    onOpenChange?(open: boolean): void;
     open?: boolean;
 }
 
@@ -33,7 +33,7 @@ export function Dialog(props: React.PropsWithChildren<DialogProps>) {
     const contentClass = cn(
         'fixed left-1/2 top-1/2 max-h-[85vh] w-[90vw] max-w-[450px]',
         '-translate-x-1/2 -translate-y-1/2 rounded-md',
-        'bg-teal-2 p-8 focus:outline-none',
+        'bg-gray-1 p-8 focus:outline-none',
         {
             'space-x-4': variant === 'alert',
         },
@@ -77,9 +77,9 @@ export function Dialog(props: React.PropsWithChildren<DialogProps>) {
     }
 
     return (
-        <RDialog.Root>
+        <RDialog.Root open={open} onOpenChange={onOpenChange}>
             <RDialog.Trigger asChild>
-                <Button {...button} />
+                {button && <Button {...button} />}
             </RDialog.Trigger>
             <RDialog.Overlay className={overlayClass} />
             <RDialog.Content className={contentClass}>

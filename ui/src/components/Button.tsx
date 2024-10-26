@@ -97,8 +97,9 @@ function ButtonComponent(
             type={as}
             className={btnClass}
             onClick={onClick}
+            aria-disabled={disabled}
         >
-            <span className="contents" aria-hidden>
+            <span className="contents select-none" aria-hidden>
                 {children}
             </span>
         </button>

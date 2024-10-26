@@ -1,3 +1,4 @@
+import React from 'react';
 import { Button } from './Button';
 import { Icon, type IconProps } from './Icon';
 import type colors from './props/color';
@@ -5,7 +6,7 @@ import type { sizes } from './props/size';
 import cn from './utils/cn';
 
 const as = ['button', 'submit', 'reset'] as const;
-const variants = ['classic', 'outline'] as const;
+const variants = ['classic', 'outline', 'soft', 'text'] as const;
 const shapes = ['rounded', 'circle'] as const;
 
 export interface IconButtonProps {
@@ -20,7 +21,10 @@ export interface IconButtonProps {
     className?: string;
 }
 
-export function IconButton(props: IconButtonProps) {
+function IconButtonComponent(
+    props: IconButtonProps,
+    ref: React.Ref<HTMLButtonElement>,
+) {
     const {
         color = 'teal',
         as = 'button',
@@ -40,6 +44,7 @@ export function IconButton(props: IconButtonProps) {
 
     return (
         <Button
+            ref={ref}
             as={as}
             variant={variant}
             color={color}
@@ -51,3 +56,5 @@ export function IconButton(props: IconButtonProps) {
         </Button>
     );
 }
+
+export const IconButton = React.forwardRef(IconButtonComponent);
