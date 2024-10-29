@@ -1,0 +1,53 @@
+services:
+  proxy:
+    image: caddy
+    entrypoint: sh
+    restart: always
+    command: -c 'set -x && echo "$$CADDYFILE" > /etc/caddy/Caddyfile && exec caddy run -c /etc/caddy/Caddyfile'
+    volumes:
+      - /root/.caddy
+    environment:
+      CADDYFILE: |
+        http://localhost:8000
+        reverse_proxy console:8000
+
+  db:
+    image: mariadb:11-noble
+    restart: on-failure
+    environment:
+      MARIADB_USER: ruline
+      MARIADB_DATABASE: ruline
+      MARIADB_PASSWORD: ruline
+      MARIADB_RANDOM_ROOT_PASSWORD: 1
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+
+  redis:
+    image: redis:7-alpine
+    restart: on-failure
+    command: redis-server --maxmemory-policy allkeys-lru --maxmemory 150mb
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+
+  console:
+    image: ruline/console:latest
+    restart: on-failure
+    environment:
+      HTTP_PORT: 8000
+      CACHE_URL: redis://redis:6379
+      DATABASE_URL: mariadb://ruline:ruline@db:3306/ruline
+
+  migrate:
+    image: arigaio/atlas:latest
+    restart: no
+    command: >
+      migrate apply --env ruline --config file://db/atlas.hcl
+    environment:
+      DATABASE_URL: mariadb://ruline:ruline@db:3306/ruline
+    volumes:
+      - ./db:/db
