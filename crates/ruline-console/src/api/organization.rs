@@ -13,6 +13,7 @@ use axum_extra::extract::{
 };
 use chrono::Duration;
 use serde::{Deserialize, Serialize};
+use tracing::info;
 
 use crate::{
     domain::{
@@ -78,6 +79,13 @@ async fn create_organization(
         .await?;
     app.db.store_project(&project, &mut trx).await?;
     app.db.commit(trx).await?;
+
+    info!({
+        organization.id = %organization.id,
+        organization.name = %organization.name,
+    },
+    "Created organization"
+    );
 
     let new_session = Session::Member {
         user,

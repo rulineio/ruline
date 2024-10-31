@@ -31,6 +31,8 @@ pub struct Config {
     pub smtp_user: Option<String>,
     pub smtp_password: Option<String>,
     pub email_from: Option<String>,
+    pub otel_service_name: Option<String>,
+    pub otel_agent_endpoint: Option<String>,
 }
 
 impl Config {
@@ -72,7 +74,7 @@ impl Config {
         }
 
         if self.google_client_id.is_none() && self.email_from.is_none() {
-            return Err(anyhow!("either google oauth or magic link must be enabled").into());
+            return Err(anyhow!("Either google oauth or magic link must be enabled").into());
         }
 
         Ok(())
@@ -99,14 +101,14 @@ impl App {
         let cache = Cache::new(config.cache_url.to_owned())
             .await
             .map(Arc::new)
-            .log_error("error initializing cache")?;
+            .log_error("Error initializing cache")?;
         let db = Database::new(config.database_url.to_owned())
             .await
             .map(Arc::new)
-            .log_error("error initializing db")?;
+            .log_error("Error initializing db")?;
         let template_client = template::TemplateClient::new()
             .map(Arc::new)
-            .log_error("error initializing template client")?;
+            .log_error("Error initializing template client")?;
         let google_client = match (
             config.google_client_id.as_ref(),
             config.google_client_secret.as_ref(),

@@ -8,6 +8,8 @@ use axum::{
     Extension, Json, Router,
 };
 use serde::{Deserialize, Serialize};
+use tracing::{info, Span};
+use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use crate::{
     domain::{
@@ -45,6 +47,7 @@ async fn create_workflow(
     Path(project_id): Path<String>,
     Json(body): Json<CreateWorkflowRequest>,
 ) -> Result<impl IntoResponse> {
+    Span::current().set_attribute("project.id", project_id.to_owned());
     let (organization_id, role) = match session {
         Session::Member {
             organization,
@@ -72,6 +75,13 @@ async fn create_workflow(
         .await?;
     app.db.commit(trx).await?;
 
+    info!({
+        workflow.id = %workflow.id,
+        workflow.name = %workflow.name,
+    },
+    "Created workflow"
+    );
+
     Ok((
         StatusCode::CREATED,
         Json(CreateWorkflowResponse {
@@ -86,6 +96,8 @@ async fn get_workflow(
     Extension(session): Extension<Session>,
     Path((project_id, workflow_id)): Path<(String, String)>,
 ) -> Result<impl IntoResponse> {
+    Span::current().set_attribute("project.id", project_id.to_owned());
+    Span::current().set_attribute("workflow.id", workflow_id.to_owned());
     let organization_id = match session {
         Session::Member { organization, .. } => organization.id,
         _ => return Err(Error::Unauthorized),
@@ -112,6 +124,7 @@ async fn get_workflows(
     Extension(session): Extension<Session>,
     Path(project_id): Path<String>,
 ) -> Result<impl IntoResponse> {
+    Span::current().set_attribute("project.id", project_id.to_owned());
     let organization_id = match session {
         Session::Member { organization, .. } => organization.id,
         _ => return Err(Error::Unauthorized),
@@ -141,6 +154,8 @@ async fn update_workflow(
     Path((project_id, workflow_id)): Path<(String, String)>,
     Json(body): Json<UpdateWorkflowRequest>,
 ) -> Result<impl IntoResponse> {
+    Span::current().set_attribute("project.id", project_id.to_owned());
+    Span::current().set_attribute("workflow.id", workflow_id.to_owned());
     let (organization_id, role) = match session {
         Session::Member {
             organization,
@@ -177,6 +192,8 @@ async fn update_workflow(
     }
     app.db.commit(trx).await?;
 
+    info!({ workflow.id = %workflow_id },"Updated workflow");
+
     Ok(StatusCode::NO_CONTENT)
 }
 
@@ -185,6 +202,8 @@ async fn create_workflow_version(
     Extension(session): Extension<Session>,
     Path((project_id, workflow_id)): Path<(String, String)>,
 ) -> Result<impl IntoResponse> {
+    Span::current().set_attribute("project.id", project_id.to_owned());
+    Span::current().set_attribute("workflow.id", workflow_id.to_owned());
     let (organization_id, role) = match session {
         Session::Member {
             organization,
@@ -238,6 +257,13 @@ async fn create_workflow_version(
         .await?;
     app.db.commit(trx).await?;
 
+    info!({
+        workflow.id = %workflow.id,
+        workflow.version = new_version.version,
+    },
+    "Created workflow version"
+    );
+
     Ok((
         StatusCode::CREATED,
         Json(CreateWorkflowVersionResponse {
@@ -251,6 +277,9 @@ async fn get_workflow_version(
     Extension(session): Extension<Session>,
     Path((project_id, workflow_id, version)): Path<(String, String, u32)>,
 ) -> Result<impl IntoResponse> {
+    Span::current().set_attribute("project.id", project_id.to_owned());
+    Span::current().set_attribute("workflow.id", workflow_id.to_owned());
+    Span::current().set_attribute("workflow.version", i64::from(version));
     let organization_id = match session {
         Session::Member { organization, .. } => organization.id,
         _ => return Err(Error::Unauthorized),
@@ -276,6 +305,8 @@ async fn get_workflow_versions(
     Extension(session): Extension<Session>,
     Path((project_id, workflow_id)): Path<(String, String)>,
 ) -> Result<impl IntoResponse> {
+    Span::current().set_attribute("project.id", project_id.to_owned());
+    Span::current().set_attribute("workflow.id", workflow_id.to_owned());
     let organization_id = match session {
         Session::Member { organization, .. } => organization.id,
         _ => return Err(Error::Unauthorized),
@@ -304,6 +335,9 @@ async fn update_workflow_version_status(
     Path((project_id, workflow_id, version)): Path<(String, String, u32)>,
     Json(body): Json<UpdateWorkflowVersionStatusRequest>,
 ) -> Result<impl IntoResponse> {
+    Span::current().set_attribute("project.id", project_id.to_owned());
+    Span::current().set_attribute("workflow.id", workflow_id.to_owned());
+    Span::current().set_attribute("workflow.version", i64::from(version));
     let (organization_id, role) = match session {
         Session::Member {
             organization,
@@ -353,11 +387,19 @@ async fn update_workflow_version_status(
             &project_id,
             &workflow_id,
             version.version,
-            status,
+            status.to_owned(),
             &mut trx,
         )
         .await?;
     app.db.commit(trx).await?;
+
+    info!({
+        workflow.id = %workflow_id,
+        workflow.version = version.version,
+        workflow.status = %status,
+    },
+    "Updated workflow version status"
+    );
 
     Ok(StatusCode::NO_CONTENT)
 }

@@ -1,6 +1,7 @@
 use super::*;
 
 use redis::{AsyncCommands, RedisError};
+use tracing::instrument;
 
 const SESSION_KEY: &str = "session";
 
@@ -9,6 +10,15 @@ impl Cache {
         self.set_session_exp(id, sess, 7 * 24 * 60 * 60).await
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            otel.name = "SETEX session",
+            otel.kind = "CLIENT",
+            db.system = "redis",
+            db.operation.name = "SETEX"
+        )
+    )]
     pub async fn set_session_exp(&self, id: &str, sess: &session::Session, exp: u64) -> Result<()> {
         let mut con = self.client.to_owned();
         let str_sess = serde_json::to_string(&sess).map_err(CacheError::Serde)?;
@@ -16,6 +26,15 @@ impl Cache {
         Ok(res.map_err(CacheError::Redis)?)
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            otel.name = "GET session",
+            otel.kind = "CLIENT",
+            db.system = "redis",
+            db.operation.name = "GET"
+        )
+    )]
     pub async fn get_session(&self, id: &str) -> Result<Option<session::Session>> {
         let mut con = self.client.to_owned();
         let result: Option<String> = con.get(session_key(id)).await.map_err(CacheError::Redis)?;
@@ -24,6 +43,15 @@ impl Cache {
             .transpose()?)
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            otel.name = "DEL session",
+            otel.kind = "CLIENT",
+            db.system = "redis",
+            db.operation.name = "DEL"
+        )
+    )]
     pub async fn delete_session(&self, id: &str) -> Result<()> {
         let mut con = self.client.to_owned();
         let res: Result<(), RedisError> = con.del(session_key(id)).await;

@@ -19,7 +19,7 @@ where
 {
     fn log_error(self, msg: &'static str) -> Self {
         if let Err(e) = &self {
-            error!({ error = %e }, "{}", msg);
+            error!({ exception.message = %e }, "{}", msg);
         }
 
         self

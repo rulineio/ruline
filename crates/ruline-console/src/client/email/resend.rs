@@ -1,12 +1,16 @@
 use std::{sync::Arc, time::Duration};
 
-use crate::{client::error::ClientError, Result};
+use crate::{
+    client::{error::ClientError, new_client},
+    Result,
+};
 use reqwest::header::{HeaderMap, AUTHORIZATION};
+use reqwest_middleware::ClientWithMiddleware;
 
 use super::*;
 
 pub struct Client {
-    client: Arc<reqwest::Client>,
+    client: Arc<ClientWithMiddleware>,
 }
 
 impl Client {
@@ -24,7 +28,7 @@ impl Client {
             .map_err(ClientError::Reqwest)?;
 
         Ok(Self {
-            client: Arc::new(client),
+            client: Arc::new(new_client(client)),
         })
     }
 
@@ -41,7 +45,7 @@ impl Client {
             })
             .send()
             .await
-            .map_err(ClientError::Reqwest)?;
+            .map_err(ClientError::ReqwestMiddleware)?;
 
         if !response.status().is_success() {
             return Err(ClientError::UnexpectedStatus(response.status()).into());

@@ -10,7 +10,7 @@ use axum::{
 use axum_extra::extract::cookie::{Cookie, CookieJar, SameSite};
 use chrono::Duration;
 use serde::Deserialize;
-use tracing::warn;
+use tracing::{info, warn};
 
 use crate::{
     client::{
@@ -23,7 +23,7 @@ use crate::{
     },
     error::Error,
     template::{LoginTemplate, Template},
-    util::{self, ResultExt},
+    util::{self},
     App, Result,
 };
 
@@ -112,7 +112,7 @@ async fn complete(
     };
 
     if pre_sess_state != state {
-        warn!("tried to complete login with invalid state");
+        warn!("Tried to complete login with invalid state");
         return Err(Error::Unauthorized);
     }
 
@@ -196,13 +196,10 @@ async fn google_oauth_complete(
         _ => return Err(Error::Unauthorized),
     };
 
-    app.cache
-        .delete_session(&pre_sess_id)
-        .await
-        .log_error("error deleting session")?;
+    app.cache.delete_session(&pre_sess_id).await?;
 
     if oauth_state != query.state {
-        warn!("tried to complete Google OAuth with invalid state");
+        warn!("Tried to complete Google OAuth with invalid state");
         return Err(Error::Unauthorized);
     }
 
@@ -253,7 +250,11 @@ async fn complete_auth(
             app.db.commit(trx).await?;
             user
         }
-        None => app.db.store_user(&new_user).await?,
+        None => {
+            let user = app.db.store_user(&new_user).await?;
+            info!({ user.email = %user.email, user.id = %user.id }, "Created new user");
+            user
+        }
     };
 
     let sess = match user.status {
@@ -289,6 +290,8 @@ async fn complete_auth(
         .http_only(true)
         .max_age(Duration::weeks(1).to_std().unwrap().try_into().unwrap())
         .build();
+
+    info!({ user.email = %user.email, user.id = %user.id }, "Logged in");
 
     Ok((jar.add(cookie), Redirect::to("/ui")))
 }

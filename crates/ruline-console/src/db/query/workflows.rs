@@ -1,10 +1,24 @@
 use serde_json::Value;
+use tracing::instrument;
 
 use crate::domain::workflow::{Workflow, WorkflowStatus, WorkflowVersion, WorkflowVersionStatus};
 
 use super::*;
 
 impl Database {
+    #[instrument(
+        skip_all,
+        fields(
+            workflow.id = %workflow.id,
+            otel.name = "INSERT workflows",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "workflows",
+            db.namespace = "ruline",
+            db.operation.name = "INSERT",
+            db.query.text = INSERT_WORKFLOW.trim()
+        )
+    )]
     pub async fn insert_workflow(
         &self,
         workflow: &Workflow,
@@ -22,6 +36,21 @@ impl Database {
         Ok(())
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            organization.id = %organization_id,
+            project.id = %project_id,
+            workflow.id = %workflow_id,
+            otel.name = "SELECT workflows",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "workflows",
+            db.namespace = "ruline",
+            db.operation.name = "SELECT",
+            db.query.text = SELECT_WORKFLOW.trim()
+        )
+    )]
     pub async fn get_workflow(
         &self,
         organization_id: &str,
@@ -39,6 +68,20 @@ impl Database {
         Ok(workflow.map(Into::into))
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            organization.id = %organization_id,
+            project.id = %project_id,
+            otel.name = "SELECT workflows",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "workflows",
+            db.namespace = "ruline",
+            db.operation.name = "SELECT",
+            db.query.text = SELECT_WORKFLOWS_BY_PROJECT_ID.trim()
+        )
+    )]
     pub async fn get_workflows_by_project_id(
         &self,
         organization_id: &str,
@@ -54,6 +97,22 @@ impl Database {
         Ok(workflows.into_iter().map(Into::into).collect())
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            organization.id = %organization_id,
+            project.id = %project_id,
+            workflow.id = %workflow_id,
+            workflow.version = %version,
+            otel.name = "UPDATE workflows",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "workflows",
+            db.namespace = "ruline",
+            db.operation.name = "UPDATE",
+            db.query.text = SET_WORKFLOW_ACTIVE_VERSION.trim()
+        )
+    )]
     pub async fn set_workflow_active_version(
         &self,
         organization_id: &str,
@@ -74,6 +133,22 @@ impl Database {
         Ok(())
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            organization.id = %organization_id,
+            project.id = %project_id,
+            workflow.id = %workflow_id,
+            workflow.status = %status,
+            otel.name = "UPDATE workflows",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "workflows",
+            db.namespace = "ruline",
+            db.operation.name = "UPDATE",
+            db.query.text = SET_WORKFLOW_STATUS.trim()
+        )
+    )]
     pub async fn set_workflow_status(
         &self,
         organization_id: &str,
@@ -94,6 +169,22 @@ impl Database {
         Ok(())
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            organization.id = %organization_id,
+            project.id = %project_id,
+            workflow.id = %workflow_id,
+            workflow.name = %name,
+            otel.name = "UPDATE workflows",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "workflows",
+            db.namespace = "ruline",
+            db.operation.name = "UPDATE",
+            db.query.text = SET_WORKFLOW_NAME.trim()
+        )
+    )]
     pub async fn set_workflow_name(
         &self,
         organization_id: &str,
@@ -114,6 +205,19 @@ impl Database {
         Ok(())
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            workflow.id = %version.workflow_id,
+            otel.name = "INSERT workflow_versions",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "workflow_versions",
+            db.namespace = "ruline",
+            db.operation.name = "INSERT",
+            db.query.text = INSERT_WORKFLOW_VERSION.trim()
+        )
+    )]
     pub async fn insert_workflow_version(
         &self,
         version: &WorkflowVersion,
@@ -132,6 +236,22 @@ impl Database {
         Ok(())
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            organization.id = %organization_id,
+            project.id = %project_id,
+            workflow.id = %workflow_id,
+            workflow.version = %version,
+            otel.name = "SELECT workflow_versions",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "workflow_versions",
+            db.namespace = "ruline",
+            db.operation.name = "SELECT",
+            db.query.text = SELECT_WORKFLOW_VERSION.trim()
+        )
+    )]
     pub async fn get_workflow_version(
         &self,
         organization_id: &str,
@@ -151,6 +271,21 @@ impl Database {
         Ok(version.map(Into::into))
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            organization.id = %organization_id,
+            project.id = %project_id,
+            workflow.id = %workflow_id,
+            otel.name = "SELECT workflow_versions",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "workflow_versions",
+            db.namespace = "ruline",
+            db.operation.name = "SELECT",
+            db.query.text = SELECT_WORKFLOW_VERSIONS_BY_WORKFLOW_ID.trim()
+        )
+    )]
     pub async fn get_workflow_versions_by_workflow_id(
         &self,
         organization_id: &str,
@@ -169,6 +304,23 @@ impl Database {
         Ok(versions.into_iter().map(Into::into).collect())
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            organization.id = %organization_id,
+            project.id = %project_id,
+            workflow.id = %workflow_id,
+            workflow.version = %version,
+            workflow.status = %status,
+            otel.name = "UPDATE workflow_versions",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "workflow_versions",
+            db.namespace = "ruline",
+            db.operation.name = "UPDATE",
+            db.query.text = SET_WORKFLOW_VERSION_STATUS.trim()
+        )
+    )]
     pub async fn set_workflow_version_status(
         &self,
         organization_id: &str,
@@ -191,6 +343,22 @@ impl Database {
         Ok(())
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            organization.id = %organization_id,
+            project.id = %project_id,
+            workflow.id = %workflow_id,
+            workflow.version = %version,
+            otel.name = "UPDATE workflow_versions",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "workflow_versions",
+            db.namespace = "ruline",
+            db.operation.name = "UPDATE",
+            db.query.text = SET_WORKFLOW_VERSION_DEFINITION.trim()
+        )
+    )]
     pub async fn set_workflow_version_definition(
         &self,
         organization_id: &str,

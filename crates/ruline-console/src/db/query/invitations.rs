@@ -1,8 +1,24 @@
+use tracing::instrument;
+
 use crate::domain::invitation::{Invitation, InvitationStatus};
 
 use super::*;
 
 impl Database {
+    #[instrument(
+        skip_all,
+        fields(
+            invitation.id = %invitation.id,
+            otel.name = "INSERT invitations",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "invitations",
+            db.namespace = "ruline",
+            db.operation.name = "INSERT",
+            db.query.text = INSERT.trim()
+        ),
+        err
+    )]
     pub async fn store_invitation(
         &self,
         invitation: &Invitation,
@@ -21,6 +37,19 @@ impl Database {
         Ok(())
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            invitation.id = %id,
+            otel.name = "SELECT invitations",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "invitations",
+            db.namespace = "ruline",
+            db.operation.name = "SELECT",
+            db.query.text = SELECT.trim()
+        )
+    )]
     pub async fn get_invitation(&self, id: &str) -> Result<Option<Invitation>> {
         let invitation: Option<invitation::Invitation> = sqlx::query_as(SELECT)
             .bind(id)
@@ -31,6 +60,20 @@ impl Database {
         Ok(invitation.map(Into::into))
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            user.id = %user_id,
+            invitation.status = %status,
+            otel.name = "SELECT invitations",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "invitations",
+            db.namespace = "ruline",
+            db.operation.name = "SELECT",
+            db.query.text = SELECT_BY_USER_ID_STATUS.trim()
+        )
+    )]
     pub async fn get_invitations_by_user_id_status(
         &self,
         user_id: &str,
@@ -46,6 +89,19 @@ impl Database {
         Ok(invitations)
     }
 
+    #[instrument(skip_all,
+        fields(
+            invitation.id = %id,
+            invitation.status = %status,
+            otel.name = "UPDATE invitation",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "invitations",
+            db.namespace = "ruline",
+            db.operation.name = "UPDATE",
+            db.query.text = SET_STATUS.trim()
+        )
+    )]
     pub async fn set_invitation_status(
         &self,
         id: &str,

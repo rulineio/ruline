@@ -1,8 +1,23 @@
+use tracing::instrument;
+
 use crate::domain::member::{Member, MemberStatus};
 
 use super::*;
 
 impl Database {
+    #[instrument(
+        skip_all,
+        fields(
+            member.id = %member.id,
+            otel.name = "INSERT members",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "members",
+            db.namespace = "ruline",
+            db.operation.name = "INSERT",
+            db.query.text = INSERT.trim()
+        )
+    )]
     pub async fn store_member(
         &self,
         member: &Member,
@@ -21,6 +36,19 @@ impl Database {
         Ok(())
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            member.id = %member_id,
+            otel.name = "SELECT members",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "members",
+            db.namespace = "ruline",
+            db.operation.name = "SELECT",
+            db.query.text = SELECT.trim()
+        )
+    )]
     pub async fn get_member(&self, member_id: &str) -> Result<Option<Member>> {
         let member: Option<member::Member> = sqlx::query_as(SELECT)
             .bind(member_id)
@@ -31,6 +59,19 @@ impl Database {
         Ok(member.map(Into::into))
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            user.id = %user_id,
+            otel.name = "SELECT members",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "members",
+            db.namespace = "ruline",
+            db.operation.name = "SELECT",
+            db.query.text = SELECT_BY_USER_ID.trim()
+        )
+    )]
     pub async fn get_members_by_user_id(&self, user_id: &str) -> Result<Vec<Member>> {
         let members: Vec<member::Member> = sqlx::query_as(SELECT_BY_USER_ID)
             .bind(user_id)
@@ -41,6 +82,20 @@ impl Database {
         Ok(members.into_iter().map(Into::into).collect())
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            member.id = %member_id,
+            member.status = %status,
+            otel.name = "UPDATE members",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "members",
+            db.namespace = "ruline",
+            db.operation.name = "UPDATE",
+            db.query.text = SET_STATUS.trim()
+        )
+    )]
     pub async fn set_member_status(
         &self,
         member_id: &str,

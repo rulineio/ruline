@@ -5,6 +5,7 @@ use lettre::{
     transport::smtp::authentication::Credentials,
     AsyncSmtpTransport, AsyncTransport, Message, Tokio1Executor,
 };
+use tracing::instrument;
 
 use crate::{client::error::ClientError, Result};
 
@@ -34,6 +35,17 @@ impl Client {
         })
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            email.from = %email_from,
+            email.subject = %request.subject,
+            email.to = match &request.to {
+                SendEmailRecipient::Single(to) => to.to_owned(),
+                SendEmailRecipient::Multiple(to) => to.join(", "),
+            }
+        )
+    )]
     pub async fn send_email(&self, email_from: &str, request: &SendEmailRequest) -> Result<()> {
         let mut msg_builder = Message::builder()
             .from(

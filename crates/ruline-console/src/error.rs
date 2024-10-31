@@ -1,15 +1,17 @@
 use axum::{http, response::IntoResponse};
+use opentelemetry_semantic_conventions::trace::OTEL_STATUS_CODE;
 use thiserror::Error;
-use tracing::error;
+use tracing::{error, Span};
+use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use crate::{cache, client, db, template};
 
 #[derive(Debug, Error)]
 pub enum Error {
-    #[error("unauthorized")]
+    #[error("Unauthorized")]
     Unauthorized,
 
-    #[error("bad request")]
+    #[error("Bad request")]
     BadRequest,
 
     #[error(transparent)]
@@ -34,7 +36,8 @@ impl IntoResponse for Error {
             Error::Unauthorized => http::StatusCode::UNAUTHORIZED,
             Error::BadRequest => http::StatusCode::BAD_REQUEST,
             _ => {
-                error!({ error = %self }, "error processing request");
+                error!({ exception.message = %self }, "Error processing request");
+                Span::current().set_attribute(OTEL_STATUS_CODE, "ERROR");
                 http::StatusCode::INTERNAL_SERVER_ERROR
             }
         };

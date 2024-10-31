@@ -1,8 +1,23 @@
+use tracing::instrument;
+
 use crate::domain::project::Project;
 
 use super::*;
 
 impl Database {
+    #[instrument(
+        skip_all,
+        fields(
+            project.id = %project.id,
+            otel.name = "INSERT projects",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "projects",
+            db.namespace = "ruline",
+            db.operation.name = "INSERT",
+            db.query.text = INSERT.trim()
+        )
+    )]
     pub async fn store_project(
         &self,
         project: &Project,
@@ -19,6 +34,20 @@ impl Database {
         Ok(())
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            organization.id = %organization_id,
+            project.id = %project_id,
+            otel.name = "SELECT projects",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "projects",
+            db.namespace = "ruline",
+            db.operation.name = "SELECT",
+            db.query.text = SELECT.trim()
+        )
+    )]
     pub async fn get_project(
         &self,
         organization_id: &str,
@@ -34,6 +63,19 @@ impl Database {
         Ok(project.map(Into::into))
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            organization.id = %organization_id,
+            otel.name = "SELECT projects",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "projects",
+            db.namespace = "ruline",
+            db.operation.name = "SELECT",
+            db.query.text = SELECT_BY_ORGANIZATION_ID.trim()
+        )
+    )]
     pub async fn get_projects_by_organization_id(
         &self,
         organization_id: &str,
@@ -50,17 +92,17 @@ impl Database {
 
 const INSERT: &str = r#"
     INSERT INTO projects (id, organization_id, name)
-    VALUES (?, ?, ?)
-"#;
+VALUES (?, ?, ?)
+    "#;
 
 const SELECT: &str = r#"
     SELECT id, organization_id, name, status, created_at, updated_at
     FROM projects
     WHERE organization_id = ? AND id = ?
-"#;
+    "#;
 
 const SELECT_BY_ORGANIZATION_ID: &str = r#"
     SELECT id, organization_id, name, status, created_at, updated_at
     FROM projects
     WHERE organization_id = ?
-"#;
+    "#;

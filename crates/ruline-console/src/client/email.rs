@@ -3,7 +3,7 @@ use std::sync::Arc;
 use crate::{Config, Result};
 
 use serde::Serialize;
-use tracing::warn;
+use tracing::{error, info};
 
 mod resend;
 mod smpt;
@@ -42,14 +42,28 @@ impl Client {
 
     pub async fn send_email(&self, request: &SendEmailRequest) -> Result<()> {
         if let Some(client) = &self.resend_client {
-            return client.send_email(&self.email_from, request).await;
+            client.send_email(&self.email_from, request).await?;
+            info!({
+                from = %self.email_from,
+                to = match &request.to {
+                    SendEmailRecipient::Single(to) => to.to_owned(),
+                    SendEmailRecipient::Multiple(to) => to.join(", "),
+                },
+            },"Sent email via Resend");
         }
 
         if let Some(client) = &self.smtp_client {
-            return client.send_email(&self.email_from, request).await;
+            client.send_email(&self.email_from, request).await?;
+            info!({
+                from = %self.email_from,
+                to = match &request.to {
+                    SendEmailRecipient::Single(to) => to.to_owned(),
+                    SendEmailRecipient::Multiple(to) => to.join(", "),
+                },
+            },"Sent email via SMTP");
         }
 
-        warn!("no email client configured");
+        error!("No email client configured");
 
         Ok(())
     }

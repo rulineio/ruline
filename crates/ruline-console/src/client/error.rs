@@ -4,6 +4,8 @@ use thiserror::Error;
 pub enum ClientError {
     #[error("HTTP error: {0}")]
     Reqwest(#[from] reqwest::Error),
+    #[error("HTTP error: {0}")]
+    ReqwestMiddleware(#[from] reqwest_middleware::Error),
     #[error("JSON error: {0}")]
     Serde(#[from] serde_json::Error),
     #[error("Unexpected status code: {0}")]

@@ -77,7 +77,7 @@ pub struct InvitationTemplate {
 
 #[derive(Debug, Error)]
 pub enum TemplateError {
-    #[error("template not found: {0}")]
+    #[error("Template not found: {0}")]
     NotFound(String),
 
     #[error(transparent)]

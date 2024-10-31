@@ -10,9 +10,12 @@ use axum::{
     Router,
 };
 use axum_extra::extract::CookieJar;
-use tower_http::trace::TraceLayer;
+use opentelemetry_semantic_conventions::trace::HTTP_RESPONSE_STATUS_CODE;
+use tower_http::{classify::ServerErrorsFailureClass, trace::TraceLayer};
+use tracing::{field, Span};
+use tracing_opentelemetry::OpenTelemetrySpanExt;
 
-use crate::{domain, error::Error, App, Result};
+use crate::{domain::session::Session, error::Error, App, Result};
 
 mod invitation;
 mod login;
@@ -54,46 +57,67 @@ pub fn router(app: Arc<App>) -> Router {
                         .map(MatchedPath::as_str)
                         .unwrap_or_else(|| request.uri().path());
 
-                    let server_address = request.uri().authority().map(|a| a.as_str());
-
-                    let protocol_str = format!("{:?}", request.version());
-                    let protocol_version = protocol_str.split('/').last();
-
-                    let user_agent = request
-                        .headers()
-                        .get("user-agent")
-                        .map(|v| v.to_str().unwrap_or_default());
-                    let client_address = request
-                        .headers()
-                        .get("x-forwarded-for")
-                        .or_else(|| request.headers().get("x-real-ip"))
-                        .map(|v| v.to_str().unwrap_or_default());
-
-                    tracing::info_span!(
-                        "request",
-                        otel.kind = "server",
+                    let span = tracing::info_span!(
+                        "http_request",
+                        otel.kind = "SERVER",
                         otel.name = format!("{} {}", request.method(), route),
                         http.request.method = ?request.method(),
                         url.path = request.uri().path(),
-                        url.scheme = request.uri().scheme_str().unwrap_or_default(),
                         http.route = route,
-                        url.query = request.uri().query().unwrap_or_default(),
-                        server.address = server_address.unwrap_or_default(),
-                        server.port = request.uri().port_u16().unwrap_or_default(),
-                        network.protocol.name = "http",
-                        network.protocol.version = protocol_version.unwrap_or_default(),
-                        user_agent.original = user_agent.unwrap_or_default(),
-                        client.address = client_address.unwrap_or_default(),
-                    )
+                        url.scheme = field::Empty,
+                        url.query = field::Empty,
+                        server.address = field::Empty,
+                        server.port = field::Empty,
+                        user_agent.original = field::Empty,
+                        client.address = field::Empty,
+                        network.protocol.version = field::Empty,
+                        http.response.status_code = field::Empty,
+                        user.id = field::Empty,
+                        organization.id = field::Empty,
+                        member.id = field::Empty,
+                    );
+
+                    if let Some(scheme) = request.uri().scheme_str() {
+                        span.record("url.scheme", scheme);
+                    }
+                    if let Some(query) = request.uri().query() {
+                        span.record("url.query", query);
+                    }
+                    let server_address = request.uri().authority().map(|a| a.as_str());
+                    if let Some(address) = server_address {
+                        span.record("server.address", address);
+                    }
+                    if let Some(port) = request.uri().port_u16() {
+                        span.record("server.port", port);
+                    }
+                    let protocol_str = format!("{:?}", request.version());
+                    let protocol_version = protocol_str.split('/').last();
+                    if let Some(protocol_version) = protocol_version {
+                        span.record("network.protocol.version", protocol_version);
+                    }
+                    let user_agent = request.headers().get("user-agent");
+                    if let Some(user_agent) = user_agent {
+                        span.record("user_agent.original", user_agent.to_str().unwrap());
+                    }
+                    let client_address = request
+                        .headers()
+                        .get("x-forwarded-for")
+                        .or_else(|| request.headers().get("x-real-ip"));
+                    if let Some(client_address) = client_address {
+                        span.record("client.address", client_address.to_str().unwrap());
+                    }
+
+                    span
                 })
                 .on_response(
-                    |response: &Response<_>, latency: Duration, _: &tracing::Span| {
-                        let duration_s = latency.as_micros() as f64 / 1_000_000.;
-                        tracing::info!(
-                            http.server.request.duration = duration_s,
-                            http.response.status_code = response.status().as_u16(),
-                            "finished processing request"
-                        );
+                    |response: &Response<_>, _latency: Duration, span: &tracing::Span| {
+                        span.record(HTTP_RESPONSE_STATUS_CODE, response.status().as_u16() as i64);
+                        tracing::debug!("Finished processing request");
+                    },
+                )
+                .on_failure(
+                    |error: ServerErrorsFailureClass, _latency: Duration, _span: &tracing::Span| {
+                        tracing::debug!(error = %error, "Request failed");
                     },
                 ),
         )
@@ -114,8 +138,21 @@ async fn authenticate_user(
 
     match sess {
         Some(sess) => {
-            req.extensions_mut()
-                .insert(domain::session::Session::from(sess));
+            let span = Span::current();
+            match sess.to_owned().into() {
+                Session::User { user } => span.set_attribute("user.id", user.id),
+                Session::Member {
+                    user,
+                    organization,
+                    member,
+                } => {
+                    span.record("user.id", user.id)
+                        .record("organization.id", organization.id)
+                        .record("member.id", member.id);
+                }
+                _ => {}
+            };
+            req.extensions_mut().insert(Session::from(sess));
             Ok(next.run(req).await)
         }
         None => Err(Error::Unauthorized),

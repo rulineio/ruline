@@ -13,6 +13,8 @@ use axum_extra::extract::{
 };
 use chrono::Duration;
 use serde::{Deserialize, Serialize};
+use tracing::{info, warn, Span};
+use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use crate::{
     client::email::{SendEmailRecipient, SendEmailRequest},
@@ -62,6 +64,10 @@ async fn create_invitation(
                 .name(body.name)
                 .build();
             app.db.store_user_trx(&new_user, &mut trx).await?;
+            info!({
+                user.email = %new_user.email,
+                user.id = %new_user.id
+            }, "Created user");
             new_user
         }
     };
@@ -80,6 +86,14 @@ async fn create_invitation(
     app.db.store_member(&member, &mut trx).await?;
     app.db.store_invitation(&invitation, &mut trx).await?;
     app.db.commit(trx).await?;
+
+    info!({
+        invitation.id = %invitation.id,
+        user.email = %user.email,
+        user.id = %user.id
+    },
+    "Created invitation"
+    );
 
     let template = Template::Invitation(InvitationTemplate {
         organization: organization_name,
@@ -131,6 +145,8 @@ async fn accept_invitation(
     jar: CookieJar,
     Path(invitation_id): Path<String>,
 ) -> Result<impl IntoResponse> {
+    Span::current().set_attribute("invitation.id", invitation_id.to_string());
+
     let user_id = match session {
         Session::User { user } => user.id,
         _ => return Err(Error::Unauthorized),
@@ -142,6 +158,7 @@ async fn accept_invitation(
     };
 
     if invitation.user_id != user_id {
+        warn!("User tried to accept invitation for another user");
         return Err(Error::Unauthorized);
     }
 
@@ -168,6 +185,8 @@ async fn accept_invitation(
 
     app.db.commit(trx).await?;
 
+    info!({ invitation.id = %invitation_id }, "Accepted invitation");
+
     let sess = Session::builder()
         .user(user)
         .organization(organization)
@@ -193,6 +212,8 @@ async fn decline_invitation(
     Extension(session): Extension<Session>,
     Path(invitation_id): Path<String>,
 ) -> Result<impl IntoResponse> {
+    Span::current().set_attribute("invitation.id", invitation_id.to_owned());
+
     let user_id = match session {
         Session::User { user } => user.id,
         _ => return Err(Error::Unauthorized),
@@ -204,6 +225,7 @@ async fn decline_invitation(
     };
 
     if invitation.user_id != user_id {
+        warn!("User tried to decline invitation for another user");
         return Err(Error::Unauthorized);
     }
 
@@ -215,6 +237,8 @@ async fn decline_invitation(
         .set_member_status(&invitation.member_id, MemberStatus::Declined, &mut trx)
         .await?;
     app.db.commit(trx).await?;
+
+    info!({ invitation.id = %invitation_id }, "Declined invitation");
 
     Ok(StatusCode::NO_CONTENT)
 }

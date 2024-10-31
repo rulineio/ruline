@@ -1,8 +1,23 @@
+use tracing::instrument;
+
 use crate::domain::user::{User, UserStatus};
 
 use super::*;
 
 impl Database {
+    #[instrument(
+        skip_all,
+        fields(
+            user.id = %user.id,
+            otel.name = "INSERT users",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "users",
+            db.namespace = "ruline",
+            db.operation.name = "INSERT",
+            db.query.text = INSERT.trim(),
+        )
+    )]
     pub async fn store_user(&self, user: &User) -> Result<User> {
         _ = sqlx::query(INSERT)
             .bind(&user.id)
@@ -18,6 +33,19 @@ impl Database {
             .ok_or(DatabaseError::NotFound.into())
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            user.id = %user.id,
+            otel.name = "INSERT users",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "users",
+            db.namespace = "ruline",
+            db.operation.name = "INSERT",
+            db.query.text = INSERT.trim()
+        )
+    )]
     pub async fn store_user_trx(
         &self,
         user: &User,
@@ -35,6 +63,19 @@ impl Database {
         Ok(())
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            user.id = %id,
+            otel.name = "SELECT users",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "users",
+            db.namespace = "ruline",
+            db.operation.name = "SELECT",
+            db.query.text = SELECT.trim()
+        )
+    )]
     pub async fn get_user(&self, id: &str) -> Result<Option<User>> {
         let user: Option<user::User> = sqlx::query_as(SELECT)
             .bind(id)
@@ -45,6 +86,19 @@ impl Database {
         Ok(user.map(Into::into))
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            user.email = %email,
+            otel.name = "SELECT users",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "users",
+            db.namespace = "ruline",
+            db.operation.name = "SELECT",
+            db.query.text = SELECT_BY_EMAIL.trim()
+        )
+    )]
     pub async fn get_user_by_email(&self, email: &str) -> Result<Option<User>> {
         let user: Option<user::User> = sqlx::query_as(SELECT_BY_EMAIL)
             .bind(email)
@@ -55,6 +109,19 @@ impl Database {
         Ok(user.map(Into::into))
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            user.id = %id,
+            otel.name = "UPDATE users",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "users",
+            db.namespace = "ruline",
+            db.operation.name = "UPDATE",
+            db.query.text = SET_LAST_LOGIN.trim()
+        )
+    )]
     pub async fn set_user_last_login(
         &self,
         id: &str,
@@ -73,6 +140,20 @@ impl Database {
         Ok(())
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            user.id = %id,
+            user.status = %status,
+            otel.name = "UPDATE users",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "users",
+            db.namespace = "ruline",
+            db.operation.name = "UPDATE",
+            db.query.text = SET_STATUS.trim()
+        )
+    )]
     pub async fn set_user_status(
         &self,
         id: &str,
@@ -93,6 +174,19 @@ impl Database {
         Ok(())
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            user.id = %id,
+            otel.name = "UPDATE users",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "users",
+            db.namespace = "ruline",
+            db.operation.name = "UPDATE",
+            db.query.text = SET_AVATAR_NAME.trim()
+        )
+    )]
     pub async fn update_user(
         &self,
         id: &str,
@@ -129,47 +223,47 @@ impl Database {
 
 const INSERT: &str = r#"
     insert into users (id, email, name, avatar)
-    values (?, ?, ?, ?)
-"#;
+values (?, ?, ?, ?)
+    "#;
 
 const SELECT: &str = r#"
     select id, email, status, name, avatar, created_at, updated_at, last_login
     from users
     where id = ?
-"#;
+    "#;
 
 const SELECT_BY_EMAIL: &str = r#"
     select id, email, status, name, avatar, created_at, updated_at, last_login
     from users
     where email = ?
-"#;
+    "#;
 
 const SET_LAST_LOGIN: &str = r#"
     update users
-    set last_login = now()
+set last_login = now()
     where id = ?
-"#;
+    "#;
 
 const SET_STATUS: &str = r#"
     update users
     set status = ?
     where id = ?
-"#;
+    "#;
 
 const SET_AVATAR: &str = r#"
     update users
     set avatar = ?
     where id = ?
-"#;
+    "#;
 
 const SET_NAME: &str = r#"
     update users
     set name = ?
     where id = ?
-"#;
+    "#;
 
 const SET_AVATAR_NAME: &str = r#"
     update users
     set avatar = ?, name = ?
     where id = ?
-"#;
+    "#;

@@ -7,6 +7,8 @@ use axum::{
     Extension, Json, Router,
 };
 use serde::Serialize;
+use tracing::Span;
+use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use crate::{domain::session::Session, error::Error, App, Result};
 
@@ -21,6 +23,7 @@ async fn get_project(
     Path(project_id): Path<String>,
     Extension(session): Extension<Session>,
 ) -> Result<impl IntoResponse> {
+    Span::current().set_attribute("project.id", project_id.to_owned());
     let organization = match session {
         Session::Member { organization, .. } => organization,
         _ => return Err(Error::Unauthorized),

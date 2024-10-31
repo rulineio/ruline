@@ -1,8 +1,23 @@
+use tracing::instrument;
+
 use crate::domain::organization::Organization;
 
 use super::*;
 
 impl Database {
+    #[instrument(
+        skip_all,
+        fields(
+            organization.id = %organization.id,
+            otel.name = "INSERT organizations",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "organizations",
+            db.namespace = "ruline",
+            db.operation.name = "INSERT",
+            db.query.text = INSERT.trim()
+        )
+    )]
     pub async fn store_organization(
         &self,
         organization: &Organization,
@@ -19,6 +34,19 @@ impl Database {
         Ok(())
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            organization.id = %id,
+            otel.name = "SELECT organizations",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "organizations",
+            db.namespace = "ruline",
+            db.operation.name = "SELECT",
+            db.query.text = SELECT.trim()
+        )
+    )]
     pub async fn get_organization(&self, id: &str) -> Result<Organization> {
         let organization: organization::Organization = sqlx::query_as(SELECT)
             .bind(id)
@@ -29,6 +57,19 @@ impl Database {
         Ok(organization.into())
     }
 
+    #[instrument(
+        skip_all,
+        fields(
+            organization.id = %organization_id,
+            otel.name = "SELECT organizations",
+            otel.kind = "CLIENT",
+            db.system = "mariadb",
+            db.collection.name = "organizations",
+            db.namespace = "ruline",
+            db.operation.name = "SELECT",
+            db.query.text = SELECT_ORGANIZATION_MEMBERS.trim()
+        )
+    )]
     pub async fn get_organization_members(
         &self,
         organization_id: &str,
@@ -45,18 +86,18 @@ impl Database {
 
 const INSERT: &str = r#"
     INSERT INTO organizations (id, name, logo)
-    VALUES (?, ?, ?)
-"#;
+VALUES (?, ?, ?)
+    "#;
 
 const SELECT: &str = r#"
     SELECT id, name, status, logo, created_at, updated_at
     FROM organizations
     WHERE id = ?
-"#;
+    "#;
 
 const SELECT_ORGANIZATION_MEMBERS: &str = r#"
     SELECT u.name, u.email, u.avatar, m.role, m.status
     FROM users u
     INNER JOIN members m ON u.id = m.user_id
     WHERE m.organization_id = ?
-"#;
+    "#;
