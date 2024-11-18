@@ -193,6 +193,7 @@ export async function updateWorkflowVersion(
 export const WorkflowVersion = v.object({
     version: v.number(),
     status: v.picklist(['draft', 'in_review', 'published', 'archived']),
+    definition: v.any(),
 });
 export type WorkflowVersion = v.InferInput<typeof WorkflowVersion>;
 

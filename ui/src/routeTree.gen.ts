@@ -34,9 +34,12 @@ const AuthedProjectProjectIdSettingsLazyImport = createFileRoute(
 const AuthedProjectProjectIdWorkflowsIndexLazyImport = createFileRoute(
   '/_authed/project/$projectId/workflows/',
 )()
-const AuthedProjectProjectIdWorkflowsWorkflowIdLazyImport = createFileRoute(
-  '/_authed/project/$projectId/workflows/$workflowId',
-)()
+const AuthedProjectProjectIdWorkflowsWorkflowIdIndexLazyImport =
+  createFileRoute('/_authed/project/$projectId/workflows/$workflowId/')()
+const AuthedProjectProjectIdWorkflowsWorkflowIdVersionLazyImport =
+  createFileRoute(
+    '/_authed/project/$projectId/workflows/$workflowId/$version',
+  )()
 
 // Create/Update Routes
 
@@ -110,13 +113,23 @@ const AuthedProjectProjectIdWorkflowsIndexLazyRoute =
     ),
   )
 
-const AuthedProjectProjectIdWorkflowsWorkflowIdLazyRoute =
-  AuthedProjectProjectIdWorkflowsWorkflowIdLazyImport.update({
-    path: '/workflows/$workflowId',
+const AuthedProjectProjectIdWorkflowsWorkflowIdIndexLazyRoute =
+  AuthedProjectProjectIdWorkflowsWorkflowIdIndexLazyImport.update({
+    path: '/workflows/$workflowId/',
     getParentRoute: () => AuthedProjectProjectIdRoute,
   } as any).lazy(() =>
     import(
-      './routes/_authed/project/$projectId/workflows/$workflowId.lazy'
+      './routes/_authed/project/$projectId/workflows/$workflowId/index.lazy'
+    ).then((d) => d.Route),
+  )
+
+const AuthedProjectProjectIdWorkflowsWorkflowIdVersionLazyRoute =
+  AuthedProjectProjectIdWorkflowsWorkflowIdVersionLazyImport.update({
+    path: '/workflows/$workflowId/$version',
+    getParentRoute: () => AuthedProjectProjectIdRoute,
+  } as any).lazy(() =>
+    import(
+      './routes/_authed/project/$projectId/workflows/$workflowId/$version.lazy'
     ).then((d) => d.Route),
   )
 
@@ -187,18 +200,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedProjectProjectIdIndexLazyImport
       parentRoute: typeof AuthedProjectProjectIdImport
     }
-    '/_authed/project/$projectId/workflows/$workflowId': {
-      id: '/_authed/project/$projectId/workflows/$workflowId'
-      path: '/workflows/$workflowId'
-      fullPath: '/project/$projectId/workflows/$workflowId'
-      preLoaderRoute: typeof AuthedProjectProjectIdWorkflowsWorkflowIdLazyImport
-      parentRoute: typeof AuthedProjectProjectIdImport
-    }
     '/_authed/project/$projectId/workflows/': {
       id: '/_authed/project/$projectId/workflows/'
       path: '/workflows'
       fullPath: '/project/$projectId/workflows'
       preLoaderRoute: typeof AuthedProjectProjectIdWorkflowsIndexLazyImport
+      parentRoute: typeof AuthedProjectProjectIdImport
+    }
+    '/_authed/project/$projectId/workflows/$workflowId/$version': {
+      id: '/_authed/project/$projectId/workflows/$workflowId/$version'
+      path: '/workflows/$workflowId/$version'
+      fullPath: '/project/$projectId/workflows/$workflowId/$version'
+      preLoaderRoute: typeof AuthedProjectProjectIdWorkflowsWorkflowIdVersionLazyImport
+      parentRoute: typeof AuthedProjectProjectIdImport
+    }
+    '/_authed/project/$projectId/workflows/$workflowId/': {
+      id: '/_authed/project/$projectId/workflows/$workflowId/'
+      path: '/workflows/$workflowId'
+      fullPath: '/project/$projectId/workflows/$workflowId'
+      preLoaderRoute: typeof AuthedProjectProjectIdWorkflowsWorkflowIdIndexLazyImport
       parentRoute: typeof AuthedProjectProjectIdImport
     }
   }
@@ -210,8 +230,9 @@ interface AuthedProjectProjectIdRouteChildren {
   AuthedProjectProjectIdSettingsLazyRoute: typeof AuthedProjectProjectIdSettingsLazyRoute
   AuthedProjectProjectIdTeamLazyRoute: typeof AuthedProjectProjectIdTeamLazyRoute
   AuthedProjectProjectIdIndexLazyRoute: typeof AuthedProjectProjectIdIndexLazyRoute
-  AuthedProjectProjectIdWorkflowsWorkflowIdLazyRoute: typeof AuthedProjectProjectIdWorkflowsWorkflowIdLazyRoute
   AuthedProjectProjectIdWorkflowsIndexLazyRoute: typeof AuthedProjectProjectIdWorkflowsIndexLazyRoute
+  AuthedProjectProjectIdWorkflowsWorkflowIdVersionLazyRoute: typeof AuthedProjectProjectIdWorkflowsWorkflowIdVersionLazyRoute
+  AuthedProjectProjectIdWorkflowsWorkflowIdIndexLazyRoute: typeof AuthedProjectProjectIdWorkflowsWorkflowIdIndexLazyRoute
 }
 
 const AuthedProjectProjectIdRouteChildren: AuthedProjectProjectIdRouteChildren =
@@ -220,10 +241,12 @@ const AuthedProjectProjectIdRouteChildren: AuthedProjectProjectIdRouteChildren =
       AuthedProjectProjectIdSettingsLazyRoute,
     AuthedProjectProjectIdTeamLazyRoute: AuthedProjectProjectIdTeamLazyRoute,
     AuthedProjectProjectIdIndexLazyRoute: AuthedProjectProjectIdIndexLazyRoute,
-    AuthedProjectProjectIdWorkflowsWorkflowIdLazyRoute:
-      AuthedProjectProjectIdWorkflowsWorkflowIdLazyRoute,
     AuthedProjectProjectIdWorkflowsIndexLazyRoute:
       AuthedProjectProjectIdWorkflowsIndexLazyRoute,
+    AuthedProjectProjectIdWorkflowsWorkflowIdVersionLazyRoute:
+      AuthedProjectProjectIdWorkflowsWorkflowIdVersionLazyRoute,
+    AuthedProjectProjectIdWorkflowsWorkflowIdIndexLazyRoute:
+      AuthedProjectProjectIdWorkflowsWorkflowIdIndexLazyRoute,
   }
 
 const AuthedProjectProjectIdRouteWithChildren =
@@ -256,8 +279,9 @@ export interface FileRoutesByFullPath {
   '/project/$projectId/settings': typeof AuthedProjectProjectIdSettingsLazyRoute
   '/project/$projectId/team': typeof AuthedProjectProjectIdTeamLazyRoute
   '/project/$projectId/': typeof AuthedProjectProjectIdIndexLazyRoute
-  '/project/$projectId/workflows/$workflowId': typeof AuthedProjectProjectIdWorkflowsWorkflowIdLazyRoute
   '/project/$projectId/workflows': typeof AuthedProjectProjectIdWorkflowsIndexLazyRoute
+  '/project/$projectId/workflows/$workflowId/$version': typeof AuthedProjectProjectIdWorkflowsWorkflowIdVersionLazyRoute
+  '/project/$projectId/workflows/$workflowId': typeof AuthedProjectProjectIdWorkflowsWorkflowIdIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
@@ -268,8 +292,9 @@ export interface FileRoutesByTo {
   '/project/$projectId/settings': typeof AuthedProjectProjectIdSettingsLazyRoute
   '/project/$projectId/team': typeof AuthedProjectProjectIdTeamLazyRoute
   '/project/$projectId': typeof AuthedProjectProjectIdIndexLazyRoute
-  '/project/$projectId/workflows/$workflowId': typeof AuthedProjectProjectIdWorkflowsWorkflowIdLazyRoute
   '/project/$projectId/workflows': typeof AuthedProjectProjectIdWorkflowsIndexLazyRoute
+  '/project/$projectId/workflows/$workflowId/$version': typeof AuthedProjectProjectIdWorkflowsWorkflowIdVersionLazyRoute
+  '/project/$projectId/workflows/$workflowId': typeof AuthedProjectProjectIdWorkflowsWorkflowIdIndexLazyRoute
 }
 
 export interface FileRoutesById {
@@ -283,8 +308,9 @@ export interface FileRoutesById {
   '/_authed/project/$projectId/settings': typeof AuthedProjectProjectIdSettingsLazyRoute
   '/_authed/project/$projectId/team': typeof AuthedProjectProjectIdTeamLazyRoute
   '/_authed/project/$projectId/': typeof AuthedProjectProjectIdIndexLazyRoute
-  '/_authed/project/$projectId/workflows/$workflowId': typeof AuthedProjectProjectIdWorkflowsWorkflowIdLazyRoute
   '/_authed/project/$projectId/workflows/': typeof AuthedProjectProjectIdWorkflowsIndexLazyRoute
+  '/_authed/project/$projectId/workflows/$workflowId/$version': typeof AuthedProjectProjectIdWorkflowsWorkflowIdVersionLazyRoute
+  '/_authed/project/$projectId/workflows/$workflowId/': typeof AuthedProjectProjectIdWorkflowsWorkflowIdIndexLazyRoute
 }
 
 export interface FileRouteTypes {
@@ -299,8 +325,9 @@ export interface FileRouteTypes {
     | '/project/$projectId/settings'
     | '/project/$projectId/team'
     | '/project/$projectId/'
-    | '/project/$projectId/workflows/$workflowId'
     | '/project/$projectId/workflows'
+    | '/project/$projectId/workflows/$workflowId/$version'
+    | '/project/$projectId/workflows/$workflowId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -310,8 +337,9 @@ export interface FileRouteTypes {
     | '/project/$projectId/settings'
     | '/project/$projectId/team'
     | '/project/$projectId'
-    | '/project/$projectId/workflows/$workflowId'
     | '/project/$projectId/workflows'
+    | '/project/$projectId/workflows/$workflowId/$version'
+    | '/project/$projectId/workflows/$workflowId'
   id:
     | '__root__'
     | '/_authed'
@@ -323,8 +351,9 @@ export interface FileRouteTypes {
     | '/_authed/project/$projectId/settings'
     | '/_authed/project/$projectId/team'
     | '/_authed/project/$projectId/'
-    | '/_authed/project/$projectId/workflows/$workflowId'
     | '/_authed/project/$projectId/workflows/'
+    | '/_authed/project/$projectId/workflows/$workflowId/$version'
+    | '/_authed/project/$projectId/workflows/$workflowId/'
   fileRoutesById: FileRoutesById
 }
 
@@ -386,8 +415,9 @@ export const routeTree = rootRoute
         "/_authed/project/$projectId/settings",
         "/_authed/project/$projectId/team",
         "/_authed/project/$projectId/",
-        "/_authed/project/$projectId/workflows/$workflowId",
-        "/_authed/project/$projectId/workflows/"
+        "/_authed/project/$projectId/workflows/",
+        "/_authed/project/$projectId/workflows/$workflowId/$version",
+        "/_authed/project/$projectId/workflows/$workflowId/"
       ]
     },
     "/_authed/project/$projectId/settings": {
@@ -402,12 +432,16 @@ export const routeTree = rootRoute
       "filePath": "_authed/project/$projectId/index.lazy.tsx",
       "parent": "/_authed/project/$projectId"
     },
-    "/_authed/project/$projectId/workflows/$workflowId": {
-      "filePath": "_authed/project/$projectId/workflows/$workflowId.lazy.tsx",
-      "parent": "/_authed/project/$projectId"
-    },
     "/_authed/project/$projectId/workflows/": {
       "filePath": "_authed/project/$projectId/workflows/index.lazy.tsx",
+      "parent": "/_authed/project/$projectId"
+    },
+    "/_authed/project/$projectId/workflows/$workflowId/$version": {
+      "filePath": "_authed/project/$projectId/workflows/$workflowId/$version.lazy.tsx",
+      "parent": "/_authed/project/$projectId"
+    },
+    "/_authed/project/$projectId/workflows/$workflowId/": {
+      "filePath": "_authed/project/$projectId/workflows/$workflowId/index.lazy.tsx",
       "parent": "/_authed/project/$projectId"
     }
   }
