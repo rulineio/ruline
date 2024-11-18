@@ -1,23 +1,34 @@
 use std::sync::Arc;
 
 use axum::{
-    extract::{Path, State},
+    extract::{
+        ws::{Message, WebSocket},
+        Path, State, WebSocketUpgrade,
+    },
     http::StatusCode,
     response::IntoResponse,
     routing::{get, patch, post},
     Extension, Json, Router,
 };
+use futures::{
+    sink::SinkExt,
+    stream::{SplitSink, StreamExt},
+};
 use serde::{Deserialize, Serialize};
-use tracing::{info, Span};
+use tokio::sync::Mutex;
+use tracing::{debug, error, info, info_span, instrument, warn, Instrument, Span};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 use crate::{
     domain::{
-        member::MemberRole,
+        member::{Member, MemberRole},
         session::Session,
+        user::User,
         workflow::{Workflow, WorkflowVersionStatus},
     },
+    editor::{VersionEditor, VersionEditorEvent, VersionEditorMember},
     error::Error,
+    util::ResultExt,
     App, Result,
 };
 
@@ -26,7 +37,8 @@ pub fn router() -> Router<Arc<App>> {
         .route("/", get(get_workflow_versions))
         .route("/", post(create_workflow_version))
         .route("/:version", get(get_workflow_version))
-        .route("/:version", patch(update_workflow_version_status));
+        .route("/:version", patch(update_workflow_version_status))
+        .route("/:version/editor", get(get_editor));
 
     let wr = Router::new()
         .route("/", get(get_workflow))
@@ -404,6 +416,181 @@ async fn update_workflow_version_status(
     Ok(StatusCode::NO_CONTENT)
 }
 
+pub async fn handle_version_ws(
+    ws: WebSocketUpgrade,
+    State(app): State<Arc<App>>,
+    Extension(session): Extension<Session>,
+) -> Result<impl IntoResponse> {
+    let (organization_id, member, user) = match session {
+        Session::Member {
+            organization,
+            member,
+            user,
+        } => (organization.id, member, user),
+        _ => return Err(Error::Unauthorized),
+    };
+
+    Ok(ws.on_upgrade(move |socket| {
+        handle_version_socket(socket, app, organization_id, member, user)
+    }))
+}
+
+#[instrument(
+    skip(socket, app, organization_id, member, user),
+    name = "Handle Socket",
+    fields(otel.kind = "server", member.id = %member.id, organization.id = %organization_id)
+)]
+async fn handle_version_socket(
+    socket: WebSocket,
+    app: Arc<App>,
+    organization_id: String,
+    member: Member,
+    user: User,
+) {
+    let (mut sender, mut receiver) = socket.split();
+    let mut editor = None::<Arc<Mutex<VersionEditor>>>;
+
+    while let Some(msg) = receiver.next().await {
+        let _span = info_span!("Handle Message").entered();
+
+        let msg = match msg {
+            Ok(msg) => msg,
+            Err(e) => {
+                warn!({ exception.message = %e }, "Failed to receive message");
+                continue;
+            }
+        };
+
+        if let Message::Text(con_req) = msg {
+            let version_msg: VersionMessage = match serde_json::from_str(&con_req) {
+                Ok(msg) => msg,
+                Err(e) => {
+                    warn!({ exception.message = %e }, "Failed to parse message");
+                    continue;
+                }
+            };
+
+            if let VersionMessage::Connect {
+                project_id,
+                workflow_id,
+                version,
+            } = version_msg
+            {
+                Span::current().set_attribute("project.id", project_id.to_owned());
+                Span::current().set_attribute("workflow.id", workflow_id.to_owned());
+                Span::current().set_attribute("workflow.version", i64::from(version));
+                Span::current().set_attribute("event", "connect");
+
+                editor = Some(app.editor(&organization_id, &project_id, &workflow_id, version));
+            }
+
+            if editor.is_some() {
+                break;
+            }
+        }
+    }
+
+    debug!("Connection established");
+
+    let editor = match editor {
+        Some(editor) => editor,
+        None => return,
+    };
+
+    let mut rx = {
+        let editor = editor.lock().await;
+        editor.subscribe()
+    };
+
+    {
+        let mut editor = editor.lock().await;
+        let _ = editor
+            .add_member(
+                member.id.to_owned(),
+                user.name.to_owned(),
+                user.avatar.to_owned(),
+            )
+            .log_error("Failed to add member");
+    }
+
+    let receiver_editor = editor.clone();
+    let mut receive = tokio::spawn(
+        async move {
+            while let Some(msg) = receiver.next().await {
+                let msg = msg.unwrap();
+                handle_message(msg, receiver_editor.clone()).await;
+            }
+        }
+        .in_current_span(),
+    );
+
+    let mut send = tokio::spawn(
+        async move {
+            while let Ok(msg) = rx.recv().await {
+                handle_event(msg, &mut sender).await;
+            }
+        }
+        .in_current_span(),
+    );
+
+    tokio::select! {
+        _ = (&mut receive) => send.abort(),
+        _ = (&mut send) => receive.abort(),
+    }
+
+    let mut editor = editor.lock().await;
+    let _ = editor
+        .remove_member(&member.id)
+        .log_error("Failed to remove member");
+
+    debug!("Connection closed");
+}
+
+#[instrument(skip(msg, editor), name = "Handle Message")]
+async fn handle_message(msg: Message, editor: Arc<Mutex<VersionEditor>>) {
+    let editor = editor.lock().await;
+    if let Message::Text(con_req) = msg {
+        let version_msg: VersionMessage = match serde_json::from_str(&con_req) {
+            Ok(msg) => msg,
+            Err(e) => {
+                error!("Failed to parse message: {:?}", e);
+                return;
+            }
+        };
+        editor.send_event(version_msg.into()).unwrap()
+    }
+}
+
+#[instrument(skip(event, sender), name = "Handle Event", fields(otel.kind = "consumer", event = event.name()))]
+async fn handle_event(event: VersionEditorEvent, sender: &mut SplitSink<WebSocket, Message>) {
+    let event = VersionMessage::from(event);
+    let event = serde_json::to_string(&event).unwrap();
+    let msg = Message::Text(event);
+    sender
+        .send(msg)
+        .instrument(info_span!("Send Message"))
+        .await
+        .unwrap();
+}
+
+async fn get_editor(
+    State(app): State<Arc<App>>,
+    Extension(session): Extension<Session>,
+    Path((project_id, workflow_id, version)): Path<(String, String, u32)>,
+) -> Result<impl IntoResponse> {
+    let organization_id = match session {
+        Session::Member { organization, .. } => organization.id,
+        _ => return Err(Error::Unauthorized),
+    };
+
+    let editor = app.editor(&organization_id, &project_id, &workflow_id, version);
+    let editor = editor.lock().await;
+
+    let members = editor.members.iter().map(Into::into).collect::<Vec<_>>();
+
+    Ok(Json(VersionEditorResponse { members }))
+}
+
 #[derive(Deserialize)]
 struct CreateWorkflowRequest {
     pub name: String,
@@ -444,4 +631,83 @@ struct WorkflowVersionResponse {
 #[derive(Deserialize)]
 struct UpdateWorkflowVersionStatusRequest {
     pub status: String,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(tag = "event", rename_all = "snake_case")]
+enum VersionMessage {
+    Connect {
+        project_id: String,
+        workflow_id: String,
+        version: u32,
+    },
+    MemberJoined {
+        member_id: String,
+        name: String,
+        avatar: String,
+    },
+    MemberLeft {
+        member_id: String,
+    },
+}
+
+impl From<VersionEditorEvent> for VersionMessage {
+    fn from(msg: VersionEditorEvent) -> Self {
+        match msg {
+            VersionEditorEvent::MemberJoined {
+                avatar,
+                member_id,
+                name,
+            } => VersionMessage::MemberJoined {
+                avatar,
+                member_id,
+                name,
+            },
+            VersionEditorEvent::MemberLeft { member_id } => {
+                VersionMessage::MemberLeft { member_id }
+            }
+        }
+    }
+}
+
+impl Into<VersionEditorEvent> for VersionMessage {
+    fn into(self) -> VersionEditorEvent {
+        match self {
+            VersionMessage::MemberJoined {
+                avatar,
+                member_id,
+                name,
+            } => VersionEditorEvent::MemberJoined {
+                avatar,
+                member_id,
+                name,
+            },
+            VersionMessage::MemberLeft { member_id } => {
+                VersionEditorEvent::MemberLeft { member_id }
+            }
+            _ => panic!("Invalid message"),
+        }
+    }
+}
+
+#[derive(Serialize)]
+struct VersionEditorMemberResponse {
+    pub id: String,
+    pub name: String,
+    pub avatar: String,
+}
+
+impl From<&VersionEditorMember> for VersionEditorMemberResponse {
+    fn from(member: &VersionEditorMember) -> Self {
+        Self {
+            id: member.id.to_owned(),
+            name: member.name.to_owned(),
+            avatar: member.avatar.to_owned(),
+        }
+    }
+}
+
+#[derive(Serialize)]
+struct VersionEditorResponse {
+    pub members: Vec<VersionEditorMemberResponse>,
 }

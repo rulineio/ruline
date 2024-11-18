@@ -6,7 +6,7 @@ use axum::{
     http::{Request, Response},
     middleware::{self, Next},
     response::{IntoResponse, Redirect},
-    routing::get,
+    routing::{any, get},
     Router,
 };
 use axum_extra::extract::CookieJar;
@@ -14,6 +14,7 @@ use opentelemetry_semantic_conventions::trace::HTTP_RESPONSE_STATUS_CODE;
 use tower_http::{classify::ServerErrorsFailureClass, trace::TraceLayer};
 use tracing::{field, Span};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
+use workflow::handle_version_ws;
 
 use crate::{domain::session::Session, error::Error, App, Result};
 
@@ -37,6 +38,7 @@ pub fn router(app: Arc<App>) -> Router {
         .nest("/users", user::router())
         .nest("/projects", project::router().merge(workflow::router()))
         .nest("/invitations", invitation::router())
+        .route("/ws", any(handle_version_ws))
         .route_layer(middleware::from_fn_with_state(
             app.clone(),
             authenticate_user,

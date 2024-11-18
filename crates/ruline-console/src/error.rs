@@ -4,7 +4,7 @@ use thiserror::Error;
 use tracing::{error, Span};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 
-use crate::{cache, client, db, template};
+use crate::{cache, client, db, editor::VersionEditorEvent, template};
 
 #[derive(Debug, Error)]
 pub enum Error {
@@ -28,6 +28,9 @@ pub enum Error {
 
     #[error("Template error: {0}")]
     TemplateError(#[from] template::TemplateError),
+
+    #[error("Could not send message to version editor channel: {0}")]
+    ChannelSendError(#[from] tokio::sync::broadcast::error::SendError<VersionEditorEvent>),
 }
 
 impl IntoResponse for Error {

@@ -3,9 +3,12 @@ use std::sync::Arc;
 use anyhow::anyhow;
 use cache::Cache;
 use client::{email, google};
+use dashmap::DashMap;
 use db::Database;
+use editor::VersionEditor;
 use error::Error;
 use serde::Deserialize;
+use tokio::sync::Mutex;
 use util::ResultExt;
 
 pub mod api;
@@ -13,6 +16,7 @@ pub mod cache;
 pub mod client;
 pub mod db;
 pub mod domain;
+pub mod editor;
 pub mod error;
 pub mod template;
 pub mod util;
@@ -94,6 +98,7 @@ pub struct App {
     pub template_client: Arc<template::TemplateClient>,
     pub google_client: Option<Arc<google::Client>>,
     pub email_client: Option<Arc<email::Client>>,
+    pub editors: DashMap<(String, String, String, u32), Arc<Mutex<VersionEditor>>>,
 }
 
 impl App {
@@ -131,6 +136,45 @@ impl App {
             template_client,
             google_client: google_client.map(Arc::new),
             email_client: email_client.map(Arc::new),
+            editors: DashMap::new(),
         })
+    }
+
+    pub fn editor(
+        &self,
+        organization_id: &str,
+        project_id: &str,
+        workflow_id: &str,
+        version: u32,
+    ) -> Arc<Mutex<VersionEditor>> {
+        let key = (
+            organization_id.to_owned(),
+            project_id.to_owned(),
+            workflow_id.to_owned(),
+            version,
+        );
+
+        self.editors
+            .entry(key)
+            .or_insert_with(|| Arc::new(Mutex::new(VersionEditor::new())))
+            .value()
+            .to_owned()
+    }
+
+    pub fn remove_editor(
+        &self,
+        organization_id: &str,
+        project_id: &str,
+        workflow_id: &str,
+        version: u32,
+    ) {
+        let key = (
+            organization_id.to_owned(),
+            project_id.to_owned(),
+            workflow_id.to_owned(),
+            version,
+        );
+
+        self.editors.remove(&key);
     }
 }

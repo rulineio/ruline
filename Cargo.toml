@@ -29,6 +29,7 @@ async-trait       = { version = "0.1.81" }
 criterion         = { version = "0.5.1" }
 dashmap           = { version = "6.0.1" }
 fixedbitset       = { version = "0.4.2" }
+futures           = { version = "0.3.31" }
 insta             = { version = "1.38.0" }
 parking_lot       = { version = "0.12.3" }
 petgraph          = { version = "0.6.5" }
